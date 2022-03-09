@@ -1,0 +1,6 @@
+idaes-pse
+pandas
+networkx
+pyomo
+numpy
+glpk

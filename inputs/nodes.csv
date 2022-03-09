@@ -1,0 +1,3 @@
+node,build_smr,build_smrCCS,build_electrolyzer,transportationFuel_tonnesperday,industrialFuel_tonnesperday,existing_tonnesperday
+one,1,1,1,0,100,500
+two,0,0,0,500,500,0

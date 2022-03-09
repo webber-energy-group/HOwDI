@@ -1,0 +1,2 @@
+type,subtype,hub_name,capacity_tonPerDay,fixed_usdPerTonPerDay,capital_usd_intercept,capital_usd_coefficient,kWh_intercept,kWh_coefficient,ng_coefficient,variable_usdPerTon,carbon_g_MJ,can_ccs1,can_ccs2,utilization
+smr,existing,one,3,70,0,0,0,600,165,100,80,1,1,0.9

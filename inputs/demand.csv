@@ -1,0 +1,4 @@
+sector,breakevenPrice,carbonSensitiveFraction,breakevenCarbon_g_MJ,demandType
+transportationFuel,10000,0.25,145,fuelStation
+industrialFuel,5000,0,120,lowPurity
+existing,5000,0,150,lowPurity
