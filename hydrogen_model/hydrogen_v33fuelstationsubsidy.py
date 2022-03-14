@@ -96,7 +96,7 @@ import time
 import numpy
 #hydrogen modules
 #import discretize_demand
-import create_graph
+import hydrogen_model.create_graph as create_graph
 
 start = time.time()
 

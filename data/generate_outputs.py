@@ -51,7 +51,7 @@ def tuple_split(df, index, name1, name2):
 
     return df
 
-def main(m, option='json'):
+def main(m, location='data/outputs/', option='json'):
     outputs = to_json(m, return_dict=True)
     outputs = outputs['unknown']['data']['None']['__pyomo_components__']
     outputs = recursive_clean(outputs)
@@ -86,5 +86,5 @@ def main(m, option='json'):
     #         dump(outputs, f, ensure_ascii=False, indent=4)
 
     if option == 'csv':
-        [df.to_csv('outputs/' + key + '.csv') for key, df in merged_dfs.items()]
+        [df.to_csv(location + key + '.csv') for key, df in merged_dfs.items()]
         
