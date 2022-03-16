@@ -1,3 +1,8 @@
+"""
+Converts inputs csvs into a single JSON
+Author: Braden Pecora
+"""
+
 import json, os, pandas as pd, numpy as np
 
 def to_list(file_name):
@@ -12,9 +17,13 @@ def to_list(file_name):
     data_list = [value for key, value in data_dict.items()]
     return data_list
 
-file_names = [file.replace('.csv','') for file in os.listdir('./inputs') if file.endswith('.csv')]
+def main():
+    file_names = [file.replace('.csv','') for file in os.listdir('./inputs') if file.endswith('.csv')]
 
-output = {file_name: to_list(file_name) for file_name in file_names}
+    output = {file_name: to_list(file_name) for file_name in file_names}
 
-with open('inputs/data.json', 'w') as f:
-    json.dump(output, f)
+    with open('inputs/data.json', 'w') as f:
+        json.dump(output, f)
+
+if __name__ == '__main__':
+    main()
