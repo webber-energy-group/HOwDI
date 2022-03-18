@@ -26,7 +26,7 @@ def main(data, path='data/'):
                 if key not in relevant_keys:
                     del outgoing_dict[key]
         return [outgoing_dict for _, outgoing_dict in outgoing_dicts.items()]
-    clean_data = {node: get_relevant_data(nodal_data) for node, nodal_data in data.items() if nodal_data['distribution']['outgoing'] != {}}
+    clean_data = {node: get_relevant_data(nodal_data) for node, nodal_data in data.items() if nodal_data['distribution'] != {"local": {},"outgoing": {},"incoming": {} }}
 
     features = []
     for node, nodal_connections in clean_data.items():
