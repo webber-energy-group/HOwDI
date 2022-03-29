@@ -1,3 +1,4 @@
 # files in here are ignored by Git
 **/__pycache__/**
 **Icon?
+.DS_Store/**
