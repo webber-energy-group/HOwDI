@@ -16,7 +16,7 @@ import json
 #data = json.load(open('outputs/outputs.json'))
 #path='data/'
 
-def main(data, path='data/'):
+def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_county_cont.shp'):
     
     # it seems that geopandas has a built in geocoder, but this was the first thing that worked
     # maybe its worth changing eventually...
@@ -73,7 +73,7 @@ def main(data, path='data/'):
     distribution = gpd.GeoDataFrame.from_features(geo_data)
 
     # get Texas plot
-    us_county = gpd.read_file(path + 'US_COUNTY_SHPFILE/US_county_cont.shp')
+    us_county = gpd.read_file(us_county_shp_file)
     # us_county = gpd.read_file('US_COUNTY_SHPFILE/US_county_cont.shp')
     tx_county = us_county[us_county['STATE_NAME'] == 'Texas']
     tx = tx_county.dissolve()
