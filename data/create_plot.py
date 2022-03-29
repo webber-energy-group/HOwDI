@@ -25,7 +25,7 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
         latlong.reverse() # is in opposite order of how geopandas will interpret 
     
     # clean data
-    def get_relevant_data(nodal_data):
+    def get_relevant_dist_data(nodal_data):
         outgoing_dicts = nodal_data['distribution']['outgoing']
         relevant_keys = ['source_class','destination','destination_class']
         for _, outgoing_dict in outgoing_dicts.items():
@@ -33,10 +33,17 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
                 if key not in relevant_keys:
                     del outgoing_dict[key]
         return [outgoing_dict for _, outgoing_dict in outgoing_dicts.items()]
-    clean_data = {node: get_relevant_data(nodal_data) for node, nodal_data in data.items() if nodal_data['distribution'] != {"local": {},"outgoing": {},"incoming": {} }}
+    dist_data = {node: get_relevant_dist_data(nodal_data) for node, nodal_data in data.items() if nodal_data['distribution'] != {"local": {},"outgoing": {},"incoming": {} }}
+
+    def get_relevant_prod_data(nodal_data):
+        if nodal_data['production'] != {}:
+            return tuple(nodal_data['production'].keys())
+        else:
+            return None
+    prod_data = {node: get_relevant_prod_data(nodal_data) for node, nodal_data in data.items()} 
 
     features = []
-    for node, nodal_connections in clean_data.items():
+    for node, nodal_connections in dist_data.items():
         node_latlng = locations[node]
         node_geodata = {
             'type' : 'Feature',
@@ -45,7 +52,8 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
                 'coordinates' : node_latlng
             },
             'properties' : {
-                'name' : node
+                'name' : node,
+                'production' : prod_data[node] # potential to lose data if 'island' that produces but not distributes
             }
         }
         features.append(node_geodata)
@@ -105,6 +113,6 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
 
 if __name__ == '__main__':
     from json import load
-    data = load(open('outputs/outputs.json'))
+    data = load(open('base/outputs/outputs.json'))
     path = ''
     main(data, path)
