@@ -13,8 +13,8 @@ from matplotlib.lines import Line2D
 import json
 
 ## for development 
-data = json.load(open('base/outputs/outputs.json'))
-path='data/base/'
+# data = json.load(open('base/outputs/outputs.json'))
+# path='data/base/'
 
 def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_county_cont.shp'):
     
