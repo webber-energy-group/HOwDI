@@ -8,7 +8,6 @@ but the metadata should be fairly easy to access and utilize.
 import geocoder
 import geopandas as gpd
 import matplotlib.pyplot as plt
-from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
 import json
 
@@ -90,26 +89,44 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
     connections = distribution[distribution.type == 'LineString']
 
     # plot
-    node_color = '#219ebc'
+    fig, ax = plt.subplots(figsize=(10,10),dpi=1000)
+
+    node_color = {
+        'default' : '#219ebc',
+        'smr': 'black',
+        'smrExisting': 'grey',
+        'smr+smrExisting': 'lightgrey', #tried for like an hour to get multiple colors in one marker instead of this
+        'electrolyzer': 'blue'
+    }
     dist_pipelineLowPurity_col = '#9b2226'
     dist_truckLiquefied_color = '#fb8500'
     dist_truckCompressed_color = '#bb3e03'
 
-    base = tx.plot(color='white',edgecolor='black')
-    nodes.plot(ax=base, color = node_color)
-    connections[connections['dist_type'] == 'dist_pipelineLowPurity'].plot(ax=base, color = dist_pipelineLowPurity_col)
-    connections[connections['dist_type'] == 'dist_truckLiquefied'].plot(ax=base, color = dist_truckLiquefied_color)
-    connections[connections['dist_type'] == 'dist_truckCompressed'].plot(ax=base, color = dist_truckCompressed_color, legend=True)
+    tx.plot(ax=ax,color='white',edgecolor='black')
 
+    nodes.plot(ax=ax, color = node_color['default'], zorder=5)
+    nodes[nodes['production'] == tuple(['smr'])].plot(ax=ax, color=node_color['smr'],zorder=5)
+    nodes[nodes['production'] == tuple(['smrExisting'])].plot(ax=ax, color=node_color['smrExisting'],zorder=5)
+    nodes[nodes['production'] == tuple(['smr','smrExisting'])].plot(ax=ax, color=node_color['smr+smrExisting'],zorder=5)
+    nodes[nodes['production'] == tuple(['electrolyzer'])].plot(ax=ax, color=node_color['electrolyzer'],zorder=5)
+    # nodes[nodes['production'] == None].plot(ax=ax, color = ?)
+    #TODO add different shape for producer vs consumer vs both
+
+    connections[connections['dist_type'] == 'dist_pipelineLowPurity'].plot(ax=ax, color = dist_pipelineLowPurity_col, zorder=1)
+    connections[connections['dist_type'] == 'dist_truckLiquefied'].plot(ax=ax, color = dist_truckLiquefied_color, zorder=1)
+    connections[connections['dist_type'] == 'dist_truckCompressed'].plot(ax=ax, color = dist_truckCompressed_color, legend=True, zorder=1)
+
+    #TODO Add other legend elements to legend
     legend_elements = [Line2D([0], [0], color=dist_pipelineLowPurity_col, lw=2, label='Gas Pipeline'), 
-    Line2D([0], [0], color=dist_truckLiquefied_color, lw=2, label='Liquid Truck Route'), 
-    Line2D([0], [0], color=dist_truckCompressed_color, lw=2, label='Gas Truck Route'),
-    Line2D([0], [0], marker='o', color=node_color, label='Node', markerfacecolor=node_color, markersize=5, lw=0)]
+                       Line2D([0], [0], color=dist_truckLiquefied_color, lw=2, label='Liquid Truck Route'), 
+                       Line2D([0], [0], color=dist_truckCompressed_color, lw=2, label='Gas Truck Route'),
+                    #    Line2D([0], [0], marker='o', color=node_color, label='Node', markerfacecolor=node_color, markersize=5, lw=0)
+                       ]
 
-    base.legend(handles=legend_elements, loc='upper left')
+    ax.legend(handles=legend_elements, loc='upper left')
 
 
-    plt.savefig(path + 'outputs/fig.png')
+    fig.savefig(path + 'outputs/fig.png')
 
 if __name__ == '__main__':
     from json import load
