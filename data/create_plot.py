@@ -90,7 +90,7 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
     # Plot
 
     #initialize figure
-    fig, ax = plt.subplots(figsize=(10,10),dpi=1000)
+    fig, ax = plt.subplots(figsize=(10,10),dpi=300)
 
     # get Texas plot
     us_county = gpd.read_file(us_county_shp_file)
