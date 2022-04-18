@@ -1,29 +1,26 @@
 import pandas as pd
 import geopandas as gpd
-import geopy #necessary installation
 import itertools
 from shapely.geometry import LineString
 import matplotlib.pyplot as plt
 
-def main(nodes_inputs, min_nodes=2,length_factor=0.8,epsg=3082):
-    # Turn nodes_inputs into a list of nodes
-    if isinstance(nodes_inputs,str):
-        nodes = pd.read_csv(nodes_inputs)['node'].tolist()
-    elif isinstance(nodes_inputs,pd.DataFrame):
-        nodes = nodes_inputs['node'].tolist()
-    elif isinstance(nodes_inputs,list):
-        nodes = nodes_inputs
-    else:
-        raise TypeError
-    # del nodes_inputs
+def main(min_nodes=2,length_factor=0.8):
+    # read files and establish parameters
+    current_dir = ''
+    
+    nodes_df = pd.read_csv(current_dir+'nodes/nodes.csv')
+    nodes = nodes_df['node'].tolist()
 
-    # create geodataframe from nodes, appending 'Texas' to the search (maybe change 'provider'?)
-    geonodes = gpd.tools.geocode([node + ' Texas' for node in nodes], provider='arcgis').set_index(pd.Series(nodes,name='node'))
+    epsg=3082
+    geonodes=gpd.read_file(current_dir+'nodes/nodes.geojson')
+    geonodes = geonodes.set_index('node')
     geonodes = geonodes.to_crs(epsg=epsg)
+
+    existing_arcs = pd.read_csv(current_dir+'nodes/existing_arcs.csv')
 
     # Initialize Figure with Texas base
     fig, ax = plt.subplots(figsize=(10,10),dpi=300)
-    us_county = gpd.read_file('data/US_COUNTY_SHPFILE/US_county_cont.shp')
+    us_county = gpd.read_file(current_dir+'US_COUNTY_SHPFILE/US_county_cont.shp')
     tx_county = us_county[us_county['STATE_NAME'] == 'Texas']
     tx = tx_county.dissolve().to_crs(epsg=epsg)
     tx.plot(ax=ax,color='white',edgecolor='black')
@@ -31,21 +28,19 @@ def main(nodes_inputs, min_nodes=2,length_factor=0.8,epsg=3082):
     # get all possible combinations of size 2, output is list of tuples turned into a multiindex
     nodes_combinations = list(itertools.combinations(nodes,2))
     index = pd.MultiIndex.from_tuples(nodes_combinations,names=['nodeA','nodeB'])
-
-    # create line from nodeA to nodeB
     gdf = gpd.GeoDataFrame(index=index)
+
     nodeA = gdf.join(geonodes.rename_axis('nodeA'))
     nodeB = gdf.join(geonodes.rename_axis('nodeB'))
+
+    # create line from nodeA to nodeB (for plotting purposes)
     gdf['LINE'] = [LineString([[a.x, a.y],[b.x, b.y]])for (a,b) in zip(nodeA.geometry, nodeB.geometry)]
     gdf = gpd.GeoDataFrame(gdf, geometry='LINE')
 
     # get euclidian distance
     gdf['distance'] = nodeA.distance(nodeB) 
-    
 
     class _Connections:
-        # semi-awkward to have class definition in main, but need gdf and nodes combinations
-        # don't want to pass through everytime
         def __init__(self, node):
             self.node = node
 
@@ -124,4 +119,4 @@ def main(nodes_inputs, min_nodes=2,length_factor=0.8,epsg=3082):
     return fig
 
 if __name__ == '__main__':
-    fig = main('data/base/inputs/texas_nodes.csv')
+    fig = main()
