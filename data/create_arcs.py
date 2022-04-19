@@ -1,11 +1,42 @@
+# https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#trip-service
+# https://2.python-requests.org/en/master/user/advanced/#session-objects
 import pandas as pd
 import geopandas as gpd
 import itertools
 from shapely.geometry import LineString
 import matplotlib.pyplot as plt
+import requests
+import json
+
+s = requests.Session() # improve performance over API calls
 
 # def sort_dict(d:dict) -> dict:
 #     return dict(sorted(d.items(), key=lambda x:x[1]))
+
+class Node:
+    """Used in make_route function"""
+    def __init__(self, coords):
+        self.x = coords[0]
+        self.y = coords[1]
+    def __str__(self):
+        return "{},{}".format(self.x,self.y)
+
+def get_route(nodeA, nodeB):
+    url = "http://router.project-osrm.org/route/v1/driving/{};{}?geometries=geojson".format(nodeA,nodeB)
+    r = s.get(url)
+    return json.loads(r.text)['routes'][0]
+    
+def make_route(row):
+    line = list(row.coords)
+    nodeA = Node(line[0])
+    nodeB = Node(line[1])
+
+    route = get_route(nodeA,nodeB)
+    road_geometry = LineString(route['geometry']['coordinates'])
+    distance = route['distance']
+    duration = route['duration']
+
+    return pd.Series([duration,distance,road_geometry])
 
 def main():
     # read files and establish parameters
@@ -17,6 +48,7 @@ def main():
 
     epsg=3082
     geonodes=gpd.read_file(current_dir+'nodes/nodes.geojson')
+    lat_long_crs = geonodes.crs
     geonodes = geonodes.set_index('node')
     geonodes = geonodes.to_crs(epsg=epsg)
 
@@ -48,11 +80,11 @@ def main():
     nodeB = gdf.join(geonodes.rename_axis('nodeB'))
 
     # create line from nodeA to nodeB (for plotting purposes)
-    gdf['LINE'] = [LineString([[a.x, a.y],[b.x, b.y]])for (a,b) in zip(nodeA.geometry, nodeB.geometry)]
-    gdf = gpd.GeoDataFrame(gdf, geometry='LINE')
+    gdf['LINE'] = [LineString([(a.x, a.y),(b.x, b.y)])for (a,b) in zip(nodeA.geometry, nodeB.geometry)]
+    gdf = gpd.GeoDataFrame(gdf, geometry='LINE').set_crs(epsg=epsg)
 
     # get euclidian distance
-    gdf['distance'] = nodeA.distance(nodeB) 
+    gdf['euclidian'] = nodeA.distance(nodeB) 
 
     class _Connections:
         def __init__(self, node):
@@ -75,7 +107,7 @@ def main():
 
         def _make_length_dict(self):
             # make dictionary that describes euclidian distance to destination
-            distances = list(gdf.loc[self.connections]['distance'])
+            distances = list(gdf.loc[self.connections]['euclidian'])
             d = {self.dests[i] : distances[i] for i in range(len(distances))}
             # considered sorting for optimization purposes but didn't seem to do anything 
             return d
@@ -179,17 +211,23 @@ def main():
 
     # trim gdf based on valid connections and plot
     gdf_trimmed = gdf.loc[valid_connections]
-    gdf_trimmed.plot(ax=ax)
+
+    # get gdf in latlong coords, turn find road distances and geometries
+    gdf_latlong = gdf_trimmed.to_crs(crs=lat_long_crs)
+    gdf_latlong[['duration','distance','road_geometry']] = gdf_latlong['LINE'].apply(make_route)
+    gdf_roads = gdf_latlong.set_geometry('road_geometry').to_crs(epsg=epsg)
+
+    gdf_trimmed.plot(ax=ax,color='grey')
+    gdf_roads.plot(ax=ax)
     fig.savefig('nodes/fig.png')
 
     # convert to df and format
     df = pd.DataFrame(gdf_trimmed)
-    df = df.rename(columns={'distance':'kmLength'})
+    df = df.rename(columns={'euclidian':'kmLength'})
     df['kmLength'] = df['kmLength']/1000
     df = df.rename_axis(['startNode','endNode'])
-    del df['LINE']
 
-    return df
+    return df[['kmLength','exist_pipeline']]
 
 if __name__ == '__main__':
     df = main()
