@@ -4,12 +4,16 @@ import itertools
 from shapely.geometry import LineString
 import matplotlib.pyplot as plt
 
-def main(min_nodes=2,length_factor=0.8):
+# def sort_dict(d:dict) -> dict:
+#     return dict(sorted(d.items(), key=lambda x:x[1]))
+
+def main():
     # read files and establish parameters
     current_dir = ''
     
-    nodes_df = pd.read_csv(current_dir+'nodes/nodes.csv')
-    nodes = nodes_df['node'].tolist()
+    nodes_df = pd.read_csv(current_dir+'nodes/nodes.csv').set_index('node')
+    nodes_df = nodes_df.sort_values(by=['minor'],ascending=False) # sort by minor; important for indexing direction
+    nodes = nodes_df.index.tolist()
 
     epsg=3082
     geonodes=gpd.read_file(current_dir+'nodes/nodes.geojson')
@@ -17,6 +21,16 @@ def main(min_nodes=2,length_factor=0.8):
     geonodes = geonodes.to_crs(epsg=epsg)
 
     existing_arcs = pd.read_csv(current_dir+'nodes/existing_arcs.csv')
+
+    # length factors (lf) are effective reach
+    # length factor > 1, restricts max distance to min*lf
+    # length factor < 1, loosens max distance to min*lf (in short)
+    minor_length_factor = 5
+    major_length_factor = 0.8
+    regular_length_factor = 0.9
+
+    # minimum number of connections for each node
+    min_nodes = 3 # 4 is not bad either
 
     # Initialize Figure with Texas base
     fig, ax = plt.subplots(figsize=(10,10),dpi=300)
@@ -55,12 +69,33 @@ def main(min_nodes=2,length_factor=0.8):
 
             self.lengths = self._make_length_dict()
 
+            self.series = nodes_df.loc[node]
+            self.major = self.series['major']
+            self.minor = self.series['minor']
+
         def _make_length_dict(self):
             # make dictionary that describes euclidian distance to destination
             distances = list(gdf.loc[self.connections]['distance'])
-            return {self.dests[i] : distances[i] for i in range(len(distances))}
+            d = {self.dests[i] : distances[i] for i in range(len(distances))}
+            # considered sorting for optimization purposes but didn't seem to do anything 
+            return d
+
+        def connection_with(self, nodeB):
+            """Returns the tuple used for indexing connection (since multiindexing requires order)"""
+            tuple1 = (self.node, nodeB.node)
+            tuple2 = (nodeB.node, self.node)
+
+            is_in_both = lambda t: (t in self.connections and t in nodeB.connections)
+
+            if is_in_both(tuple1):
+                return tuple1
+            elif is_in_both(tuple2):
+                return tuple2
+            else:
+                return None
+
         def get_length(self, nodeB):
-            # nodeB is a _Connections object
+            # nodeB is a _Connections object (can do typing but pylance gets mad)
             return self.lengths[nodeB.node]
         def remove_connection(self, nodeB):
             # nodeB should be of type _Connections
@@ -71,14 +106,9 @@ def main(min_nodes=2,length_factor=0.8):
             self.dests.remove(b_str)
             nodeB.dests.remove(a_str)
 
-            tuple1 = (a_str, b_str)
-            tuple2 = (a_str, b_str)
-
-            for t in [tuple1, tuple2]:
-                if t in self.connections:
-                    self.connections.remove(t)
-                if t in nodeB.connections:
-                    nodeB.connections.remove(t)
+            connection = self.connection_with(nodeB)
+            self.connections.remove(connection)
+            nodeB.connections.remove(connection)
 
             del self.lengths[b_str]
             del nodeB.lengths[a_str]
@@ -86,37 +116,81 @@ def main(min_nodes=2,length_factor=0.8):
             self.n = self.n - 1
             nodeB.n = nodeB.n - 1
 
-        def has_remaining_valid_connections(self, l):
+        def has_remaining_valid_connections(self, current_length, length_factor):
             # returns boolean if has enough remaining valid connections
             # (has a number of connections greater than min_nodes with length less than length_factor times current length)
-            return len([length for length in self.lengths if self.lengths[length] < length_factor*l]) > min_nodes
+            return len([length for length in self.lengths if self.lengths[length] < length_factor*current_length]) >= min_nodes
 
-    nodal_c = {node: _Connections(node) for node in nodes} #initialize
+        def get_smallest_length(self):
+            """Returns length of smallest connection"""
+            return min(self.lengths.values())
+            
 
-    for nodeA_str, _nodeA in nodal_c.items():
-        for _nodeB in [nodal_c[node] for node in _nodeA.dests]:
+    # initialize nodal connections
+    nodal_c = {node: _Connections(node) for node in nodes} 
+
+    # initial trim based on `has_remaining_valid_connections` method
+    for _, _nodeA in nodal_c.items():
+        for _nodeB in [nodal_c[node] for node in _nodeA.lengths.keys()]:
             current_length = _nodeA.get_length(_nodeB)
-            if _nodeB.has_remaining_valid_connections(current_length) and _nodeA.has_remaining_valid_connections(current_length):
+            if _nodeA.major or _nodeB.major:
+                lf= major_length_factor
+            else:
+                lf = regular_length_factor
+            if _nodeB.has_remaining_valid_connections(current_length, lf) and _nodeA.has_remaining_valid_connections(current_length, lf):
                 _nodeA.remove_connection(_nodeB)
+
+    # trim minor nodes (only include nodes whose length <= minor_length_factor * length of smallest connection)
+    # an alternate method would be to only connect to the n shortest connections
+    for _, _nodeA in nodal_c.items():
+        if _nodeA.minor:
+            max_length = minor_length_factor*_nodeA.get_smallest_length()
+            lengths_copy = _nodeA.lengths.copy() # need a copy since deleting items through iterations
+            for _nodeB, distance in lengths_copy.items():
+                if distance > max_length:
+                    _nodeA.remove_connection(nodal_c[_nodeB])
 
     valid_connections = []
     [valid_connections.extend(nodal_c[node].connections) for node in nodal_c]
-    valid_connections = set(valid_connections)
+    
+    # add arcs from existing arcs and correspoindg 'exist_pipeline'
+    gdf['exist_pipeline'] = 0
+    for _, row in existing_arcs.iterrows():
+        nodeA_str = row['startNode']
+        nodeB_str = row['endNode']
+        _nodeA = nodal_c[nodeA_str]
+        _nodeB = nodal_c[nodeB_str]
+        
+        # get correct indexing used in gdf
+        connection = _nodeA.connection_with(_nodeB) # returns None if connection DNE
+        if connection == None: # if connection DNE
+            c1 = (nodeA_str,nodeB_str)
+            c2 = (nodeB_str,nodeA_str)
+            if c1 in nodes_combinations:
+                connection = c1
+            elif c2 in nodes_combinations:
+                connection = c2
+            valid_connections.append(connection) #add to 'trimmer'
 
-    gdf_trimmed1 = gdf.loc[valid_connections]
-    gdf_trimmed1.plot(ax=ax)
+        gdf.at[connection,'exist_pipeline'] = 1
+    
+    # make connections unique
+    valid_connections = list(set(valid_connections))
 
-    # TODO maybe trim down list even further based on triangle l to h ratios
+    # trim gdf based on valid connections and plot
+    gdf_trimmed = gdf.loc[valid_connections]
+    gdf_trimmed.plot(ax=ax)
+    fig.savefig('nodes/fig.png')
 
-    df = pd.DataFrame(gdf_trimmed1)
+    # convert to df and format
+    df = pd.DataFrame(gdf_trimmed)
     df = df.rename(columns={'distance':'kmLength'})
     df['kmLength'] = df['kmLength']/1000
     df = df.rename_axis(['startNode','endNode'])
-    df['exist_pipeline'] = 0
     del df['LINE']
-    df.to_csv('test.csv')
 
-    return fig
+    return df
 
 if __name__ == '__main__':
-    fig = main()
+    df = main()
+    df.to_csv('base/inputs/texas_arcs.csv')

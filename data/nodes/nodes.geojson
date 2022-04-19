@@ -31,6 +31,7 @@
 { "type": "Feature", "properties": { "node": "houston", "address": "Houston, Texas" }, "geometry": { "type": "Point", "coordinates": [ -95.36952, 29.76078 ] } },
 { "type": "Feature", "properties": { "node": "sanAntonio", "address": "San Antonio, Texas" }, "geometry": { "type": "Point", "coordinates": [ -98.49461, 29.42458 ] } },
 { "type": "Feature", "properties": { "node": "austin", "address": "Austin, Texas" }, "geometry": { "type": "Point", "coordinates": [ -97.74299, 30.26759 ] } },
-{ "type": "Feature", "properties": { "node": "dallas", "address": "Dallas, Texas" }, "geometry": { "type": "Point", "coordinates": [ -96.79512, 32.77822 ] } }
+{ "type": "Feature", "properties": { "node": "dallas", "address": "Dallas, Texas" }, "geometry": { "type": "Point", "coordinates": [ -96.79512, 32.77822 ] } },
+{ "type": "Feature", "properties": { "node": "amarillo", "address": "Amarillo, Texas" }, "geometry": { "type": "Point", "coordinates": [ -101.83389, 35.20725 ] } }
 ]
 }
