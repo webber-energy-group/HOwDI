@@ -5,7 +5,7 @@ Author: Braden Pecora
 In the current version, there are next to no features,
 but the metadata should be fairly easy to access and utilize.
 """
-import geocoder
+# import geocoder
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
@@ -19,9 +19,12 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
     
     # it seems that geopandas has a built in geocoder, but this was the first thing that worked
     # maybe its worth changing eventually...
-    locations = {node: geocoder.arcgis(node + ' Texas').latlng for node in data.keys()} # takes ~ 30 seconds
-    for _, latlong in locations.items():
-        latlong.reverse() # is in opposite order of how geopandas will interpret 
+    # locations = {node: geocoder.arcgis(node + ' Texas').latlng for node in data.keys()} # takes ~ 30 seconds
+    # for _, latlong in locations.items():
+    #     latlong.reverse() # is in opposite order of how geopandas will interpret 
+    node_data = json.load(open('data/nodes/nodes.geojson'))['features']
+    locations = {d['properties']['node']: d['geometry']['coordinates'] for d in node_data}
+
     
     # clean data
     def get_relevant_dist_data(nodal_data):
