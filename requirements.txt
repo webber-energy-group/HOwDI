@@ -4,6 +4,6 @@ networkx
 pyomo
 numpy
 glpk
-geocoder
 geopandas
 geopy
+anytree
