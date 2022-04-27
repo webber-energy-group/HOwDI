@@ -80,11 +80,13 @@ def create_nodal_distribution_data(df, node):
 
     def out_in_add_info(df):
         # I'm not sure how python's "pass by object reference" works in for loops so I opted for a function to avoid repeating code
+        df['source'] = df['arc_start'].str.split('_').str[0]
         df['arc_start'] = df['arc_start'].str.replace(node_string,'')
         df.index = df['arc_start'] + '_TO_' + df['arc_end']
         df['destination'] = df['arc_end'].str.split('_').str[0]
         df['destination_class'] = df['arc_end'].str.split('_').str[1:].apply(lambda x: '_'.join(map(str,x)))
         df = df.rename(columns = {'arc_start':'source_class'})
+        df = df[df['dist_h'] > 0]
         return df
     outgoing = out_in_add_info(outgoing)
     incoming = out_in_add_info(incoming)
