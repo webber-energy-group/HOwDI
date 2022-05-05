@@ -19,6 +19,7 @@ class MetaNode(Node):
         
         self.h = self.get_h()
         self.percent_upstream = 0
+        self.h_upstream = 0
 
     def get_h(self):
         if self.dist_data:
@@ -76,7 +77,9 @@ def find_percent_upstream(parent):
     children = parent.get_children()
     total_child_h = sum([child.h for child in children])
     for child in children:
-        child.percent_upstream = child.h * parent.h / (total_child_h**2)
+        child.percent_upstream = parent.h  / total_child_h
+        child.h_upstream = child.percent_upstream*child.h
+        # change the above into a method so that price fraction can be updated
         find_percent_upstream(child)
 
 def print_tree(parent):
@@ -85,7 +88,7 @@ def print_tree(parent):
         #     h = node.h
         # else:
         #     h = None
-        print("%s%s (%s)" % (pre, node.name, node.percent_upstream))
+        print("{}{} ({:2.2f}*{:2.2f}%={:2.2f})".format(pre, node.name, node.h, 100*node.percent_upstream, node.h_upstream))
 
 
 def main(node, full_data):
