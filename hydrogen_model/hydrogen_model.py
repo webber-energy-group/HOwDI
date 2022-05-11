@@ -105,7 +105,35 @@ class hydrogen_inputs:
     stores all of the input files needed to run the hydrogen model
     stores some hard coded variables used for the hydrogen model
     '''
-    def __init__(self, inputs, industrial_electricity_usd_per_kwh=0.05, industrial_ng_usd_per_mmbtu=3.50, carbon_price_dollars_per_ton=100, carbon_capture_credit_dollars_per_ton=50., price_tracking_array = numpy.arange(0,20,0.1), price_hubs='all', price_demand=0.01, find_prices=False, csv_prefix = '', investment_interest=0.06, investment_period=20, time_slices=365, subsidy_dollar_billion=0, subsidy_cost_share_fraction=1):
+    def __init__(self, inputs,
+                    industrial_electricity_usd_per_kwh, 
+                    industrial_ng_usd_per_mmbtu, 
+                    carbon_price_dollars_per_ton, 
+                    carbon_capture_credit_dollars_per_ton, 
+                    price_tracking_array, 
+                    price_hubs, 
+                    price_demand, 
+                    find_prices, 
+                    csv_prefix, 
+                    investment_interest,
+                    investment_period, 
+                    time_slices, 
+                    subsidy_dollar_billion, 
+                    subsidy_cost_share_fraction):
+                    # industrial_electricity_usd_per_kwh=0.05, 
+                    # industrial_ng_usd_per_mmbtu=3.50, 
+                    # carbon_price_dollars_per_ton=100, 
+                    # carbon_capture_credit_dollars_per_ton=50., 
+                    # price_tracking_array = numpy.arange(0,20,0.1), 
+                    # price_hubs='all', 
+                    # price_demand=0.01, 
+                    # find_prices=False, 
+                    # csv_prefix = '', 
+                    # investment_interest=0.06, 
+                    # investment_period=20, 
+                    # time_slices=365, 
+                    # subsidy_dollar_billion=0, 
+                    # subsidy_cost_share_fraction=1):
         '''
         carbon_price_dollars_per_ton: dollars per ton penalty on CO2 emissions 
         investment_interest: interest rate for financing capital investments
@@ -134,7 +162,7 @@ class hydrogen_inputs:
         self.carbon_capture_credit = carbon_capture_credit_dollars_per_ton
         self.A = (((1+investment_interest)**investment_period)-1)/(investment_interest*(1+investment_interest)**investment_period) #yearly amortized payment = capital cost / A
         self.carbon_g_MJ_to_t_tH2 = 120000./1000000. #unit conversion 120,000 MJ/tonH2, 1,000,000 g/tonCO2
-        self.price_tracking_array = price_tracking_array
+        self.price_tracking_array = numpy.arange(**price_tracking_array)
         self.price_hubs = price_hubs
         self.price_demand = price_demand
         self.find_prices = find_prices
@@ -142,20 +170,20 @@ class hydrogen_inputs:
         self.subsidy_dollar_billion = subsidy_dollar_billion #how many billions of dollars are available to subsidize infrastructure
         self.subsidy_cost_share_fraction = subsidy_cost_share_fraction #what fraction of dollars must industry spend on new infrastructure--e.g., if = 0.6, then for a $10Billion facility, industry must spend $6Billion (which counts toward the objective function) and the subsidy will cover $4Billion (which is excluded from the objective function).
         
-def build_h2_model(inputs):
+def build_h2_model(inputs, input_parameters):
     print ('Building model')
     ###create the hydrogen_inputs object
-    H = hydrogen_inputs(inputs= inputs,
-                        csv_prefix='texas_', 
-                        price_tracking_array = numpy.arange(3,9,0.05), 
-                        #price_hubs=['austin', 'pasadena', 'elPaso'],
-                        price_hubs=['austin', 'pasadena'],
-                        find_prices=True,
-                        industrial_electricity_usd_per_kwh=0.075, 
-                        industrial_ng_usd_per_mmbtu=3.50, 
-                        carbon_price_dollars_per_ton=0,
-                        subsidy_dollar_billion=0, 
-                        subsidy_cost_share_fraction=0.9)
+    H = hydrogen_inputs(inputs= inputs, **input_parameters)
+                        # csv_prefix='texas_', 
+                        # price_tracking_array = numpy.arange(3,9,0.05), 
+                        # #price_hubs=['austin', 'pasadena', 'elPaso'],
+                        # price_hubs=['austin', 'pasadena'],
+                        # find_prices=True,
+                        # industrial_electricity_usd_per_kwh=0.075, 
+                        # industrial_ng_usd_per_mmbtu=3.50, 
+                        # carbon_price_dollars_per_ton=0,
+                        # subsidy_dollar_billion=0, 
+                        # subsidy_cost_share_fraction=0.9)
     #use the discretize_demand module to add individual consumers to the hydrogen_inputs object
     #H.consumers = discretize_demand.main(H) #no longer using this
 

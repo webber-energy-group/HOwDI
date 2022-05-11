@@ -1,6 +1,6 @@
 from json import load, dump
 from data.generate_inputs_json import main as generate_inputs_json
-from hydrogen_model.hydrogen_v33fuelstationsubsidy import build_h2_model
+from hydrogen_model.hydrogen_model import build_h2_model
 from data.generate_outputs import main as generate_outputs
 from data.create_plot import main as create_plot
 
@@ -14,9 +14,12 @@ def main(scenario='base', read_inputs_from_file=False):
         # will create file to save inputs
     else:
         inputs = load(open('{}{}'.format(path+'inputs/','inputs.json')))
+
+    input_parameters = load(open('{}{}'.format(path+'inputs/','parameters.json')))
+
     nodes_list = [node_data['node'] for node_data in inputs['texas_nodes']]
 
-    m = build_h2_model(inputs)
+    m = build_h2_model(inputs, input_parameters)
     
     output_dfs, output_json = generate_outputs(m, nodes_list)
     output_path = path + 'outputs/'
