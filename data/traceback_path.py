@@ -110,6 +110,6 @@ def main(node, full_data):
 
 
 if __name__ == '__main__':
-    node = 'montBelvieu'
+    node = 'corpusChristi'
     data = json.load(open('base/outputs/outputs.json'))
     main(node, data)
