@@ -97,7 +97,7 @@ class hydrogen_network:
             g.add_edge('%s_hub_highPurity'%hub_name, '%s_dist_pipelineHighPurity'%hub_name, **(connection_char)) 
 
 
-            # Added by Braden Pecora, allows pipeline to travel back to hub to be converted?
+            # Added by Braden Pecora, allows for h2 to be distributed through a pipeline and then converted
             connection_char = {'kmLength': 0.0,
                                'capital_usdPerUnit': 0.0,
                                'fixed_usdPerUnitPerDay': 0.0,
@@ -106,6 +106,7 @@ class hydrogen_network:
                                'class': 'reverse_flow_within_hub'}
             g.add_edge('%s_dist_pipelineLowPurity'%hub_name, '%s_hub_lowPurity'%hub_name, **(connection_char)) 
             g.add_edge('%s_dist_pipelineHighPurity'%hub_name, '%s_hub_highPurity'%hub_name, **(connection_char)) 
+            
             #2.2) the connection of hub node to truck distribution hub incorporates the capital and fixed cost of the trucks--it represents the trucking fleet that is based out of that hub. The truck fleet size ultimately limits the amount of hydrogen that can flow from the hub node to the truck distribution hub.   
             for truck_type in list(distributors_df[distributors_df['distributor'].str.contains('truck')]['distributor']):
                             #costs and flow limits, (note the the unit for trucks is an individual truck, as compared to km for pipelines--i.e., when the model builds 1 truck unit, it is building 1 truck, but when it builds 1 pipeline unit, it is building 1km of pipeline. However, truck variable costs are in terms of km. This is why we separate the truck capital and fixed costs onto this arc, and the variable costs onto the arcs that go from one hub to another.)
