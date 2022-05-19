@@ -33,10 +33,10 @@ def make_route(row):
 
     route = get_route(nodeA,nodeB)
     road_geometry = LineString(route['geometry']['coordinates'])
-    distance = route['distance']
+    km_distance = route['distance']/1000
     duration = route['duration']
 
-    return pd.Series([duration,distance,road_geometry])
+    return pd.Series([duration,km_distance,road_geometry])
 
 def main():
     # read files and establish parameters
@@ -84,7 +84,7 @@ def main():
     gdf = gpd.GeoDataFrame(gdf, geometry='LINE').set_crs(epsg=epsg)
 
     # get euclidian distance
-    gdf['euclidian'] = nodeA.distance(nodeB) 
+    gdf['mLength_euclid'] = nodeA.distance(nodeB) 
 
     class _Connections:
         def __init__(self, node):
@@ -107,7 +107,7 @@ def main():
 
         def _make_length_dict(self):
             # make dictionary that describes euclidian distance to destination
-            distances = list(gdf.loc[self.connections]['euclidian'])
+            distances = list(gdf.loc[self.connections]['mLength_euclid'])
             d = {self.dests[i] : distances[i] for i in range(len(distances))}
             # considered sorting for optimization purposes but didn't seem to do anything 
             return d
@@ -214,7 +214,7 @@ def main():
 
     # get gdf in latlong coords, turn find road distances and geometries
     gdf_latlong = gdf_trimmed.to_crs(crs=lat_long_crs)
-    gdf_latlong[['duration','distance','road_geometry']] = gdf_latlong['LINE'].apply(make_route)
+    gdf_latlong[['road_duration','kmLength_road','road_geometry']] = gdf_latlong['LINE'].apply(make_route)
     gdf_roads = gdf_latlong.set_geometry('road_geometry').to_crs(epsg=epsg)
 
     gdf_trimmed.plot(ax=ax,color='grey')
@@ -222,12 +222,12 @@ def main():
     fig.savefig('nodes/fig.png')
 
     # convert to df and format
-    df = pd.DataFrame(gdf_trimmed)
-    df = df.rename(columns={'euclidian':'kmLength'})
-    df['kmLength'] = df['kmLength']/1000
+    df = pd.DataFrame(gdf_roads)
+    df['mLength_euclid'] = df['mLength_euclid']/1000
+    df = df.rename(columns={'mLength_euclid':'kmLength_euclid'})
     df = df.rename_axis(['startNode','endNode'])
 
-    return df[['kmLength','exist_pipeline']]
+    return df[['kmLength_euclid','kmLength_road','exist_pipeline']]
 
 if __name__ == '__main__':
     df = main()

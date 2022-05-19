@@ -1,7 +1,7 @@
 # TODO
 # Get amounts flowing through edge of tree
 # associate prices with each node
-import json
+import json, sys
 from anytree import Node, RenderTree, Resolver
 
 class MetaNode(Node):
@@ -110,6 +110,6 @@ def main(node, full_data):
 
 
 if __name__ == '__main__':
-    node = 'montBelvieu'
+    node = sys.argv[1]
     data = json.load(open('base/outputs/outputs.json'))
     main(node, data)

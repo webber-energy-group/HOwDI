@@ -177,15 +177,20 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
     # Plot connections: 
     connections = distribution[distribution.type == 'LineString']
     dist_pipelineLowPurity_col = '#9b2226'
+    dist_pipelineHighPurity_col = '#6A6262'
     dist_truckLiquefied_color = '#fb8500'
     dist_truckCompressed_color = '#bb3e03'
     connections[connections['dist_type'] == 'dist_pipelineLowPurity'].plot(ax=ax, color = dist_pipelineLowPurity_col, zorder=1)
+    connections[connections['dist_type'] == 'dist_pipelineHighPurity'].plot(ax=ax, color = dist_pipelineHighPurity_col, zorder=1)
+
     connections[connections['dist_type'] == 'dist_truckLiquefied'].plot(ax=ax, color = dist_truckLiquefied_color, zorder=1)
     connections[connections['dist_type'] == 'dist_truckCompressed'].plot(ax=ax, color = dist_truckCompressed_color, legend=True, zorder=1)
 
-    legend_elements = [Line2D([0], [0], color=dist_pipelineLowPurity_col, lw=2, label='Gas Pipeline'), 
+    legend_elements = [Line2D([0], [0], color=dist_pipelineLowPurity_col, lw=2, label='Gas Pipeline (Low Purity)'), 
+                       Line2D([0], [0], color=dist_pipelineHighPurity_col, lw=2, label='Gas Pipeline (High Purity)'), 
                        Line2D([0], [0], color=dist_truckLiquefied_color, lw=2, label='Liquid Truck Route'), 
-                       Line2D([0], [0], color=dist_truckCompressed_color, lw=2, label='Gas Truck Route'),
+                       Line2D([0], [0], color=dist_truckCompressed_color, lw=2, label='Gas Truck Route')
+                       ,
                     #    Line2D([0], [0], marker='o', color=node_color, label='Node', markerfacecolor=node_color, markersize=5, lw=0)
                        ]
     legend_elements.extend([Line2D([0], [0], color=tech_plot['color'], label=tech_plot['name'], marker='o',lw=0) for tech, tech_plot in node_plot_tech.items()])

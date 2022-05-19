@@ -143,6 +143,9 @@ class hydrogen_network:
         #3) create the arcs and associated data that connect hub_names to each other (e.g., baytown to montBelvieu): i.e., add pipelines and truck routes between connected hub_names
         for num,arow in arcs_df.iterrows():
             arow_dict = dict(arow)
+            
+            pipeline_length = arow['kmLength_euclid']
+            road_length = arow['kmLength_road']
             #for each low purity and high purity distribution hub
             for purity_type in ['LowPurity', 'HighPurity']:
                 #2.1) add a pipeline going in each direction to allow bi-directional flow
@@ -153,10 +156,10 @@ class hydrogen_network:
                             (arow_dict['endNode'], arow_dict['startNode'])]:  
                     pipeline_char = {'startNode': arc[0]+'_dist_pipeline%s'%purity_type,
                                      'endNode': arc[1]+'_dist_pipeline%s'%purity_type,
-                                     'kmLength': arow['kmLength'],
-                                     'capital_usdPerUnit': distributors_df[distributors_df['distributor']=='pipeline']['capital_usdPerUnit'].iloc[0]*arow['kmLength'],
-                                     'fixed_usdPerUnitPerDay': distributors_df[distributors_df['distributor']=='pipeline']['fixed_usdPerUnitPerDay'].iloc[0]*arow['kmLength'],
-                                     'variable_usdPerTon': distributors_df[distributors_df['distributor']=='pipeline']['variable_usdPerKilometer-Ton'].iloc[0]*arow['kmLength'],
+                                     'kmLength': pipeline_length,
+                                     'capital_usdPerUnit': distributors_df[distributors_df['distributor']=='pipeline']['capital_usdPerUnit'].iloc[0]*pipeline_length,
+                                     'fixed_usdPerUnitPerDay': distributors_df[distributors_df['distributor']=='pipeline']['fixed_usdPerUnitPerDay'].iloc[0]*pipeline_length,
+                                     'variable_usdPerTon': distributors_df[distributors_df['distributor']=='pipeline']['variable_usdPerKilometer-Ton'].iloc[0]*pipeline_length,
                                      'flowLimit_tonsPerDay': distributors_df[distributors_df['distributor']=='pipeline']['flowLimit_tonsPerDay'].iloc[0],
                                      'class': 'arc_pipeline%s'%purity_type,
                                      'existing': arow['exist_pipeline']}
@@ -169,10 +172,10 @@ class hydrogen_network:
                             #information for the trucking routes between hydrogen hubs
                             truck_route_dict = {'startNode': arc[0]+'_dist_%s'%truck_type,
                                           'endNode': arc[1]+'_dist_%s'%truck_type,
-                                          'kmLength': arow['kmLength'],
+                                          'kmLength': road_length,
                                           'capital_usdPerUnit': 0.0,
                                           'fixed_usdPerUnitPerDay': 0.0,
-                                          'variable_usdPerTon': distributors_df[distributors_df['distributor']==truck_type]['variable_usdPerKilometer-Ton'].iloc[0]*arow['kmLength'],
+                                          'variable_usdPerTon': distributors_df[distributors_df['distributor']==truck_type]['variable_usdPerKilometer-Ton'].iloc[0]*road_length,
                                           'class': 'arc_%s'%truck_type}
                             #add the distribution arc for the truck
                             g.add_edge(truck_route_dict['startNode'], truck_route_dict['endNode'], **(truck_route_dict)) 
