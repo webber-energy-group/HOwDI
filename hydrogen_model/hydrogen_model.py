@@ -119,7 +119,8 @@ class hydrogen_inputs:
                     investment_period, 
                     time_slices, 
                     subsidy_dollar_billion, 
-                    subsidy_cost_share_fraction):
+                    subsidy_cost_share_fraction,
+                    **kwargs):
                     # industrial_electricity_usd_per_kwh=0.05, 
                     # industrial_ng_usd_per_mmbtu=3.50, 
                     # carbon_price_dollars_per_ton=100, 
@@ -494,7 +495,7 @@ def build_h2_model(inputs, input_parameters):
     ###
     print('Time elapsed: %f'%(time.time() - start))
     print ('Solving model')
-    solver = pyomo.opt.SolverFactory('glpk')
+    solver = pyomo.opt.SolverFactory(input_parameters["solver"])
     solver.options["mipgap"] = 0.01
     results = solver.solve(m, tee=False)
     # m.solutions.store_to(results)

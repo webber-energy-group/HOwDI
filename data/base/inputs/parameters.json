@@ -21,6 +21,8 @@
 
     "investment_interest":0.06,
     "investment_period":20,
-    "time_slices":365
+    "time_slices":365,
+
+    "solver":"gurobi"
 
 }
