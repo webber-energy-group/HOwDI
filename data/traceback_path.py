@@ -1,6 +1,18 @@
-# TODO
-# Get amounts flowing through edge of tree
-# associate prices with each node
+"""
+Author:Braden Pecora
+Generates tree describing Hydrogen flow up from a consumer.
+
+Consumer location is the first argument, for example run on Austin with `python traceback_path.py austin`
+
+****
+Displays percent going downstream in the tree:
+Total hydrogen at current node * percent sent downstream = hydrogen sent downstream
+
+****
+TODO
+Get prices associated with each step
+Generate graphic to show cost breakdown
+"""
 import json, sys
 from anytree import Node, RenderTree, Resolver
 
@@ -18,8 +30,8 @@ class MetaNode(Node):
         self.cons_data = cons_data
         
         self.h = self.get_h()
-        self.percent_upstream = 0
-        self.h_upstream = 0
+        self.percent_downstream = 0
+        self.h_downstream = 0
 
     def get_h(self):
         if self.dist_data:
@@ -73,14 +85,14 @@ def find_children_dist(full_data, parent,current_node,scope='local',past_node = 
                 new_node = dist_params['source']
                 find_children_dist(full_data,child,new_node,'outgoing',current_node)
 
-def find_percent_upstream(parent):
+def find_percent_downstream(parent):
     children = parent.get_children()
     total_child_h = sum([child.h for child in children])
     for child in children:
-        child.percent_upstream = parent.h  / total_child_h
-        child.h_upstream = child.percent_upstream*child.h
+        child.percent_downstream = parent.h  / total_child_h
+        child.h_downstream = child.percent_downstream*child.h
         # change the above into a method so that price fraction can be updated
-        find_percent_upstream(child)
+        find_percent_downstream(child)
 
 def print_tree(parent):
     for pre, fill, node in RenderTree(parent):
@@ -88,7 +100,7 @@ def print_tree(parent):
         #     h = node.h
         # else:
         #     h = None
-        print("{}{} ({:2.2f}*{:2.2f}%={:2.2f})".format(pre, node.name, node.h, 100*node.percent_upstream, node.h_upstream))
+        print("{}{} ({:2.2f}*{:2.2f}%={:2.2f})".format(pre, node.name, node.h, 100*node.percent_downstream, node.h_downstream))
 
 
 def main(node, full_data):
@@ -105,7 +117,7 @@ def main(node, full_data):
         consumer_node = MetaNode(name = consumer_name, parent = parent_node, cons_data=consumer_data, scope='local')
 
         find_children_dist(full_data, consumer_node, node)
-    find_percent_upstream(parent_node)
+    find_percent_downstream(parent_node)
     print_tree(parent_node)
 
 
