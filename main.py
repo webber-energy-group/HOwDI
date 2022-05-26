@@ -21,13 +21,17 @@ def main(scenario='base', read_inputs_from_file=False):
 
     m = build_h2_model(inputs, input_parameters)
     
-    output_dfs, output_json = generate_outputs(m, nodes_list)
+    output_dfs, output_json = generate_outputs(m, nodes_list, input_parameters)
     output_path = path + 'outputs/'
     [df.to_csv(output_path + key + '.csv') for key, df in output_dfs.items()]
     with open(output_path + 'outputs.json', 'w', encoding='utf-8') as f:
         dump(output_json, f, ensure_ascii=False, indent=4)
 
     create_plot(output_json, path)
+
+    # #debug :
+    # from idaes.core.util import to_json
+    # output_json = to_json(m, return_dict=True)
     
 if __name__ == '__main__':
     main()

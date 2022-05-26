@@ -93,7 +93,7 @@ def create_nodal_distribution_data(df, node):
 
     return {'local' : local.to_dict('index'), 'outgoing': outgoing.to_dict('index'), 'incoming': incoming.to_dict('index')}
 
-def main(m, nodes_list):
+def main(m, nodes_list, parameters):
     outputs = to_json(m, return_dict=True)
     outputs = outputs['unknown']['data']['None']['__pyomo_components__']
     outputs = recursive_clean(outputs)
@@ -126,19 +126,46 @@ def main(m, nodes_list):
         dfs[file_name] = dfs[file_name].rename(columns={'index':new_index})
         dfs[file_name][new_index] = dfs[file_name][new_index].str.replace('\'','')
         dfs[file_name] = dfs[file_name].set_index(new_index)
+    
+    # find price for price nodes
+    if parameters['find_prices']:
+        if parameters['price_hubs'] == 'all':
+            price_hubs = nodes_list
+        else:
+            price_hubs = parameters['price_hubs']
 
-    # TODO/WIP add postprocessing and increase readability,
-    # change column names, remove "null" data, etc.
+        price_demand = parameters['price_demand']
+
+        price_hubs_df_all = dfs['consumption'][(dfs['consumption'].index.str.contains('priceFuelStation')) & (dfs['consumption']['cons_h'] == price_demand)]
+
+        #initialize empty df
+        price_hub_min = pd.DataFrame(columns=price_hubs_df_all.columns)
+        price_hub_min.index.name = 'consumer'
+        for price_hub in price_hubs:
+            local_price_hub_df = price_hubs_df_all[price_hubs_df_all.index.str.contains(price_hub)]
+            if not local_price_hub_df.empty:
+                breakeven_price_at_hub = local_price_hub_df[local_price_hub_df['cons_price'] == local_price_hub_df['cons_price'].min()]
+                price_hub_min = pd.concat([price_hub_min, breakeven_price_at_hub])
+
+    # remove null data
+
+    # find_prices is a binary, price_demand is the demand amount used with price nodes, thus,
+    # if price nodes are used (find_prices binary), then data utilizing an amount of hydrogen <= price_demand will be removed
+    price_hub_demand = parameters['find_prices']*parameters['price_demand'] 
+
     dfs['production'] = dfs['production'][dfs['production']['prod_capacity']>0]
-    dfs['consumption'] = dfs['consumption'][dfs['consumption']['cons_h']>0.01]
+    dfs['consumption'] = dfs['consumption'][(dfs['consumption']['cons_h']>0) & (dfs['consumption']['cons_h']!=price_hub_demand)]
     dfs['conversion'] = dfs['conversion'][dfs['conversion']['conv_capacity']>0]
 
     dfs['distribution'] = dfs['distribution'].replace(['n/a'],-99.99) # change na to -99.99 for conditional
-    dfs['distribution'] = dfs['distribution'][(dfs['distribution']['dist_capacity']>0) | (dfs['distribution']['dist_h']>0.01)]
+    dfs['distribution'] = dfs['distribution'][(dfs['distribution']['dist_capacity']>0) | (( dfs['distribution']['dist_h']>0)&( dfs['distribution']['dist_h']!=price_hub_demand))]
     dfs['distribution'] = dfs['distribution'].replace([-99.99],'n/a') # and change back
 
-    ## CREATE JSON OUTPUTS FROM DATAFRAMES
+    # re add price hub data
+    if parameters['find_prices']:
+        dfs['consumption'] = pd.concat([dfs['consumption'],price_hub_min])
 
+    ## CREATE JSON OUTPUTS FROM DATAFRAMES
     node_dict = {node: {} for node in nodes_list}
     for node in nodes_list:
         node_dict[node]['production'] = create_nodal_data(dfs['production'], node)

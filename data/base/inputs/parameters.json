@@ -5,10 +5,7 @@
         "stop":9,
         "step":0.05
     },
-    "price_hubs" : [
-        "austin",
-        "pasadena"
-    ],
+    "price_hubs" : "all",
     "price_demand":0.01,
     "find_prices":1,
     "industrial_electricity_usd_per_kwh":0.075,
