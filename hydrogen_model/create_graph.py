@@ -97,7 +97,7 @@ class hydrogen_network:
             g.add_edge('%s_hub_highPurity'%hub_name, '%s_dist_pipelineHighPurity'%hub_name, **(connection_char)) 
 
 
-            # Added by Braden Pecora, allows for h2 to be distributed through a pipeline and then converted
+            # bsp:, allows for h2 to be distributed through a pipeline and then converted
             connection_char = {'kmLength': 0.0,
                                'capital_usdPerUnit': 0.0,
                                'fixed_usdPerUnitPerDay': 0.0,
@@ -156,7 +156,7 @@ class hydrogen_network:
         for num,arow in arcs_df.iterrows():
             arow_dict = dict(arow)
             
-            pipeline_length = arow['kmLength_euclid']
+            pipeline_length = arow['kmLength_road'] #TODO adjust this value, `arow['kmLength_euclid]` is the straight line distance
             road_length = arow['kmLength_road']
             #for each low purity and high purity distribution hub
             for purity_type in ['LowPurity', 'HighPurity']:

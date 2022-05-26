@@ -3,7 +3,6 @@ pandas
 networkx
 pyomo
 numpy
-glpk
 geopandas
 geopy
 anytree
