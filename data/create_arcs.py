@@ -217,6 +217,11 @@ def main():
     gdf_latlong[['road_duration','kmLength_road','road_geometry']] = gdf_latlong['LINE'].apply(make_route)
     gdf_roads = gdf_latlong.set_geometry('road_geometry').to_crs(epsg=epsg)
 
+    # save roads data
+    roads_df = gdf_roads.to_crs(crs=lat_long_crs)
+    roads_df = pd.DataFrame(roads_df.geometry)
+    roads_df.to_csv('nodes/roads.csv')
+
     gdf_trimmed.plot(ax=ax,color='grey')
     gdf_roads.plot(ax=ax)
     fig.savefig('nodes/fig.png')

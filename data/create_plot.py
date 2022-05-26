@@ -10,18 +10,12 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import json
+from nodes.roads_to_gdf import roads_to_gdf
 
-## for development 
-# data = json.load(open('base/outputs/outputs.json'))
-# path='data/base/'
+# TODO change file paths to be more clear
 
 def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_county_cont.shp'):
-    
-    # it seems that geopandas has a built in geocoder, but this was the first thing that worked
-    # maybe its worth changing eventually...
-    # locations = {node: geocoder.arcgis(node + ' Texas').latlng for node in data.keys()} # takes ~ 30 seconds
-    # for _, latlong in locations.items():
-    #     latlong.reverse() # is in opposite order of how geopandas will interpret 
+
     node_data = json.load(open('data/nodes/nodes.geojson'))['features']
     locations = {d['properties']['node']: d['geometry']['coordinates'] for d in node_data}
 
@@ -80,6 +74,8 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
                 },
                 'properties' : {
                     'name': node + ' to ' + dest,
+                    'start': node,
+                    'end' : dest,
                     'dist_type': dist_type
                 }
             }
@@ -176,15 +172,30 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
 
     # Plot connections: 
     connections = distribution[distribution.type == 'LineString']
+
+    # get data from roads csv
+    roads = roads_to_gdf('data/nodes/')
+        # geodataframe with all roads. currently plots connections, but could be used as a layer instead?
+    roads_connections = connections.copy()
+
+    for row in roads.itertuples():
+        # get road geodata for each connection in connections df
+        nodeA = row.nodeA
+        nodeB = row.nodeB
+        roads_connections.loc[(roads_connections['start'] == nodeA) & (roads_connections['end'] == nodeB),'geometry'] = row.geometry
+        roads_connections.loc[(roads_connections['end'] == nodeA) & (roads_connections['start'] == nodeB),'geometry'] = row.geometry
+
     dist_pipelineLowPurity_col = '#9b2226'
     dist_pipelineHighPurity_col = '#6A6262'
     dist_truckLiquefied_color = '#fb8500'
     dist_truckCompressed_color = '#bb3e03'
+
     connections[connections['dist_type'] == 'dist_pipelineLowPurity'].plot(ax=ax, color = dist_pipelineLowPurity_col, zorder=1)
     connections[connections['dist_type'] == 'dist_pipelineHighPurity'].plot(ax=ax, color = dist_pipelineHighPurity_col, zorder=1)
 
-    connections[connections['dist_type'] == 'dist_truckLiquefied'].plot(ax=ax, color = dist_truckLiquefied_color, zorder=1)
-    connections[connections['dist_type'] == 'dist_truckCompressed'].plot(ax=ax, color = dist_truckCompressed_color, legend=True, zorder=1)
+    # change 'road_connections' to 'connections' to plot straight lines
+    roads_connections[connections['dist_type'] == 'dist_truckLiquefied'].plot(ax=ax, color = dist_truckLiquefied_color, zorder=1)
+    roads_connections[connections['dist_type'] == 'dist_truckCompressed'].plot(ax=ax, color = dist_truckCompressed_color, legend=True, zorder=1)
 
     legend_elements = [Line2D([0], [0], color=dist_pipelineLowPurity_col, lw=2, label='Gas Pipeline (Low Purity)'), 
                        Line2D([0], [0], color=dist_pipelineHighPurity_col, lw=2, label='Gas Pipeline (High Purity)'), 
