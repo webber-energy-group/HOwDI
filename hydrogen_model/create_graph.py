@@ -371,8 +371,7 @@ class hydrogen_network:
                 return g
             else:
                 if price_hubs=='all':
-                    price_hubs = set([s[1] for s in list(g.nodes(data="hub_name"))]) #if (g.nodes[s]['class']=='hub_lowPurity')]
-                    print(price_hubs)
+                    price_hubs = set([s[1] for s in list(g.nodes(data="hub_name"))])
                 for ph in price_hubs:
                     #add nodes to store pricing information
                     for p in price_range:
