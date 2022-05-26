@@ -10,7 +10,7 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import json
-from nodes.roads_to_gdf import roads_to_gdf
+from data.nodes.roads_to_gdf import roads_to_gdf
 
 # TODO change file paths to be more clear
 
