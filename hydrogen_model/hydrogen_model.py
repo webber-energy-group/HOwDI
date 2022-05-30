@@ -500,6 +500,7 @@ def build_h2_model(inputs, input_parameters):
     results = solver.solve(m, tee=False)
     # m.solutions.store_to(results)
     # results.write(filename='results.json', format='json')
+    print('Model Solved with objective value {}'.format(m.OBJ()))
     print('Time elapsed: %f'%(time.time() - start))
 
     return m

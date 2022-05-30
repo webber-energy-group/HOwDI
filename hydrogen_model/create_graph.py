@@ -168,6 +168,8 @@ class hydrogen_network:
                             (arow_dict['endNode'], arow_dict['startNode'])]:  
                     pipeline_char = {'startNode': arc[0]+'_dist_pipeline%s'%purity_type,
                                      'endNode': arc[1]+'_dist_pipeline%s'%purity_type,
+                                     # alternate way of connecting nodes, remove the second half of 2.1 if this is used
+                                     #'endNode': arc[1]+'_hub_%s'%(purity_type[0].lower()+purity_type[1:]), #lowercase for the first letter of purity type
                                      'kmLength': pipeline_length,
                                      'capital_usdPerUnit': distributors_df[distributors_df['distributor']=='pipeline']['capital_usdPerUnit'].iloc[0]*pipeline_length,
                                      'fixed_usdPerUnitPerDay': distributors_df[distributors_df['distributor']=='pipeline']['fixed_usdPerUnitPerDay'].iloc[0]*pipeline_length,
