@@ -466,7 +466,7 @@ def build_h2_model(inputs, input_parameters):
     #co2 emissions for consumers that are not using hydrogen
     def rule_co2Consumers(m, node):
         #consumer_co2_rate = m.H.consumers.loc[node, 'breakevenCarbon_g_MJ'] * m.H.carbon_g_MJ_to_t_tH2 #this threw errors after we added the price nodes, but the price nodes were not included in H.consumers
-        consumer_co2_rate = m.cons_breakevenCarbon[node] * m.H.carbon_g_MJ_to_t_tH2
+        consumer_co2_rate = m.cons_breakevenCarbon[node] # * m.H.carbon_g_MJ_to_t_tH2 #NOTE pretty sure this is a typo? I think breakevenCarbon is already multiplied by the conversion factor? -bsp
         constraint = (m.co2_nonHydrogenConsumer[node]  == (m.cons_size[node] - m.cons_h[node]) * consumer_co2_rate)
         return constraint
     m.constr_co2Consumers = pe.Constraint(m.consumer_set, rule=rule_co2Consumers)
