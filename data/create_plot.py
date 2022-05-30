@@ -5,7 +5,6 @@ Author: Braden Pecora
 In the current version, there are next to no features,
 but the metadata should be fairly easy to access and utilize.
 """
-# import geocoder
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
@@ -135,8 +134,18 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
                 # b) it seems you can only split with two colors in matplotlib
                 # ... seems like all the permutations will get hair fairly fast,
                 # we should probably find a way to do this
+            },
+        'electrolyzer':
+            {
+                'name': 'Electrolysis (Color)',
+                'color': 'green',
+                'set' : set(('electrolyzer',)),
+                'b' : lambda df: df['production'] == set(('electrolyzer',))
             }
-        # and so on... (ccs not implemented -> can't plot ccs, electrolysis since never built)
+        # and so on... (ccs not implemented -> can't plot ccs, haven't gone through all combinations yet)
+        # TODO maybe have makers colored by percent production:
+        #   https://stackoverflow.com/questions/41167300/multiple-color-fills-in-matplotlib-markers
+        # or maybe only plot "smr","electrolysis","smr+electrolysis" where "smr" includes "smr" and "smrExisting"?
     }
     node_plot_type = { # Options for node by Production, Consumption, or both
         # 'none' :
