@@ -5,11 +5,12 @@ Author: Braden Pecora
 
 import json, os, pandas as pd, numpy as np
 
-def main(inputs_dir,filename='data'):
-    file_names = [file.replace('.csv','') for file in os.listdir('./{}'.format(inputs_dir)) if file.endswith('.csv')]
+def main(inputs_path,filename='inputs.json'):
+    # file_names = [file.replace('.csv','') for file in os.listdir('./{}'.format(inputs_dir)) if file.endswith('.csv')]
+    files = list(inputs_path.glob('*.csv'))
 
-    def to_list(file_name):
-        df = pd.read_csv('./{}'.format(inputs_dir) + file_name + '.csv')
+    def to_list(file):
+        df = pd.read_csv(file)
 
         for column_name in df.columns:
             if df[column_name].dtypes == np.int64: # replace all 'int64' types with floats
@@ -20,9 +21,11 @@ def main(inputs_dir,filename='data'):
         data_list = [value for key, value in data_dict.items()]
         return data_list
 
-    output = {file_name: to_list(file_name) for file_name in file_names}
+    output = {os.path.basename(file).replace('.csv',''): to_list(file) for file in files}
 
-    with open('{}/{}'.format(inputs_dir,filename), 'w') as f:
+    output_file = inputs_path / filename
+
+    with output_file.open('w') as f:
         json.dump(output, f)
 
     return output #aka inputs files

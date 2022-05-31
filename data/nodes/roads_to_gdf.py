@@ -10,14 +10,14 @@ The shapely.wkt function "loads" can interpret this literal string and convert i
 from shapely.wkt import loads
 import geopandas as gpd
 
-def roads_to_gdf(wd=''):
-    #wd is path to this current directory, '/nodes'
+def roads_to_gdf(wd):
+    # wd is path where 'nodes.geojson' and 'roads.csv' are located
 
     # get nodes for crs
-    nodes = gpd.read_file(wd+'nodes.geojson')
+    nodes = gpd.read_file(wd/'nodes.geojson')
 
     # read csv and convert geometry column
-    roads = gpd.read_file(wd+'roads.csv')
+    roads = gpd.read_file(wd/'roads.csv')
     roads['geometry'] = roads['road_geometry'].apply(loads) # convert string into Linestring
     roads = roads.set_crs(nodes.crs)
     del roads['road_geometry']
@@ -25,5 +25,6 @@ def roads_to_gdf(wd=''):
     return roads
 
 if __name__ == "__main__":
-    roads = roads_to_gdf()
+    from pathlib import Path
+    roads = roads_to_gdf(Path('.'))
     print(roads)

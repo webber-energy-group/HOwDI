@@ -5,19 +5,22 @@ Author: Braden Pecora
 In the current version, there are next to no features,
 but the metadata should be fairly easy to access and utilize.
 """
+import warnings
+warnings.simplefilter(action='ignore', category=UserWarning) #ignore warning about plotting empty frame
+
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import json
-from data.nodes.roads_to_gdf import roads_to_gdf
+try:
+    from data.nodes.roads_to_gdf import roads_to_gdf
+except ModuleNotFoundError:
+    from nodes.roads_to_gdf import roads_to_gdf
 
-# TODO change file paths to be more clear
+def main(data, data_dir, scenario_dir):
 
-def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_county_cont.shp'):
-
-    node_data = json.load(open('data/nodes/nodes.geojson'))['features']
+    node_data = json.load(open(data_dir / 'nodes' / 'nodes.geojson'))['features']
     locations = {d['properties']['node']: d['geometry']['coordinates'] for d in node_data}
-
     
     # clean data
     def get_relevant_dist_data(nodal_data):
@@ -116,7 +119,7 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
     fig, ax = plt.subplots(figsize=(10,10),dpi=300)
 
     # get Texas plot
-    us_county = gpd.read_file(us_county_shp_file)
+    us_county = gpd.read_file(data_dir / 'US_COUNTY_SHPFILE' / 'US_county_cont.shp')
     # us_county = gpd.read_file('US_COUNTY_SHPFILE/US_county_cont.shp')
     tx_county = us_county[us_county['STATE_NAME'] == 'Texas']
     tx = tx_county.dissolve()
@@ -208,7 +211,7 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
     connections = distribution[distribution.type == 'LineString']
 
     # get data from roads csv
-    roads = roads_to_gdf('data/nodes/')
+    roads = roads_to_gdf(data_dir / 'nodes')
         # geodataframe with all roads. currently plots connections, but could be used as a layer instead?
     roads_connections = connections.copy()
 
@@ -244,11 +247,12 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
 
     ax.legend(handles=legend_elements, loc='upper left')
 
-
-    fig.savefig(path + 'outputs/fig.png')
+    fig.savefig(scenario_dir/'outputs'/'fig.png')
 
 if __name__ == '__main__':
     from json import load
-    data = load(open('base/outputs/outputs.json'))
-    path = ''
-    main(data, path)
+    from pathlib import Path
+    scenario_path = Path('base')
+    data_path = scenario_path/'outputs'/'outputs.json'
+    data = load(open(data_path))
+    main(data, Path('.'),scenario_path)

@@ -3,9 +3,6 @@ Converts outputs of Hydrogen model into dataframes and a dictionary
 Author: Braden Pecora
 """
 
-import warnings
-warnings.simplefilter(action='ignore', category=UserWarning) #ignore warning about plotting empty frame
-
 from numpy import int64
 import pandas as pd
 from idaes.core.util import to_json
