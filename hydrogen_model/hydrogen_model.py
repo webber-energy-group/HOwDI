@@ -120,6 +120,7 @@ class hydrogen_inputs:
                     time_slices, 
                     subsidy_dollar_billion, 
                     subsidy_cost_share_fraction,
+                    minimum_producer_size_tonnes_per_day,
                     **kwargs):
                     # industrial_electricity_usd_per_kwh=0.05, 
                     # industrial_ng_usd_per_mmbtu=3.50, 
@@ -171,6 +172,8 @@ class hydrogen_inputs:
         self.subsidy_dollar_billion = subsidy_dollar_billion #how many billions of dollars are available to subsidize infrastructure
         self.subsidy_cost_share_fraction = subsidy_cost_share_fraction #what fraction of dollars must industry spend on new infrastructure--e.g., if = 0.6, then for a $10Billion facility, industry must spend $6Billion (which counts toward the objective function) and the subsidy will cover $4Billion (which is excluded from the objective function).
         
+        self.min_prod_h = minimum_producer_size_tonnes_per_day # define a minimum amount of hydrogen that can be produced
+
 def build_h2_model(inputs, input_parameters):
     print ('Building model')
     ###create the hydrogen_inputs object
@@ -305,6 +308,7 @@ def build_h2_model(inputs, input_parameters):
     m.dist_capacity = pe.Var(m.arc_set, domain=pe.NonNegativeIntegers) #daily capacity of each arc
     m.dist_h = pe.Var(m.arc_set, domain=pe.NonNegativeReals) #daily flow along each arc
     #production
+    m.prod_exists = pe.Var(m.producer_set, domain=pe.Binary) # binary that tracks if a producer was built or not
     m.prod_capacity = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily capacity of each producer
     m.prod_h = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily production of each producer
     #conversion
@@ -396,6 +400,11 @@ def build_h2_model(inputs, input_parameters):
 
 
     #production and ccs
+    # Prohibit model from not deploying existing producers
+    def rule_forceExistingProduction(m,node):
+        constraint = (m.prod_exists[node] == True)
+        return constraint
+    m.const_forceExistingProduction = pe.Constraint(m.producer_existing_set, rule=rule_forceExistingProduction)
     #existing producers' capacity equals their existing capacity
     def rule_productionCapacityExisting(m, node):
         constraint = (m.prod_capacity[node] == m.g.nodes[node]['capacity_tonPerDay'])
@@ -406,6 +415,21 @@ def build_h2_model(inputs, input_parameters):
         constraint = (m.prod_h[node] <= m.prod_capacity[node] * m.prod_utilization[node])
         return constraint
     m.constr_productionCapacity = pe.Constraint(m.producer_set, rule=rule_productionCapacity)
+    # production must exceed minimum production value, if not already existing
+    def rule_minProductionCapacity1(m,node):
+        if node in m.producer_existing_set:
+            # if producer is an existing producer, don't constrain by minimum value
+            # note - do not confuse node with hub. node in this case would be something akin to 'dallas_smrExisting', not 'dallas'
+            constraint = (m.prod_h[node] >= 0)
+        else:
+            constraint = (m.prod_h[node] >= m.H.min_h * m.prod_exists[node])
+        return constraint
+    m.constr_minProductionCapacity1 = pe.Constraint(m.producer_set, rule=rule_minProductionCapacity1)
+    def rule_minProductionCapacity2(m,node):
+        constraint = (m.prod_h[node] <= 1e12 * m.prod_exists[node]) #1e12 is just a large number, not specific since python doesn't have anything like int.max
+        return constraint
+    m.constr_minProductionCapacity2 = pe.Constraint(m.producer_set, rule=rule_minProductionCapacity2)
+
     #ccs capacity in terms of CO2 is related to its capacity in terms of H2, which must be zero if m.ccs#_can==0
     def rule_ccs1CapacityRelationship(m, node):
         constraint = (m.ccs1_capacity_co2[node] * m.can_ccs1[node] == m.ccs1_capacity_h2[node] * m.prod_carbonRate[node] * m.H.ccs_data.loc['ccs1', 'percent_CO2_captured'])

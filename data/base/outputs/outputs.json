@@ -1,6 +1,31 @@
 {
     "brazoria": {
-        "production": {},
+        "production": {
+            "smr": {
+                "can_ccs1": 1,
+                "can_ccs2": 1,
+                "ccs1_capacity_co2": 0.0,
+                "ccs1_capacity_h2": 0.0,
+                "ccs1_hblack": 0.0,
+                "ccs2_capacity_co2": 0.0,
+                "ccs2_capacity_h2": 0.0,
+                "ccs2_hblack": 0.0,
+                "co2_emitted": 4842.0,
+                "prod_capacity": 597.7777777777777,
+                "prod_carbonRate": 9.0,
+                "prod_cost_capital_coeff": 425000.0,
+                "prod_cost_fixed": 70.0,
+                "prod_cost_variable": 90.0,
+                "prod_h": 538.0,
+                "prod_hblack": 538.0,
+                "prod_kwh_variable_coeff": 570.0,
+                "prod_ng_variable_coeff": 156.25,
+                "prod_utilization": 0.9,
+                "total_co2_produced": 4842.0,
+                "co2_captured": 0.0,
+                "%co2_captured": 0.0
+            }
+        },
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
@@ -34,24 +59,30 @@
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 538.0
+                },
+                "hub_lowPurity_TO_dist_pipelineLowPurity": {
+                    "source_class": "hub_lowPurity",
+                    "destination_class": "dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 538.0
+                },
+                "production_smr_TO_hub_lowPurity": {
+                    "source_class": "production_smr",
+                    "destination_class": "hub_lowPurity",
+                    "dist_capacity": "n/a",
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 538.0
                 }
             },
             "outgoing": {},
-            "incoming": {
-                "freeport_dist_pipelineLowPurity_TO_brazoria_dist_pipelineLowPurity": {
-                    "source_class": "freeport_dist_pipelineLowPurity",
-                    "arc_end": "brazoria_dist_pipelineLowPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": 33954240.0,
-                    "dist_cost_fixed": 4651.73088,
-                    "dist_cost_variable": 2.8295200000000005,
-                    "dist_flowLimit": 999999.0,
-                    "dist_h": 538.0,
-                    "source": "freeport",
-                    "destination": "brazoria",
-                    "destination_class": "dist_pipelineLowPurity"
-                }
-            }
+            "incoming": {}
         }
     },
     "freeport": {
@@ -136,21 +167,7 @@
                     "dist_h": 433.8
                 }
             },
-            "outgoing": {
-                "dist_pipelineLowPurity_TO_brazoria_dist_pipelineLowPurity": {
-                    "source_class": "dist_pipelineLowPurity",
-                    "arc_end": "brazoria_dist_pipelineLowPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": 33954240.0,
-                    "dist_cost_fixed": 4651.73088,
-                    "dist_cost_variable": 2.8295200000000005,
-                    "dist_flowLimit": 999999.0,
-                    "dist_h": 538.0,
-                    "source": "freeport",
-                    "destination": "brazoria",
-                    "destination_class": "dist_pipelineLowPurity"
-                }
-            },
+            "outgoing": {},
             "incoming": {
                 "chocolateBay_dist_pipelineLowPurity_TO_freeport_dist_pipelineLowPurity": {
                     "source_class": "chocolateBay_dist_pipelineLowPurity",
@@ -160,7 +177,7 @@
                     "dist_cost_fixed": 8180.544,
                     "dist_cost_variable": 4.976,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 642.2,
+                    "dist_h": 104.19999999999999,
                     "source": "chocolateBay",
                     "destination": "freeport",
                     "destination_class": "dist_pipelineLowPurity"
@@ -214,7 +231,7 @@
                     "dist_cost_fixed": 8180.544,
                     "dist_cost_variable": 4.976,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 642.2,
+                    "dist_h": 104.19999999999999,
                     "source": "chocolateBay",
                     "destination": "freeport",
                     "destination_class": "dist_pipelineLowPurity"
@@ -229,7 +246,7 @@
                     "dist_cost_fixed": 6803.7433200000005,
                     "dist_cost_variable": 4.13853,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 1180.2,
+                    "dist_h": 642.2,
                     "source": "texasCity",
                     "destination": "chocolateBay",
                     "destination_class": "dist_pipelineLowPurity"
@@ -328,22 +345,22 @@
                     "dist_cost_fixed": 6803.7433200000005,
                     "dist_cost_variable": 4.13853,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 1180.2,
+                    "dist_h": 642.2,
                     "source": "texasCity",
                     "destination": "chocolateBay",
                     "destination_class": "dist_pipelineLowPurity"
                 },
-                "dist_pipelineLowPurity_TO_laPorte_dist_pipelineLowPurity": {
+                "dist_pipelineLowPurity_TO_sanJacinto_dist_pipelineLowPurity": {
                     "source_class": "dist_pipelineLowPurity",
-                    "arc_end": "laPorte_dist_pipelineLowPurity",
+                    "arc_end": "sanJacinto_dist_pipelineLowPurity",
                     "dist_capacity": 1.0,
-                    "dist_cost_capital": 40062480.0,
-                    "dist_cost_fixed": 5488.55976,
-                    "dist_cost_variable": 3.33854,
+                    "dist_cost_capital": 32941800.0,
+                    "dist_cost_fixed": 4513.0266,
+                    "dist_cost_variable": 2.74515,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 1208.6000000000001,
+                    "dist_h": 1746.6000000000001,
                     "source": "texasCity",
-                    "destination": "laPorte",
+                    "destination": "sanJacinto",
                     "destination_class": "dist_pipelineLowPurity"
                 }
             },
@@ -379,7 +396,7 @@
         },
         "conversion": {
             "liquefaction": {
-                "conv_capacity": 1103.1578947368423,
+                "conv_capacity": 579.2842105263157,
                 "conv_cost_capital_coeff": 1920000.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -388,7 +405,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "purification": {
-                "conv_capacity": 1103.1578947368423,
+                "conv_capacity": 579.2842105263157,
                 "conv_cost_capital_coeff": 480000.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -397,7 +414,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "terminalLiquid": {
-                "conv_capacity": 1232.9411764705885,
+                "conv_capacity": 647.435294117647,
                 "conv_cost_capital_coeff": 1175000.0,
                 "conv_cost_fixed": 290.0,
                 "conv_cost_variable": 0,
@@ -427,7 +444,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 1048.0000000000002
+                    "dist_h": 550.3199999999999
                 },
                 "converter_purification_TO_hub_highPurity": {
                     "source_class": "converter_purification",
@@ -437,17 +454,17 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 1048.0000000000002
+                    "dist_h": 550.3199999999999
                 },
                 "converter_terminalLiquid_TO_dist_truckLiquefied": {
                     "source_class": "converter_terminalLiquid",
                     "destination_class": "dist_truckLiquefied",
-                    "dist_capacity": 131.0,
+                    "dist_capacity": 69.0,
                     "dist_cost_capital": 1016000.0,
                     "dist_cost_fixed": 139.18,
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 8.0,
-                    "dist_h": 1048.0000000000002
+                    "dist_h": 550.3199999999999
                 },
                 "demand_lowPurity_TO_demandSector_existing": {
                     "source_class": "demand_lowPurity",
@@ -477,7 +494,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 1048.0000000000002
+                    "dist_h": 550.3199999999999
                 },
                 "hub_lowPurity_TO_converter_purification": {
                     "source_class": "hub_lowPurity",
@@ -487,7 +504,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 1048.0000000000002
+                    "dist_h": 550.3199999999999
                 },
                 "hub_lowPurity_TO_dist_pipelineLowPurity": {
                     "source_class": "hub_lowPurity",
@@ -497,7 +514,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 89.59999999999991
+                    "dist_h": 587.2800000000002
                 },
                 "production_smrExisting_TO_hub_lowPurity": {
                     "source_class": "production_smrExisting",
@@ -519,7 +536,7 @@
                     "dist_cost_fixed": 9153.282360000001,
                     "dist_cost_variable": 5.567690000000001,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 760.2,
+                    "dist_h": 49.2800000000002,
                     "source": "laPorte",
                     "destination": "sanJacinto",
                     "destination_class": "dist_pipelineLowPurity"
@@ -532,27 +549,13 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": 9.541947,
                     "dist_flowLimit": "n/a",
-                    "dist_h": 1048.0000000000002,
+                    "dist_h": 550.3199999999999,
                     "source": "laPorte",
                     "destination": "pasadena",
                     "destination_class": "dist_truckLiquefied"
                 }
             },
-            "incoming": {
-                "texasCity_dist_pipelineLowPurity_TO_laPorte_dist_pipelineLowPurity": {
-                    "source_class": "texasCity_dist_pipelineLowPurity",
-                    "arc_end": "laPorte_dist_pipelineLowPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": 40062480.0,
-                    "dist_cost_fixed": 5488.55976,
-                    "dist_cost_variable": 3.33854,
-                    "dist_flowLimit": 999999.0,
-                    "dist_h": 1208.6000000000001,
-                    "source": "texasCity",
-                    "destination": "laPorte",
-                    "destination_class": "dist_pipelineLowPurity"
-                }
-            }
+            "incoming": {}
         }
     },
     "sanJacinto": {
@@ -593,6 +596,19 @@
                 }
             },
             "outgoing": {
+                "dist_pipelineLowPurity_TO_baytown_dist_pipelineLowPurity": {
+                    "source_class": "dist_pipelineLowPurity",
+                    "arc_end": "baytown_dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 78690960.0,
+                    "dist_cost_fixed": 10780.66152,
+                    "dist_cost_variable": 6.557580000000001,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 294.58000000000015,
+                    "source": "sanJacinto",
+                    "destination": "baytown",
+                    "destination_class": "dist_pipelineLowPurity"
+                },
                 "dist_pipelineLowPurity_TO_deerPark_dist_pipelineLowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "arc_end": "deerPark_dist_pipelineLowPurity",
@@ -601,7 +617,7 @@
                     "dist_cost_fixed": 10670.92452,
                     "dist_cost_variable": 6.49083,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 222.20000000000005,
+                    "dist_h": 963.3000000000001,
                     "source": "sanJacinto",
                     "destination": "deerPark",
                     "destination_class": "dist_pipelineLowPurity"
@@ -616,8 +632,21 @@
                     "dist_cost_fixed": 9153.282360000001,
                     "dist_cost_variable": 5.567690000000001,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 760.2,
+                    "dist_h": 49.2800000000002,
                     "source": "laPorte",
+                    "destination": "sanJacinto",
+                    "destination_class": "dist_pipelineLowPurity"
+                },
+                "texasCity_dist_pipelineLowPurity_TO_sanJacinto_dist_pipelineLowPurity": {
+                    "source_class": "texasCity_dist_pipelineLowPurity",
+                    "arc_end": "sanJacinto_dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 32941800.0,
+                    "dist_cost_fixed": 4513.0266,
+                    "dist_cost_variable": 2.74515,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 1746.6000000000001,
+                    "source": "texasCity",
                     "destination": "sanJacinto",
                     "destination_class": "dist_pipelineLowPurity"
                 }
@@ -625,32 +654,7 @@
         }
     },
     "deerPark": {
-        "production": {
-            "smr": {
-                "can_ccs1": 0,
-                "can_ccs2": 0,
-                "ccs1_capacity_co2": 0.0,
-                "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
-                "ccs2_capacity_co2": 0.0,
-                "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
-                "co2_emitted": 2842.2,
-                "prod_capacity": 350.88888888888886,
-                "prod_carbonRate": 9.0,
-                "prod_cost_capital_coeff": 425000.0,
-                "prod_cost_fixed": 70.0,
-                "prod_cost_variable": 90.0,
-                "prod_h": 315.79999999999995,
-                "prod_hblack": 315.79999999999995,
-                "prod_kwh_variable_coeff": 570.0,
-                "prod_ng_variable_coeff": 156.25,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 2842.2,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
-            }
-        },
+        "production": {},
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
@@ -684,29 +688,36 @@
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 538.0
-                },
-                "hub_lowPurity_TO_dist_pipelineLowPurity": {
-                    "source_class": "hub_lowPurity",
-                    "destination_class": "dist_pipelineLowPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 315.79999999999995
-                },
-                "production_smr_TO_hub_lowPurity": {
-                    "source_class": "production_smr",
-                    "destination_class": "hub_lowPurity",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 315.79999999999995
                 }
             },
-            "outgoing": {},
+            "outgoing": {
+                "dist_pipelineLowPurity_TO_channelview_dist_pipelineLowPurity": {
+                    "source_class": "dist_pipelineLowPurity",
+                    "arc_end": "channelview_dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 20128680.0,
+                    "dist_cost_fixed": 2757.6291600000004,
+                    "dist_cost_variable": 1.6773900000000002,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 321.1,
+                    "source": "deerPark",
+                    "destination": "channelview",
+                    "destination_class": "dist_pipelineLowPurity"
+                },
+                "dist_pipelineLowPurity_TO_pasadena_dist_pipelineLowPurity": {
+                    "source_class": "dist_pipelineLowPurity",
+                    "arc_end": "pasadena_dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 11160480.0,
+                    "dist_cost_fixed": 1528.98576,
+                    "dist_cost_variable": 0.93004,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 104.19999999999999,
+                    "source": "deerPark",
+                    "destination": "pasadena",
+                    "destination_class": "dist_pipelineLowPurity"
+                }
+            },
             "incoming": {
                 "sanJacinto_dist_pipelineLowPurity_TO_deerPark_dist_pipelineLowPurity": {
                     "source_class": "sanJacinto_dist_pipelineLowPurity",
@@ -716,7 +727,7 @@
                     "dist_cost_fixed": 10670.92452,
                     "dist_cost_variable": 6.49083,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 222.20000000000005,
+                    "dist_h": 963.3000000000001,
                     "source": "sanJacinto",
                     "destination": "deerPark",
                     "destination_class": "dist_pipelineLowPurity"
@@ -726,30 +737,6 @@
     },
     "pasadena": {
         "production": {
-            "smr": {
-                "can_ccs1": 0,
-                "can_ccs2": 0,
-                "ccs1_capacity_co2": 0.0,
-                "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
-                "ccs2_capacity_co2": 0.0,
-                "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
-                "co2_emitted": 958.4999999812864,
-                "prod_capacity": 118.33333333102301,
-                "prod_carbonRate": 9.0,
-                "prod_cost_capital_coeff": 425000.0,
-                "prod_cost_fixed": 70.0,
-                "prod_cost_variable": 90.0,
-                "prod_h": 106.49999999792071,
-                "prod_hblack": 106.49999999792071,
-                "prod_kwh_variable_coeff": 570.0,
-                "prod_ng_variable_coeff": 156.25,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 958.4999999812864,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
-            },
             "smrExisting": {
                 "can_ccs1": 1,
                 "can_ccs2": 1,
@@ -777,31 +764,13 @@
         },
         "conversion": {
             "fuelDispenserLiquid": {
-                "conv_capacity": 80.00000000811553,
+                "conv_capacity": 83.86666666666656,
                 "conv_cost_capital_coeff": 5525000.0,
                 "conv_cost_fixed": 1500.0,
                 "conv_cost_variable": 0,
                 "conv_kwh_variable_coeff": 560.0,
                 "conv_utilization": 0.6,
-                "fuelStation_cost_capital_subsidy": 44200000.00448383
-            },
-            "fuelDispenserPipeline": {
-                "conv_capacity": 3.833333325217699,
-                "conv_cost_capital_coeff": 10030000.0,
-                "conv_cost_fixed": 1575.0,
-                "conv_cost_variable": 0,
-                "conv_kwh_variable_coeff": 1970.0,
-                "conv_utilization": 0.6,
-                "fuelStation_cost_capital_subsidy": 3844833.325193351
-            },
-            "purification": {
-                "conv_capacity": 2.4210526272018216,
-                "conv_cost_capital_coeff": 480000.0,
-                "conv_cost_fixed": 0.0,
-                "conv_cost_variable": 0,
-                "conv_kwh_variable_coeff": 1800.0,
-                "conv_utilization": 0.95,
-                "fuelStation_cost_capital_subsidy": "n/a"
+                "fuelStation_cost_capital_subsidy": 46336333.33333326
             }
         },
         "consumption": {
@@ -832,13 +801,13 @@
                 "cons_price": 10000.0,
                 "cons_size": 12.5
             },
-            "priceFuelStation_7.500000": {
+            "priceFuelStation_7.400000": {
                 "co2_nonHydrogenConsumer": 0.0,
                 "cons_breakevenCarbon": 0.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 0.01,
                 "cons_hblack": 0.0,
-                "cons_price": 7499.999999999984,
+                "cons_price": 7399.9999999999845,
                 "cons_size": 0.01
             }
         },
@@ -852,27 +821,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 48.00000000486932
-                },
-                "converter_fuelDispenserPipeline_TO_demand_fuelStation": {
-                    "source_class": "converter_fuelDispenserPipeline",
-                    "destination_class": "demand_fuelStation",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 2.2999999951306194
-                },
-                "converter_purification_TO_hub_highPurity": {
-                    "source_class": "converter_purification",
-                    "destination_class": "hub_highPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 2.2999999958417305
+                    "dist_h": 50.319999999999936
                 },
                 "demand_fuelStation_TO_demandSector_transportationFuel": {
                     "source_class": "demand_fuelStation",
@@ -904,16 +853,6 @@
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 538.0
                 },
-                "dist_pipelineHighPurity_TO_converter_fuelDispenserPipeline": {
-                    "source_class": "dist_pipelineHighPurity",
-                    "destination_class": "converter_fuelDispenserPipeline",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 2.2999999951306194
-                },
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
@@ -932,27 +871,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 48.00000000486932
-                },
-                "hub_highPurity_TO_dist_pipelineHighPurity": {
-                    "source_class": "hub_highPurity",
-                    "destination_class": "dist_pipelineHighPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 2.2999999958417305
-                },
-                "hub_lowPurity_TO_converter_purification": {
-                    "source_class": "hub_lowPurity",
-                    "destination_class": "converter_purification",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 2.2999999958417305
+                    "dist_h": 50.319999999999936
                 },
                 "hub_lowPurity_TO_dist_pipelineLowPurity": {
                     "source_class": "hub_lowPurity",
@@ -962,17 +881,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 538.000000002079
-                },
-                "production_smr_TO_hub_lowPurity": {
-                    "source_class": "production_smr",
-                    "destination_class": "hub_lowPurity",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 106.49999999792071
+                    "dist_h": 433.8
                 },
                 "production_smrExisting_TO_hub_lowPurity": {
                     "source_class": "production_smrExisting",
@@ -994,13 +903,26 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": 11.517585,
                     "dist_flowLimit": "n/a",
-                    "dist_h": 999.9999999951309,
+                    "dist_h": 500.0,
                     "source": "pasadena",
                     "destination": "houston",
                     "destination_class": "dist_truckLiquefied"
                 }
             },
             "incoming": {
+                "deerPark_dist_pipelineLowPurity_TO_pasadena_dist_pipelineLowPurity": {
+                    "source_class": "deerPark_dist_pipelineLowPurity",
+                    "arc_end": "pasadena_dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 11160480.0,
+                    "dist_cost_fixed": 1528.98576,
+                    "dist_cost_variable": 0.93004,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 104.19999999999999,
+                    "source": "deerPark",
+                    "destination": "pasadena",
+                    "destination_class": "dist_pipelineLowPurity"
+                },
                 "laPorte_dist_truckLiquefied_TO_pasadena_dist_truckLiquefied": {
                     "source_class": "laPorte_dist_truckLiquefied",
                     "arc_end": "pasadena_dist_truckLiquefied",
@@ -1009,7 +931,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": 9.541947,
                     "dist_flowLimit": "n/a",
-                    "dist_h": 1048.0000000000002,
+                    "dist_h": 550.3199999999999,
                     "source": "laPorte",
                     "destination": "pasadena",
                     "destination_class": "dist_truckLiquefied"
@@ -1019,30 +941,6 @@
     },
     "channelview": {
         "production": {
-            "smr": {
-                "can_ccs1": 0,
-                "can_ccs2": 0,
-                "ccs1_capacity_co2": 0.0,
-                "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
-                "ccs2_capacity_co2": 0.0,
-                "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
-                "co2_emitted": 2889.900000018711,
-                "prod_capacity": 356.7777777800878,
-                "prod_carbonRate": 9.0,
-                "prod_cost_capital_coeff": 425000.0,
-                "prod_cost_fixed": 70.0,
-                "prod_cost_variable": 90.0,
-                "prod_h": 321.100000002079,
-                "prod_hblack": 321.100000002079,
-                "prod_kwh_variable_coeff": 570.0,
-                "prod_ng_variable_coeff": 156.25,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 2889.900000018711,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
-            },
             "smrExisting": {
                 "can_ccs1": 1,
                 "can_ccs2": 1,
@@ -1110,17 +1008,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 538.000000002079
-                },
-                "production_smr_TO_hub_lowPurity": {
-                    "source_class": "production_smr",
-                    "destination_class": "hub_lowPurity",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 321.100000002079
+                    "dist_h": 216.9
                 },
                 "production_smrExisting_TO_hub_lowPurity": {
                     "source_class": "production_smrExisting",
@@ -1134,32 +1022,46 @@
                 }
             },
             "outgoing": {},
-            "incoming": {}
+            "incoming": {
+                "deerPark_dist_pipelineLowPurity_TO_channelview_dist_pipelineLowPurity": {
+                    "source_class": "deerPark_dist_pipelineLowPurity",
+                    "arc_end": "channelview_dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 20128680.0,
+                    "dist_cost_fixed": 2757.6291600000004,
+                    "dist_cost_variable": 1.6773900000000002,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 321.1,
+                    "source": "deerPark",
+                    "destination": "channelview",
+                    "destination_class": "dist_pipelineLowPurity"
+                }
+            }
         }
     },
     "montBelvieu": {
         "production": {
             "smr": {
-                "can_ccs1": 0,
-                "can_ccs2": 0,
+                "can_ccs1": 1,
+                "can_ccs2": 1,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
                 "ccs1_hblack": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
                 "ccs2_hblack": 0.0,
-                "co2_emitted": 2889.9,
-                "prod_capacity": 356.77777777777777,
+                "co2_emitted": 1176.4799999999982,
+                "prod_capacity": 145.2444444444442,
                 "prod_carbonRate": 9.0,
                 "prod_cost_capital_coeff": 425000.0,
                 "prod_cost_fixed": 70.0,
                 "prod_cost_variable": 90.0,
-                "prod_h": 321.1,
-                "prod_hblack": 321.1,
+                "prod_h": 130.7199999999998,
+                "prod_hblack": 130.7199999999998,
                 "prod_kwh_variable_coeff": 570.0,
                 "prod_ng_variable_coeff": 156.25,
                 "prod_utilization": 0.9,
-                "total_co2_produced": 2889.9,
+                "total_co2_produced": 1176.4799999999982,
                 "co2_captured": 0.0,
                 "%co2_captured": 0.0
             },
@@ -1230,7 +1132,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 538.0
+                    "dist_h": 347.6199999999998
                 },
                 "production_smr_TO_hub_lowPurity": {
                     "source_class": "production_smr",
@@ -1240,7 +1142,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 321.1
+                    "dist_h": 130.7199999999998
                 },
                 "production_smrExisting_TO_hub_lowPurity": {
                     "source_class": "production_smrExisting",
@@ -1254,35 +1156,25 @@
                 }
             },
             "outgoing": {},
-            "incoming": {}
+            "incoming": {
+                "baytown_dist_pipelineLowPurity_TO_montBelvieu_dist_pipelineLowPurity": {
+                    "source_class": "baytown_dist_pipelineLowPurity",
+                    "arc_end": "montBelvieu_dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 24054960.0,
+                    "dist_cost_fixed": 3295.52952,
+                    "dist_cost_variable": 2.0045800000000003,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 190.38000000000017,
+                    "source": "baytown",
+                    "destination": "montBelvieu",
+                    "destination_class": "dist_pipelineLowPurity"
+                }
+            }
         }
     },
     "baytown": {
         "production": {
-            "smr": {
-                "can_ccs1": 0,
-                "can_ccs2": 0,
-                "ccs1_capacity_co2": 0.0,
-                "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
-                "ccs2_capacity_co2": 0.0,
-                "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
-                "co2_emitted": 937.8,
-                "prod_capacity": 115.77777777777776,
-                "prod_carbonRate": 9.0,
-                "prod_cost_capital_coeff": 425000.0,
-                "prod_cost_fixed": 70.0,
-                "prod_cost_variable": 90.0,
-                "prod_h": 104.19999999999999,
-                "prod_hblack": 104.19999999999999,
-                "prod_kwh_variable_coeff": 570.0,
-                "prod_ng_variable_coeff": 156.25,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 937.8,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
-            },
             "smrExisting": {
                 "can_ccs1": 1,
                 "can_ccs2": 1,
@@ -1350,17 +1242,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 538.0
-                },
-                "production_smr_TO_hub_lowPurity": {
-                    "source_class": "production_smr",
-                    "destination_class": "hub_lowPurity",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 104.19999999999999
+                    "dist_h": 433.8
                 },
                 "production_smrExisting_TO_hub_lowPurity": {
                     "source_class": "production_smrExisting",
@@ -1373,8 +1255,36 @@
                     "dist_h": 433.8
                 }
             },
-            "outgoing": {},
-            "incoming": {}
+            "outgoing": {
+                "dist_pipelineLowPurity_TO_montBelvieu_dist_pipelineLowPurity": {
+                    "source_class": "dist_pipelineLowPurity",
+                    "arc_end": "montBelvieu_dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 24054960.0,
+                    "dist_cost_fixed": 3295.52952,
+                    "dist_cost_variable": 2.0045800000000003,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 190.38000000000017,
+                    "source": "baytown",
+                    "destination": "montBelvieu",
+                    "destination_class": "dist_pipelineLowPurity"
+                }
+            },
+            "incoming": {
+                "sanJacinto_dist_pipelineLowPurity_TO_baytown_dist_pipelineLowPurity": {
+                    "source_class": "sanJacinto_dist_pipelineLowPurity",
+                    "arc_end": "baytown_dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 78690960.0,
+                    "dist_cost_fixed": 10780.66152,
+                    "dist_cost_variable": 6.557580000000001,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 294.58000000000015,
+                    "source": "sanJacinto",
+                    "destination": "baytown",
+                    "destination_class": "dist_pipelineLowPurity"
+                }
+            }
         }
     },
     "portArthur": {
@@ -1404,107 +1314,9 @@
                 "%co2_captured": 0.0
             }
         },
-        "conversion": {},
-        "consumption": {
-            "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
-                "cons_breakevenCarbon": 18.0,
-                "cons_carbonSensitive": 0,
-                "cons_h": 538.0,
-                "cons_hblack": 0.0,
-                "cons_price": 5000.0,
-                "cons_size": 538.0
-            }
-        },
-        "distribution": {
-            "local": {
-                "demand_lowPurity_TO_demandSector_existing": {
-                    "source_class": "demand_lowPurity",
-                    "destination_class": "demandSector_existing",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 538.0
-                },
-                "dist_pipelineLowPurity_TO_demand_lowPurity": {
-                    "source_class": "dist_pipelineLowPurity",
-                    "destination_class": "demand_lowPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 538.0
-                },
-                "hub_lowPurity_TO_dist_pipelineLowPurity": {
-                    "source_class": "hub_lowPurity",
-                    "destination_class": "dist_pipelineLowPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 1734.3
-                },
-                "production_smrExisting_TO_hub_lowPurity": {
-                    "source_class": "production_smrExisting",
-                    "destination_class": "hub_lowPurity",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 1734.3
-                }
-            },
-            "outgoing": {
-                "dist_pipelineLowPurity_TO_beaumont_dist_pipelineLowPurity": {
-                    "source_class": "dist_pipelineLowPurity",
-                    "arc_end": "beaumont_dist_pipelineLowPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": 34351080.0,
-                    "dist_cost_fixed": 4706.09796,
-                    "dist_cost_variable": 2.8625900000000004,
-                    "dist_flowLimit": 999999.0,
-                    "dist_h": 1042.0000000000118,
-                    "source": "portArthur",
-                    "destination": "beaumont",
-                    "destination_class": "dist_pipelineLowPurity"
-                },
-                "dist_pipelineLowPurity_TO_orange_dist_pipelineLowPurity": {
-                    "source_class": "dist_pipelineLowPurity",
-                    "arc_end": "orange_dist_pipelineLowPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": 36394920.0,
-                    "dist_cost_fixed": 4986.10404,
-                    "dist_cost_variable": 3.03291,
-                    "dist_flowLimit": 999999.0,
-                    "dist_h": 154.2999999999882,
-                    "source": "portArthur",
-                    "destination": "orange",
-                    "destination_class": "dist_pipelineLowPurity"
-                }
-            },
-            "incoming": {}
-        }
-    },
-    "medicalCenter": {
-        "production": {},
-        "conversion": {},
-        "consumption": {},
-        "distribution": {
-            "local": {},
-            "outgoing": {},
-            "incoming": {}
-        }
-    },
-    "beaumont": {
-        "production": {},
         "conversion": {
             "liquefaction": {
-                "conv_capacity": 530.5263157894738,
+                "conv_capacity": 4.210526315789511,
                 "conv_cost_capital_coeff": 1920000.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -1513,7 +1325,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "purification": {
-                "conv_capacity": 530.5263157894738,
+                "conv_capacity": 4.210526315789511,
                 "conv_cost_capital_coeff": 480000.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -1522,7 +1334,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "terminalLiquid": {
-                "conv_capacity": 592.9411764705884,
+                "conv_capacity": 4.705882352941218,
                 "conv_cost_capital_coeff": 1175000.0,
                 "conv_cost_fixed": 290.0,
                 "conv_cost_variable": 0,
@@ -1552,7 +1364,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 504.0000000000001
+                    "dist_h": 4.0000000000000355
                 },
                 "converter_purification_TO_hub_highPurity": {
                     "source_class": "converter_purification",
@@ -1562,7 +1374,196 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 504.0000000000001
+                    "dist_h": 4.0000000000000355
+                },
+                "converter_terminalLiquid_TO_dist_truckLiquefied": {
+                    "source_class": "converter_terminalLiquid",
+                    "destination_class": "dist_truckLiquefied",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 1016000.0,
+                    "dist_cost_fixed": 139.18,
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": 8.0,
+                    "dist_h": 4.0000000000000355
+                },
+                "demand_lowPurity_TO_demandSector_existing": {
+                    "source_class": "demand_lowPurity",
+                    "destination_class": "demandSector_existing",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 538.0
+                },
+                "dist_pipelineLowPurity_TO_demand_lowPurity": {
+                    "source_class": "dist_pipelineLowPurity",
+                    "destination_class": "demand_lowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 538.0
+                },
+                "hub_highPurity_TO_converter_liquefaction": {
+                    "source_class": "hub_highPurity",
+                    "destination_class": "converter_liquefaction",
+                    "dist_capacity": "n/a",
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 4.0000000000000355
+                },
+                "hub_lowPurity_TO_converter_purification": {
+                    "source_class": "hub_lowPurity",
+                    "destination_class": "converter_purification",
+                    "dist_capacity": "n/a",
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 4.0000000000000355
+                },
+                "hub_lowPurity_TO_dist_pipelineLowPurity": {
+                    "source_class": "hub_lowPurity",
+                    "destination_class": "dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 1730.3
+                },
+                "production_smrExisting_TO_hub_lowPurity": {
+                    "source_class": "production_smrExisting",
+                    "destination_class": "hub_lowPurity",
+                    "dist_capacity": "n/a",
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 1734.3
+                }
+            },
+            "outgoing": {
+                "dist_pipelineLowPurity_TO_beaumont_dist_pipelineLowPurity": {
+                    "source_class": "dist_pipelineLowPurity",
+                    "arc_end": "beaumont_dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 34351080.0,
+                    "dist_cost_fixed": 4706.09796,
+                    "dist_cost_variable": 2.8625900000000004,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 1038.0,
+                    "source": "portArthur",
+                    "destination": "beaumont",
+                    "destination_class": "dist_pipelineLowPurity"
+                },
+                "dist_pipelineLowPurity_TO_orange_dist_pipelineLowPurity": {
+                    "source_class": "dist_pipelineLowPurity",
+                    "arc_end": "orange_dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 36394920.0,
+                    "dist_cost_fixed": 4986.10404,
+                    "dist_cost_variable": 3.03291,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 154.29999999999993,
+                    "source": "portArthur",
+                    "destination": "orange",
+                    "destination_class": "dist_pipelineLowPurity"
+                },
+                "dist_truckLiquefied_TO_orange_dist_truckLiquefied": {
+                    "source_class": "dist_truckLiquefied",
+                    "arc_end": "orange_dist_truckLiquefied",
+                    "dist_capacity": "n/a",
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": 15.467841,
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 4.0000000000000355,
+                    "source": "portArthur",
+                    "destination": "orange",
+                    "destination_class": "dist_truckLiquefied"
+                }
+            },
+            "incoming": {}
+        }
+    },
+    "medicalCenter": {
+        "production": {},
+        "conversion": {},
+        "consumption": {},
+        "distribution": {
+            "local": {},
+            "outgoing": {},
+            "incoming": {}
+        }
+    },
+    "beaumont": {
+        "production": {},
+        "conversion": {
+            "liquefaction": {
+                "conv_capacity": 526.3157894736842,
+                "conv_cost_capital_coeff": 1920000.0,
+                "conv_cost_fixed": 0.0,
+                "conv_cost_variable": 0,
+                "conv_kwh_variable_coeff": 7200.0,
+                "conv_utilization": 0.95,
+                "fuelStation_cost_capital_subsidy": "n/a"
+            },
+            "purification": {
+                "conv_capacity": 526.3157894736842,
+                "conv_cost_capital_coeff": 480000.0,
+                "conv_cost_fixed": 0.0,
+                "conv_cost_variable": 0,
+                "conv_kwh_variable_coeff": 1800.0,
+                "conv_utilization": 0.95,
+                "fuelStation_cost_capital_subsidy": "n/a"
+            },
+            "terminalLiquid": {
+                "conv_capacity": 588.2352941176471,
+                "conv_cost_capital_coeff": 1175000.0,
+                "conv_cost_fixed": 290.0,
+                "conv_cost_variable": 0,
+                "conv_kwh_variable_coeff": 0.0,
+                "conv_utilization": 0.85,
+                "fuelStation_cost_capital_subsidy": "n/a"
+            }
+        },
+        "consumption": {
+            "demandSector_existing": {
+                "co2_nonHydrogenConsumer": 0.0,
+                "cons_breakevenCarbon": 18.0,
+                "cons_carbonSensitive": 0,
+                "cons_h": 538.0,
+                "cons_hblack": 0.0,
+                "cons_price": 5000.0,
+                "cons_size": 538.0
+            }
+        },
+        "distribution": {
+            "local": {
+                "converter_liquefaction_TO_converter_terminalLiquid": {
+                    "source_class": "converter_liquefaction",
+                    "destination_class": "converter_terminalLiquid",
+                    "dist_capacity": "n/a",
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 500.0
+                },
+                "converter_purification_TO_hub_highPurity": {
+                    "source_class": "converter_purification",
+                    "destination_class": "hub_highPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 500.0
                 },
                 "converter_terminalLiquid_TO_dist_truckLiquefied": {
                     "source_class": "converter_terminalLiquid",
@@ -1572,7 +1573,7 @@
                     "dist_cost_fixed": 139.18,
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 8.0,
-                    "dist_h": 504.0000000000001
+                    "dist_h": 500.0
                 },
                 "demand_lowPurity_TO_demandSector_existing": {
                     "source_class": "demand_lowPurity",
@@ -1602,7 +1603,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 504.00000000001194
+                    "dist_h": 500.0
                 },
                 "hub_highPurity_TO_converter_liquefaction": {
                     "source_class": "hub_highPurity",
@@ -1612,7 +1613,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 504.0000000000001
+                    "dist_h": 500.0
                 },
                 "hub_lowPurity_TO_converter_purification": {
                     "source_class": "hub_lowPurity",
@@ -1622,23 +1623,10 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 504.0000000000001
+                    "dist_h": 500.0
                 }
             },
             "outgoing": {
-                "dist_truckLiquefied_TO_orange_dist_truckLiquefied": {
-                    "source_class": "dist_truckLiquefied",
-                    "arc_end": "orange_dist_truckLiquefied",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 20.017857000000003,
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 3.9999999999998863,
-                    "source": "beaumont",
-                    "destination": "orange",
-                    "destination_class": "dist_truckLiquefied"
-                },
                 "dist_truckLiquefied_TO_texarkana_dist_truckLiquefied": {
                     "source_class": "dist_truckLiquefied",
                     "arc_end": "texarkana_dist_truckLiquefied",
@@ -1662,7 +1650,7 @@
                     "dist_cost_fixed": 4706.09796,
                     "dist_cost_variable": 2.8625900000000004,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 1042.0000000000118,
+                    "dist_h": 1038.0,
                     "source": "portArthur",
                     "destination": "beaumont",
                     "destination_class": "dist_pipelineLowPurity"
@@ -1673,26 +1661,26 @@
     "orange": {
         "production": {
             "smr": {
-                "can_ccs1": 0,
-                "can_ccs2": 0,
+                "can_ccs1": 1,
+                "can_ccs2": 1,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
                 "ccs1_hblack": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
                 "ccs2_hblack": 0.0,
-                "co2_emitted": 7917.300000000106,
-                "prod_capacity": 977.4444444444575,
+                "co2_emitted": 7917.3,
+                "prod_capacity": 977.4444444444445,
                 "prod_carbonRate": 9.0,
                 "prod_cost_capital_coeff": 425000.0,
                 "prod_cost_fixed": 70.0,
                 "prod_cost_variable": 90.0,
-                "prod_h": 879.7000000000118,
-                "prod_hblack": 879.7000000000118,
+                "prod_h": 879.7,
+                "prod_hblack": 879.7,
                 "prod_kwh_variable_coeff": 570.0,
                 "prod_ng_variable_coeff": 156.25,
                 "prod_utilization": 0.9,
-                "total_co2_produced": 7917.300000000106,
+                "total_co2_produced": 7917.3,
                 "co2_captured": 0.0,
                 "%co2_captured": 0.0
             }
@@ -1708,7 +1696,7 @@
                 "fuelStation_cost_capital_subsidy": 460416666.66666657
             },
             "liquefaction": {
-                "conv_capacity": 522.1052631578948,
+                "conv_capacity": 522.1052631578947,
                 "conv_cost_capital_coeff": 1920000.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -1717,7 +1705,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "purification": {
-                "conv_capacity": 522.1052631578948,
+                "conv_capacity": 522.1052631578947,
                 "conv_cost_capital_coeff": 480000.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -1726,7 +1714,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "terminalLiquid": {
-                "conv_capacity": 583.529411764706,
+                "conv_capacity": 583.5294117647059,
                 "conv_cost_capital_coeff": 1175000.0,
                 "conv_cost_fixed": 290.0,
                 "conv_cost_variable": 0,
@@ -1784,7 +1772,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 496.0000000000001
+                    "dist_h": 495.99999999999994
                 },
                 "converter_purification_TO_hub_highPurity": {
                     "source_class": "converter_purification",
@@ -1794,7 +1782,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 496.0000000000001
+                    "dist_h": 495.99999999999994
                 },
                 "converter_terminalLiquid_TO_dist_truckLiquefied": {
                     "source_class": "converter_terminalLiquid",
@@ -1804,7 +1792,7 @@
                     "dist_cost_fixed": 139.18,
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 8.0,
-                    "dist_h": 496.0000000000001
+                    "dist_h": 495.99999999999994
                 },
                 "demand_fuelStation_TO_demandSector_transportationFuel": {
                     "source_class": "demand_fuelStation",
@@ -1864,7 +1852,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 496.0000000000001
+                    "dist_h": 495.99999999999994
                 },
                 "hub_lowPurity_TO_converter_purification": {
                     "source_class": "hub_lowPurity",
@@ -1874,7 +1862,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 496.0000000000001
+                    "dist_h": 495.99999999999994
                 },
                 "hub_lowPurity_TO_dist_pipelineLowPurity": {
                     "source_class": "hub_lowPurity",
@@ -1884,7 +1872,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 383.70000000001164
+                    "dist_h": 383.7000000000001
                 },
                 "production_smr_TO_hub_lowPurity": {
                     "source_class": "production_smr",
@@ -1894,24 +1882,11 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 879.7000000000118
+                    "dist_h": 879.7
                 }
             },
             "outgoing": {},
             "incoming": {
-                "beaumont_dist_truckLiquefied_TO_orange_dist_truckLiquefied": {
-                    "source_class": "beaumont_dist_truckLiquefied",
-                    "arc_end": "orange_dist_truckLiquefied",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 20.017857000000003,
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 3.9999999999998863,
-                    "source": "beaumont",
-                    "destination": "orange",
-                    "destination_class": "dist_truckLiquefied"
-                },
                 "portArthur_dist_pipelineLowPurity_TO_orange_dist_pipelineLowPurity": {
                     "source_class": "portArthur_dist_pipelineLowPurity",
                     "arc_end": "orange_dist_pipelineLowPurity",
@@ -1920,10 +1895,23 @@
                     "dist_cost_fixed": 4986.10404,
                     "dist_cost_variable": 3.03291,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 154.2999999999882,
+                    "dist_h": 154.29999999999993,
                     "source": "portArthur",
                     "destination": "orange",
                     "destination_class": "dist_pipelineLowPurity"
+                },
+                "portArthur_dist_truckLiquefied_TO_orange_dist_truckLiquefied": {
+                    "source_class": "portArthur_dist_truckLiquefied",
+                    "arc_end": "orange_dist_truckLiquefied",
+                    "dist_capacity": "n/a",
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": 15.467841,
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 4.0000000000000355,
+                    "source": "portArthur",
+                    "destination": "orange",
+                    "destination_class": "dist_truckLiquefied"
                 }
             }
         }
@@ -1931,26 +1919,26 @@
     "elPaso": {
         "production": {
             "smr": {
-                "can_ccs1": 0,
-                "can_ccs2": 0,
+                "can_ccs1": 1,
+                "can_ccs2": 1,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
                 "ccs1_hblack": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
                 "ccs2_hblack": 0.0,
-                "co2_emitted": 13464.000000000002,
-                "prod_capacity": 1662.2222222222224,
+                "co2_emitted": 13500.0,
+                "prod_capacity": 1666.6666666666667,
                 "prod_carbonRate": 9.0,
                 "prod_cost_capital_coeff": 425000.0,
                 "prod_cost_fixed": 70.0,
                 "prod_cost_variable": 90.0,
-                "prod_h": 1496.0000000000002,
-                "prod_hblack": 1496.0000000000002,
+                "prod_h": 1500.0,
+                "prod_hblack": 1500.0,
                 "prod_kwh_variable_coeff": 570.0,
                 "prod_ng_variable_coeff": 156.25,
                 "prod_utilization": 0.9,
-                "total_co2_produced": 13464.000000000002,
+                "total_co2_produced": 13500.0,
                 "co2_captured": 0.0,
                 "%co2_captured": 0.0
             }
@@ -1966,7 +1954,7 @@
                 "fuelStation_cost_capital_subsidy": 460416666.66666657
             },
             "liquefaction": {
-                "conv_capacity": 1574.7368421052633,
+                "conv_capacity": 526.3157894736842,
                 "conv_cost_capital_coeff": 1920000.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -1975,7 +1963,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "purification": {
-                "conv_capacity": 1574.7368421052633,
+                "conv_capacity": 526.3157894736842,
                 "conv_cost_capital_coeff": 480000.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -1984,7 +1972,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "terminalLiquid": {
-                "conv_capacity": 1760.0000000000002,
+                "conv_capacity": 588.2352941176471,
                 "conv_cost_capital_coeff": 1175000.0,
                 "conv_cost_fixed": 290.0,
                 "conv_cost_variable": 0,
@@ -2033,7 +2021,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 1496.0000000000002
+                    "dist_h": 500.0
                 },
                 "converter_purification_TO_hub_highPurity": {
                     "source_class": "converter_purification",
@@ -2043,17 +2031,17 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 1496.0000000000002
+                    "dist_h": 500.0
                 },
                 "converter_terminalLiquid_TO_dist_truckLiquefied": {
                     "source_class": "converter_terminalLiquid",
                     "destination_class": "dist_truckLiquefied",
-                    "dist_capacity": 187.0,
+                    "dist_capacity": 63.0,
                     "dist_cost_capital": 1016000.0,
                     "dist_cost_fixed": 139.18,
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 8.0,
-                    "dist_h": 1496.0000000000002
+                    "dist_h": 500.0
                 },
                 "demand_fuelStation_TO_demandSector_transportationFuel": {
                     "source_class": "demand_fuelStation",
@@ -2093,7 +2081,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 1496.0000000000002
+                    "dist_h": 500.0
                 },
                 "hub_lowPurity_TO_converter_purification": {
                     "source_class": "hub_lowPurity",
@@ -2103,7 +2091,17 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 1496.0000000000002
+                    "dist_h": 500.0
+                },
+                "hub_lowPurity_TO_dist_pipelineLowPurity": {
+                    "source_class": "hub_lowPurity",
+                    "destination_class": "dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 1000.0
                 },
                 "production_smr_TO_hub_lowPurity": {
                     "source_class": "production_smr",
@@ -2113,35 +2111,22 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 1496.0000000000002
+                    "dist_h": 1500.0
                 }
             },
             "outgoing": {
-                "dist_truckLiquefied_TO_midland_dist_truckLiquefied": {
-                    "source_class": "dist_truckLiquefied",
-                    "arc_end": "midland_dist_truckLiquefied",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 251.05372200000002,
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 496.0000000000002,
-                    "source": "elPaso",
-                    "destination": "midland",
-                    "destination_class": "dist_truckLiquefied"
-                },
-                "dist_truckLiquefied_TO_vanHorn_dist_truckLiquefied": {
-                    "source_class": "dist_truckLiquefied",
-                    "arc_end": "vanHorn_dist_truckLiquefied",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 99.437658,
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 500.0,
+                "dist_pipelineLowPurity_TO_vanHorn_dist_pipelineLowPurity": {
+                    "source_class": "dist_pipelineLowPurity",
+                    "arc_end": "vanHorn_dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 233970960.0,
+                    "dist_cost_fixed": 32054.02152,
+                    "dist_cost_variable": 19.49758,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 1000.0,
                     "source": "elPaso",
                     "destination": "vanHorn",
-                    "destination_class": "dist_truckLiquefied"
+                    "destination_class": "dist_pipelineLowPurity"
                 }
             },
             "incoming": {}
@@ -2158,6 +2143,33 @@
                 "conv_kwh_variable_coeff": 560.0,
                 "conv_utilization": 0.6,
                 "fuelStation_cost_capital_subsidy": 460416666.66666657
+            },
+            "liquefaction": {
+                "conv_capacity": 1052.6315789473683,
+                "conv_cost_capital_coeff": 1920000.0,
+                "conv_cost_fixed": 0.0,
+                "conv_cost_variable": 0,
+                "conv_kwh_variable_coeff": 7200.0,
+                "conv_utilization": 0.95,
+                "fuelStation_cost_capital_subsidy": "n/a"
+            },
+            "purification": {
+                "conv_capacity": 1052.6315789473683,
+                "conv_cost_capital_coeff": 480000.0,
+                "conv_cost_fixed": 0.0,
+                "conv_cost_variable": 0,
+                "conv_kwh_variable_coeff": 1800.0,
+                "conv_utilization": 0.95,
+                "fuelStation_cost_capital_subsidy": "n/a"
+            },
+            "terminalLiquid": {
+                "conv_capacity": 1176.4705882352941,
+                "conv_cost_capital_coeff": 1175000.0,
+                "conv_cost_fixed": 290.0,
+                "conv_cost_variable": 0,
+                "conv_kwh_variable_coeff": 0.0,
+                "conv_utilization": 0.85,
+                "fuelStation_cost_capital_subsidy": "n/a"
             }
         },
         "consumption": {
@@ -2192,6 +2204,36 @@
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 500.0
                 },
+                "converter_liquefaction_TO_converter_terminalLiquid": {
+                    "source_class": "converter_liquefaction",
+                    "destination_class": "converter_terminalLiquid",
+                    "dist_capacity": "n/a",
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 1000.0
+                },
+                "converter_purification_TO_hub_highPurity": {
+                    "source_class": "converter_purification",
+                    "destination_class": "hub_highPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 1000.0
+                },
+                "converter_terminalLiquid_TO_dist_truckLiquefied": {
+                    "source_class": "converter_terminalLiquid",
+                    "destination_class": "dist_truckLiquefied",
+                    "dist_capacity": 125.0,
+                    "dist_cost_capital": 1016000.0,
+                    "dist_cost_fixed": 139.18,
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": 8.0,
+                    "dist_h": 1000.0
+                },
                 "demand_fuelStation_TO_demandSector_transportationFuel": {
                     "source_class": "demand_fuelStation",
                     "destination_class": "demandSector_transportationFuel",
@@ -2212,6 +2254,16 @@
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 125.0
                 },
+                "dist_pipelineLowPurity_TO_hub_lowPurity": {
+                    "source_class": "dist_pipelineLowPurity",
+                    "destination_class": "hub_lowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 1000.0
+                },
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
@@ -2221,22 +2273,56 @@
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
                     "dist_h": 500.0
-                }
-            },
-            "outgoing": {},
-            "incoming": {
-                "elPaso_dist_truckLiquefied_TO_vanHorn_dist_truckLiquefied": {
-                    "source_class": "elPaso_dist_truckLiquefied",
-                    "arc_end": "vanHorn_dist_truckLiquefied",
+                },
+                "hub_highPurity_TO_converter_liquefaction": {
+                    "source_class": "hub_highPurity",
+                    "destination_class": "converter_liquefaction",
                     "dist_capacity": "n/a",
                     "dist_cost_capital": "n/a",
                     "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 99.437658,
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 1000.0
+                },
+                "hub_lowPurity_TO_converter_purification": {
+                    "source_class": "hub_lowPurity",
+                    "destination_class": "converter_purification",
+                    "dist_capacity": "n/a",
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 1000.0
+                }
+            },
+            "outgoing": {
+                "dist_truckLiquefied_TO_midland_dist_truckLiquefied": {
+                    "source_class": "dist_truckLiquefied",
+                    "arc_end": "midland_dist_truckLiquefied",
+                    "dist_capacity": "n/a",
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": 152.034978,
                     "dist_flowLimit": "n/a",
                     "dist_h": 500.0,
+                    "source": "vanHorn",
+                    "destination": "midland",
+                    "destination_class": "dist_truckLiquefied"
+                }
+            },
+            "incoming": {
+                "elPaso_dist_pipelineLowPurity_TO_vanHorn_dist_pipelineLowPurity": {
+                    "source_class": "elPaso_dist_pipelineLowPurity",
+                    "arc_end": "vanHorn_dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 233970960.0,
+                    "dist_cost_fixed": 32054.02152,
+                    "dist_cost_variable": 19.49758,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 1000.0,
                     "source": "elPaso",
                     "destination": "vanHorn",
-                    "destination_class": "dist_truckLiquefied"
+                    "destination_class": "dist_pipelineLowPurity"
                 }
             }
         }
@@ -2317,21 +2403,7 @@
                     "dist_h": 500.0
                 }
             },
-            "outgoing": {
-                "dist_truckLiquefied_TO_midland_dist_truckLiquefied": {
-                    "source_class": "dist_truckLiquefied",
-                    "arc_end": "midland_dist_truckLiquefied",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 132.218316,
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 3.9999999982971572,
-                    "source": "sonora",
-                    "destination": "midland",
-                    "destination_class": "dist_truckLiquefied"
-                }
-            },
+            "outgoing": {},
             "incoming": {
                 "sanAntonio_dist_truckLiquefied_TO_sonora_dist_truckLiquefied": {
                     "source_class": "sanAntonio_dist_truckLiquefied",
@@ -2341,7 +2413,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": 140.041155,
                     "dist_flowLimit": "n/a",
-                    "dist_h": 503.99999999829714,
+                    "dist_h": 500.0,
                     "source": "sanAntonio",
                     "destination": "sonora",
                     "destination_class": "dist_truckLiquefied"
@@ -2394,16 +2466,6 @@
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 500.0
                 },
-                "converter_purification_TO_hub_highPurity": {
-                    "source_class": "converter_purification",
-                    "destination_class": "hub_highPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 1.7025740817189225e-09
-                },
                 "demand_fuelStation_TO_demandSector_transportationFuel": {
                     "source_class": "demand_fuelStation",
                     "destination_class": "demandSector_transportationFuel",
@@ -2424,16 +2486,6 @@
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 125.0
                 },
-                "dist_pipelineLowPurity_TO_hub_lowPurity": {
-                    "source_class": "dist_pipelineLowPurity",
-                    "destination_class": "hub_lowPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 1.7025740817189225e-09
-                },
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
@@ -2447,29 +2499,16 @@
             },
             "outgoing": {},
             "incoming": {
-                "elPaso_dist_truckLiquefied_TO_midland_dist_truckLiquefied": {
-                    "source_class": "elPaso_dist_truckLiquefied",
+                "vanHorn_dist_truckLiquefied_TO_midland_dist_truckLiquefied": {
+                    "source_class": "vanHorn_dist_truckLiquefied",
                     "arc_end": "midland_dist_truckLiquefied",
                     "dist_capacity": "n/a",
                     "dist_cost_capital": "n/a",
                     "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 251.05372200000002,
+                    "dist_cost_variable": 152.034978,
                     "dist_flowLimit": "n/a",
-                    "dist_h": 496.0000000000002,
-                    "source": "elPaso",
-                    "destination": "midland",
-                    "destination_class": "dist_truckLiquefied"
-                },
-                "sonora_dist_truckLiquefied_TO_midland_dist_truckLiquefied": {
-                    "source_class": "sonora_dist_truckLiquefied",
-                    "arc_end": "midland_dist_truckLiquefied",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 132.218316,
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 3.9999999982971572,
-                    "source": "sonora",
+                    "dist_h": 500.0,
+                    "source": "vanHorn",
                     "destination": "midland",
                     "destination_class": "dist_truckLiquefied"
                 }
@@ -2541,16 +2580,6 @@
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 125.0
                 },
-                "dist_pipelineHighPurity_TO_hub_highPurity": {
-                    "source_class": "dist_pipelineHighPurity",
-                    "destination_class": "hub_highPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 7.22047843737528e-09
-                },
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
@@ -2564,16 +2593,16 @@
             },
             "outgoing": {},
             "incoming": {
-                "austin_dist_truckLiquefied_TO_abilene_dist_truckLiquefied": {
-                    "source_class": "austin_dist_truckLiquefied",
+                "waco_dist_truckLiquefied_TO_abilene_dist_truckLiquefied": {
+                    "source_class": "waco_dist_truckLiquefied",
                     "arc_end": "abilene_dist_truckLiquefied",
                     "dist_capacity": "n/a",
                     "dist_cost_capital": "n/a",
                     "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 181.518435,
+                    "dist_cost_variable": 161.133837,
                     "dist_flowLimit": "n/a",
-                    "dist_h": 499.9999999944821,
-                    "source": "austin",
+                    "dist_h": 500.0,
+                    "source": "waco",
                     "destination": "abilene",
                     "destination_class": "dist_truckLiquefied"
                 }
@@ -2685,6 +2714,24 @@
                 "conv_kwh_variable_coeff": 560.0,
                 "conv_utilization": 0.6,
                 "fuelStation_cost_capital_subsidy": 460416666.66666657
+            },
+            "liquefaction": {
+                "conv_capacity": 2105.2631578947367,
+                "conv_cost_capital_coeff": 1920000.0,
+                "conv_cost_fixed": 0.0,
+                "conv_cost_variable": 0,
+                "conv_kwh_variable_coeff": 7200.0,
+                "conv_utilization": 0.95,
+                "fuelStation_cost_capital_subsidy": "n/a"
+            },
+            "terminalLiquid": {
+                "conv_capacity": 2352.9411764705883,
+                "conv_cost_capital_coeff": 1175000.0,
+                "conv_cost_fixed": 290.0,
+                "conv_cost_variable": 0,
+                "conv_kwh_variable_coeff": 0.0,
+                "conv_utilization": 0.85,
+                "fuelStation_cost_capital_subsidy": "n/a"
             }
         },
         "consumption": {
@@ -2719,6 +2766,26 @@
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 500.0
                 },
+                "converter_liquefaction_TO_converter_terminalLiquid": {
+                    "source_class": "converter_liquefaction",
+                    "destination_class": "converter_terminalLiquid",
+                    "dist_capacity": "n/a",
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 2000.0
+                },
+                "converter_terminalLiquid_TO_dist_truckLiquefied": {
+                    "source_class": "converter_terminalLiquid",
+                    "destination_class": "dist_truckLiquefied",
+                    "dist_capacity": 250.0,
+                    "dist_cost_capital": 1016000.0,
+                    "dist_cost_fixed": 139.18,
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": 8.0,
+                    "dist_h": 2000.0
+                },
                 "demand_fuelStation_TO_demandSector_transportationFuel": {
                     "source_class": "demand_fuelStation",
                     "destination_class": "demandSector_transportationFuel",
@@ -2739,6 +2806,16 @@
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 125.0
                 },
+                "dist_pipelineHighPurity_TO_hub_highPurity": {
+                    "source_class": "dist_pipelineHighPurity",
+                    "destination_class": "hub_highPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": "n/a",
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 2000.0
+                },
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
@@ -2749,18 +2826,44 @@
                     "dist_flowLimit": "n/a",
                     "dist_h": 500.0
                 },
-                "hub_highPurity_TO_dist_pipelineHighPurity": {
+                "hub_highPurity_TO_converter_liquefaction": {
                     "source_class": "hub_highPurity",
-                    "destination_class": "dist_pipelineHighPurity",
-                    "dist_capacity": 1.0,
+                    "destination_class": "converter_liquefaction",
+                    "dist_capacity": "n/a",
                     "dist_cost_capital": "n/a",
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 2.547494659665973e-09
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 2000.0
                 }
             },
             "outgoing": {
+                "dist_truckLiquefied_TO_abilene_dist_truckLiquefied": {
+                    "source_class": "dist_truckLiquefied",
+                    "arc_end": "abilene_dist_truckLiquefied",
+                    "dist_capacity": "n/a",
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": 161.133837,
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 500.0,
+                    "source": "waco",
+                    "destination": "abilene",
+                    "destination_class": "dist_truckLiquefied"
+                },
+                "dist_truckLiquefied_TO_centerville_dist_truckLiquefied": {
+                    "source_class": "dist_truckLiquefied",
+                    "arc_end": "centerville_dist_truckLiquefied",
+                    "dist_capacity": "n/a",
+                    "dist_cost_capital": "n/a",
+                    "dist_cost_fixed": "n/a",
+                    "dist_cost_variable": 67.620645,
+                    "dist_flowLimit": "n/a",
+                    "dist_h": 500.0,
+                    "source": "waco",
+                    "destination": "centerville",
+                    "destination_class": "dist_truckLiquefied"
+                },
                 "dist_truckLiquefied_TO_dallas_dist_truckLiquefied": {
                     "source_class": "dist_truckLiquefied",
                     "arc_end": "dallas_dist_truckLiquefied",
@@ -2769,25 +2872,25 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": 77.84211599999999,
                     "dist_flowLimit": "n/a",
-                    "dist_h": 500.000000004673,
+                    "dist_h": 500.0,
                     "source": "waco",
                     "destination": "dallas",
                     "destination_class": "dist_truckLiquefied"
                 }
             },
             "incoming": {
-                "austin_dist_truckLiquefied_TO_waco_dist_truckLiquefied": {
-                    "source_class": "austin_dist_truckLiquefied",
-                    "arc_end": "waco_dist_truckLiquefied",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 85.075497,
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 1000.0000000055172,
+                "austin_dist_pipelineHighPurity_TO_waco_dist_pipelineHighPurity": {
+                    "source_class": "austin_dist_pipelineHighPurity",
+                    "arc_end": "waco_dist_pipelineHighPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 200177640.0,
+                    "dist_cost_fixed": 27424.33668,
+                    "dist_cost_variable": 16.68147,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 2000.0,
                     "source": "austin",
                     "destination": "waco",
-                    "destination_class": "dist_truckLiquefied"
+                    "destination_class": "dist_pipelineHighPurity"
                 }
             }
         }
@@ -2870,16 +2973,16 @@
             },
             "outgoing": {},
             "incoming": {
-                "houston_dist_truckLiquefied_TO_centerville_dist_truckLiquefied": {
-                    "source_class": "houston_dist_truckLiquefied",
+                "waco_dist_truckLiquefied_TO_centerville_dist_truckLiquefied": {
+                    "source_class": "waco_dist_truckLiquefied",
                     "arc_end": "centerville_dist_truckLiquefied",
                     "dist_capacity": "n/a",
                     "dist_cost_capital": "n/a",
                     "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 96.199107,
+                    "dist_cost_variable": 67.620645,
                     "dist_flowLimit": "n/a",
                     "dist_h": 500.0,
-                    "source": "houston",
+                    "source": "waco",
                     "destination": "centerville",
                     "destination_class": "dist_truckLiquefied"
                 }
@@ -3213,16 +3316,6 @@
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 500.0
                 },
-                "converter_purification_TO_hub_highPurity": {
-                    "source_class": "converter_purification",
-                    "destination_class": "hub_highPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 4.157982402830387e-09
-                },
                 "demand_fuelStation_TO_demandSector_transportationFuel": {
                     "source_class": "demand_fuelStation",
                     "destination_class": "demandSector_transportationFuel",
@@ -3243,26 +3336,6 @@
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 125.0
                 },
-                "dist_pipelineHighPurity_TO_hub_highPurity": {
-                    "source_class": "dist_pipelineHighPurity",
-                    "destination_class": "hub_highPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 7.111111699487091e-10
-                },
-                "dist_pipelineLowPurity_TO_hub_lowPurity": {
-                    "source_class": "dist_pipelineLowPurity",
-                    "destination_class": "hub_lowPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 4.157982402830387e-09
-                },
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
@@ -3274,21 +3347,7 @@
                     "dist_h": 500.0
                 }
             },
-            "outgoing": {
-                "dist_truckLiquefied_TO_centerville_dist_truckLiquefied": {
-                    "source_class": "dist_truckLiquefied",
-                    "arc_end": "centerville_dist_truckLiquefied",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 96.199107,
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 500.0,
-                    "source": "houston",
-                    "destination": "centerville",
-                    "destination_class": "dist_truckLiquefied"
-                }
-            },
+            "outgoing": {},
             "incoming": {
                 "pasadena_dist_truckLiquefied_TO_houston_dist_truckLiquefied": {
                     "source_class": "pasadena_dist_truckLiquefied",
@@ -3298,7 +3357,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": 11.517585,
                     "dist_flowLimit": "n/a",
-                    "dist_h": 999.9999999951309,
+                    "dist_h": 500.0,
                     "source": "pasadena",
                     "destination": "houston",
                     "destination_class": "dist_truckLiquefied"
@@ -3319,7 +3378,7 @@
                 "fuelStation_cost_capital_subsidy": 460416666.66666657
             },
             "liquefaction": {
-                "conv_capacity": 2635.789473684211,
+                "conv_capacity": 2631.578947368421,
                 "conv_cost_capital_coeff": 1920000.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -3328,7 +3387,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "terminalLiquid": {
-                "conv_capacity": 2945.882352941177,
+                "conv_capacity": 2941.1764705882356,
                 "conv_cost_capital_coeff": 1175000.0,
                 "conv_cost_fixed": 290.0,
                 "conv_cost_variable": 0,
@@ -3377,7 +3436,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 2504.0000000000005
+                    "dist_h": 2500.0
                 },
                 "converter_terminalLiquid_TO_dist_truckLiquefied": {
                     "source_class": "converter_terminalLiquid",
@@ -3387,7 +3446,7 @@
                     "dist_cost_fixed": 139.18,
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 8.0,
-                    "dist_h": 2504.0000000000005
+                    "dist_h": 2500.0
                 },
                 "demand_fuelStation_TO_demandSector_transportationFuel": {
                     "source_class": "demand_fuelStation",
@@ -3417,7 +3476,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 2504.0000000000005
+                    "dist_h": 2500.0
                 },
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
@@ -3437,7 +3496,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 2504.0000000000005
+                    "dist_h": 2500.0
                 }
             },
             "outgoing": {
@@ -3488,7 +3547,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": 140.041155,
                     "dist_flowLimit": "n/a",
-                    "dist_h": 503.99999999829714,
+                    "dist_h": 500.0,
                     "source": "sanAntonio",
                     "destination": "sonora",
                     "destination_class": "dist_truckLiquefied"
@@ -3503,7 +3562,7 @@
                     "dist_cost_fixed": 21005.25648,
                     "dist_cost_variable": 12.77692,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 2504.0000000000005,
+                    "dist_h": 2500.0,
                     "source": "austin",
                     "destination": "sanAntonio",
                     "destination_class": "dist_pipelineHighPurity"
@@ -3514,51 +3573,42 @@
     "austin": {
         "production": {
             "smr": {
-                "can_ccs1": 0,
-                "can_ccs2": 0,
+                "can_ccs1": 1,
+                "can_ccs2": 1,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
                 "ccs1_hblack": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
                 "ccs2_hblack": 0.0,
-                "co2_emitted": 40538.7,
-                "prod_capacity": 5004.7777777777765,
+                "co2_emitted": 45002.88,
+                "prod_capacity": 5555.911111111111,
                 "prod_carbonRate": 9.0,
                 "prod_cost_capital_coeff": 425000.0,
                 "prod_cost_fixed": 70.0,
                 "prod_cost_variable": 90.0,
-                "prod_h": 4504.299999999999,
-                "prod_hblack": 4504.299999999999,
+                "prod_h": 5000.32,
+                "prod_hblack": 5000.32,
                 "prod_kwh_variable_coeff": 570.0,
                 "prod_ng_variable_coeff": 156.25,
                 "prod_utilization": 0.9,
-                "total_co2_produced": 40538.7,
+                "total_co2_produced": 45002.88,
                 "co2_captured": 0.0,
                 "%co2_captured": 0.0
             }
         },
         "conversion": {
             "fuelDispenserLiquid": {
-                "conv_capacity": 833.3333333333353,
+                "conv_capacity": 833.8666666666662,
                 "conv_cost_capital_coeff": 5525000.0,
                 "conv_cost_fixed": 1500.0,
                 "conv_cost_variable": 0,
                 "conv_kwh_variable_coeff": 560.0,
                 "conv_utilization": 0.6,
-                "fuelStation_cost_capital_subsidy": 460416666.66666764
-            },
-            "fuelDispenserPipeline": {
-                "conv_capacity": 0.4999999999976505,
-                "conv_cost_capital_coeff": 10030000.0,
-                "conv_cost_fixed": 1575.0,
-                "conv_cost_variable": 0,
-                "conv_kwh_variable_coeff": 1970.0,
-                "conv_utilization": 0.6,
-                "fuelStation_cost_capital_subsidy": 501499.99999764335
+                "fuelStation_cost_capital_subsidy": 460711333.333333
             },
             "liquefaction": {
-                "conv_capacity": 2105.263157894737,
+                "conv_capacity": 526.6526315789471,
                 "conv_cost_capital_coeff": 1920000.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -3567,7 +3617,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "purification": {
-                "conv_capacity": 4741.368421052631,
+                "conv_capacity": 5263.494736842104,
                 "conv_cost_capital_coeff": 480000.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -3576,7 +3626,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "terminalLiquid": {
-                "conv_capacity": 2352.9411764705887,
+                "conv_capacity": 588.611764705882,
                 "conv_cost_capital_coeff": 1175000.0,
                 "conv_cost_fixed": 290.0,
                 "conv_cost_variable": 0,
@@ -3604,13 +3654,13 @@
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             },
-            "priceFuelStation_7.500000": {
+            "priceFuelStation_7.400000": {
                 "co2_nonHydrogenConsumer": 0.0,
                 "cons_breakevenCarbon": 0.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 0.01,
                 "cons_hblack": 0.0,
-                "cons_price": 7499.999999999984,
+                "cons_price": 7399.9999999999845,
                 "cons_size": 0.01
             }
         },
@@ -3624,17 +3674,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 500.00000000000114
-                },
-                "converter_fuelDispenserPipeline_TO_demand_fuelStation": {
-                    "source_class": "converter_fuelDispenserPipeline",
-                    "destination_class": "demand_fuelStation",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 0.2999999999985903
+                    "dist_h": 500.3199999999997
                 },
                 "converter_liquefaction_TO_converter_terminalLiquid": {
                     "source_class": "converter_liquefaction",
@@ -3644,7 +3684,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 2000.0000000000005
+                    "dist_h": 500.3199999999997
                 },
                 "converter_purification_TO_hub_highPurity": {
                     "source_class": "converter_purification",
@@ -3654,17 +3694,17 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 4504.299999999999
+                    "dist_h": 5000.32
                 },
                 "converter_terminalLiquid_TO_dist_truckLiquefied": {
                     "source_class": "converter_terminalLiquid",
                     "destination_class": "dist_truckLiquefied",
-                    "dist_capacity": 250.0,
+                    "dist_capacity": 63.0,
                     "dist_cost_capital": 1016000.0,
                     "dist_cost_fixed": 139.18,
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 8.0,
-                    "dist_h": 2000.0000000000005
+                    "dist_h": 500.3199999999997
                 },
                 "demand_fuelStation_TO_demandSector_transportationFuel": {
                     "source_class": "demand_fuelStation",
@@ -3686,16 +3726,6 @@
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 125.0
                 },
-                "dist_pipelineHighPurity_TO_converter_fuelDispenserPipeline": {
-                    "source_class": "dist_pipelineHighPurity",
-                    "destination_class": "converter_fuelDispenserPipeline",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 0.2999999999985903
-                },
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
@@ -3704,7 +3734,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 500.00000000000114
+                    "dist_h": 500.3199999999997
                 },
                 "hub_highPurity_TO_converter_liquefaction": {
                     "source_class": "hub_highPurity",
@@ -3714,7 +3744,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 2000.0000000000005
+                    "dist_h": 500.3199999999997
                 },
                 "hub_highPurity_TO_dist_pipelineHighPurity": {
                     "source_class": "hub_highPurity",
@@ -3724,7 +3754,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 2504.299999999999
+                    "dist_h": 4500.0
                 },
                 "hub_lowPurity_TO_converter_purification": {
                     "source_class": "hub_lowPurity",
@@ -3734,7 +3764,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 4504.299999999999
+                    "dist_h": 5000.32
                 },
                 "production_smr_TO_hub_lowPurity": {
                     "source_class": "production_smr",
@@ -3744,7 +3774,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
-                    "dist_h": 4504.299999999999
+                    "dist_h": 5000.32
                 }
             },
             "outgoing": {
@@ -3756,36 +3786,23 @@
                     "dist_cost_fixed": 21005.25648,
                     "dist_cost_variable": 12.77692,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 2504.0000000000005,
+                    "dist_h": 2500.0,
                     "source": "austin",
                     "destination": "sanAntonio",
                     "destination_class": "dist_pipelineHighPurity"
                 },
-                "dist_truckLiquefied_TO_abilene_dist_truckLiquefied": {
-                    "source_class": "dist_truckLiquefied",
-                    "arc_end": "abilene_dist_truckLiquefied",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 181.518435,
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 499.9999999944821,
-                    "source": "austin",
-                    "destination": "abilene",
-                    "destination_class": "dist_truckLiquefied"
-                },
-                "dist_truckLiquefied_TO_waco_dist_truckLiquefied": {
-                    "source_class": "dist_truckLiquefied",
-                    "arc_end": "waco_dist_truckLiquefied",
-                    "dist_capacity": "n/a",
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": 85.075497,
-                    "dist_flowLimit": "n/a",
-                    "dist_h": 1000.0000000055172,
+                "dist_pipelineHighPurity_TO_waco_dist_pipelineHighPurity": {
+                    "source_class": "dist_pipelineHighPurity",
+                    "arc_end": "waco_dist_pipelineHighPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 200177640.0,
+                    "dist_cost_fixed": 27424.33668,
+                    "dist_cost_variable": 16.68147,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 2000.0,
                     "source": "austin",
                     "destination": "waco",
-                    "destination_class": "dist_truckLiquefied"
+                    "destination_class": "dist_pipelineHighPurity"
                 }
             },
             "incoming": {}
@@ -3865,16 +3882,6 @@
                     "dist_cost_variable": "n/a",
                     "dist_flowLimit": "n/a",
                     "dist_h": 500.0
-                },
-                "hub_highPurity_TO_dist_pipelineHighPurity": {
-                    "source_class": "hub_highPurity",
-                    "destination_class": "dist_pipelineHighPurity",
-                    "dist_capacity": 1.0,
-                    "dist_cost_capital": "n/a",
-                    "dist_cost_fixed": "n/a",
-                    "dist_cost_variable": "n/a",
-                    "dist_flowLimit": 99999999.9,
-                    "dist_h": 4.672983777709307e-09
                 }
             },
             "outgoing": {},
@@ -3887,7 +3894,7 @@
                     "dist_cost_fixed": "n/a",
                     "dist_cost_variable": 77.84211599999999,
                     "dist_flowLimit": "n/a",
-                    "dist_h": 500.000000004673,
+                    "dist_h": 500.0,
                     "source": "waco",
                     "destination": "dallas",
                     "destination_class": "dist_truckLiquefied"
