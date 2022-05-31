@@ -153,12 +153,14 @@ def main(m, nodes_list, parameters):
     # if price nodes are used (find_prices binary), then data utilizing an amount of hydrogen <= price_demand will be removed
     price_hub_demand = parameters['find_prices']*parameters['price_demand'] 
 
-    dfs['production'] = dfs['production'][dfs['production']['prod_capacity']>0]
-    dfs['consumption'] = dfs['consumption'][(dfs['consumption']['cons_h']>0.001) & (dfs['consumption']['cons_h']!=price_hub_demand)]
-    dfs['conversion'] = dfs['conversion'][dfs['conversion']['conv_capacity']>0]
+    tol = 1e-6
+
+    dfs['production'] = dfs['production'][dfs['production']['prod_capacity']>tol]
+    dfs['consumption'] = dfs['consumption'][(dfs['consumption']['cons_h']>tol) & (dfs['consumption']['cons_h']!=price_hub_demand)]
+    dfs['conversion'] = dfs['conversion'][dfs['conversion']['conv_capacity']>tol]
 
     dfs['distribution'] = dfs['distribution'].replace(['n/a'],-99.99) # change na to -99.99 for conditional
-    dfs['distribution'] = dfs['distribution'][(dfs['distribution']['dist_capacity']>0) | (( dfs['distribution']['dist_h']>0.001)&( dfs['distribution']['dist_h']!=price_hub_demand))]
+    dfs['distribution'] = dfs['distribution'][(dfs['distribution']['dist_capacity']>tol) | (( dfs['distribution']['dist_h']>tol)&( dfs['distribution']['dist_h']!=price_hub_demand))]
     dfs['distribution'] = dfs['distribution'].replace([-99.99],'n/a') # and change back
 
     # re add price hub data
