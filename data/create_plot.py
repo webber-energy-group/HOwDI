@@ -116,7 +116,7 @@ def main(data, data_dir, scenario_dir):
     # Plot
 
     #initialize figure
-    fig, ax = plt.subplots(figsize=(10,10),dpi=300)
+    fig, ax = plt.subplots(figsize=(10,10),dpi=300)\
 
     # get Texas plot
     us_county = gpd.read_file(data_dir / 'US_COUNTY_SHPFILE' / 'US_county_cont.shp')
@@ -208,39 +208,39 @@ def main(data, data_dir, scenario_dir):
 
 
     # Plot connections: 
-    connections = distribution[distribution.type == 'LineString']
-
-    # get data from roads csv
-    roads = roads_to_gdf(data_dir / 'nodes')
-        # geodataframe with all roads. currently plots connections, but could be used as a layer instead?
-    roads_connections = connections.copy()
-
-    for row in roads.itertuples():
-        # get road geodata for each connection in connections df
-        nodeA = row.nodeA
-        nodeB = row.nodeB
-        roads_connections.loc[(roads_connections['start'] == nodeA) & (roads_connections['end'] == nodeB),'geometry'] = row.geometry
-        roads_connections.loc[(roads_connections['end'] == nodeA) & (roads_connections['start'] == nodeB),'geometry'] = row.geometry
-
     dist_pipelineLowPurity_col = '#9b2226'
     dist_pipelineHighPurity_col = '#6A6262'
     dist_truckLiquefied_color = '#fb8500'
     dist_truckCompressed_color = '#bb3e03'
 
-    connections[connections['dist_type'] == 'dist_pipelineLowPurity'].plot(ax=ax, color = dist_pipelineLowPurity_col, zorder=1)
-    connections[connections['dist_type'] == 'dist_pipelineHighPurity'].plot(ax=ax, color = dist_pipelineHighPurity_col, zorder=1)
+    connections = distribution[distribution.type == 'LineString']
+    roads_connections = connections.copy()
 
-    # change 'road_connections' to 'connections' to plot straight lines
-    roads_connections[connections['dist_type'] == 'dist_truckLiquefied'].plot(ax=ax, color = dist_truckLiquefied_color, zorder=1)
-    roads_connections[connections['dist_type'] == 'dist_truckCompressed'].plot(ax=ax, color = dist_truckCompressed_color, legend=True, zorder=1)
+    if not roads_connections.empty:
 
-    legend_elements = [Line2D([0], [0], color=dist_pipelineLowPurity_col, lw=2, label='Gas Pipeline (Low Purity)'), 
-                       Line2D([0], [0], color=dist_pipelineHighPurity_col, lw=2, label='Gas Pipeline (High Purity)'), 
-                       Line2D([0], [0], color=dist_truckLiquefied_color, lw=2, label='Liquid Truck Route'), 
-                       Line2D([0], [0], color=dist_truckCompressed_color, lw=2, label='Gas Truck Route')
-                       ,
-                    #    Line2D([0], [0], marker='o', color=node_color, label='Node', markerfacecolor=node_color, markersize=5, lw=0)
-                       ]
+        # get data from roads csv, which draws out the road path along a connection
+        roads = roads_to_gdf(data_dir / 'nodes')
+
+        for row in roads.itertuples():
+            # get road geodata for each connection in connections df
+            nodeA = row.nodeA
+            nodeB = row.nodeB
+            roads_connections.loc[(roads_connections['start'] == nodeA) & (roads_connections['end'] == nodeB),'geometry'] = row.geometry
+            roads_connections.loc[(roads_connections['end'] == nodeA) & (roads_connections['start'] == nodeB),'geometry'] = row.geometry
+
+        connections[connections['dist_type'] == 'dist_pipelineLowPurity'].plot(ax=ax, color = dist_pipelineLowPurity_col, zorder=1)
+        connections[connections['dist_type'] == 'dist_pipelineHighPurity'].plot(ax=ax, color = dist_pipelineHighPurity_col, zorder=1)
+
+        # change 'road_connections' to 'connections' to plot straight lines
+        roads_connections[connections['dist_type'] == 'dist_truckLiquefied'].plot(ax=ax, color = dist_truckLiquefied_color, zorder=1)
+        roads_connections[connections['dist_type'] == 'dist_truckCompressed'].plot(ax=ax, color = dist_truckCompressed_color, legend=True, zorder=1)
+
+    legend_elements = []
+    legend_elements.extend([Line2D([0], [0], color=dist_pipelineLowPurity_col, lw=2, label='Gas Pipeline (Low Purity)'), 
+                            Line2D([0], [0], color=dist_pipelineHighPurity_col, lw=2, label='Gas Pipeline (High Purity)'), 
+                            Line2D([0], [0], color=dist_truckLiquefied_color, lw=2, label='Liquid Truck Route'), 
+                            Line2D([0], [0], color=dist_truckCompressed_color, lw=2, label='Gas Truck Route')])
+
     legend_elements.extend([Line2D([0], [0], color=tech_plot['color'], label=tech_plot['name'], marker='o',lw=0) for tech, tech_plot in node_plot_tech.items()])
     legend_elements.extend([Line2D([0], [0], color='black', label=type_plot['name'], marker=type_plot['marker'],lw=0) for type_name, type_plot in node_plot_type.items()])
 
