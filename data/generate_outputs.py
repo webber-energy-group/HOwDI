@@ -165,6 +165,11 @@ def main(m, nodes_list, parameters):
     if parameters['find_prices']:
         dfs['consumption'] = pd.concat([dfs['consumption'],price_hub_min])
 
+    # post processing
+    dfs['production']['total_co2_produced'] = dfs['production']['prod_h']*dfs['production']['prod_carbonRate']
+    dfs['production']['co2_captured'] = dfs['production']['total_co2_produced']-dfs['production']['co2_emitted']
+    dfs['production'][r'%co2_captured'] = dfs['production']['co2_captured']/dfs['production']['total_co2_produced']
+
     ## CREATE JSON OUTPUTS FROM DATAFRAMES
     node_dict = {node: {} for node in nodes_list}
     for node in nodes_list:
