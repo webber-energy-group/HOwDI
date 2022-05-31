@@ -422,7 +422,7 @@ def build_h2_model(inputs, input_parameters):
             # note - do not confuse node with hub. node in this case would be something akin to 'dallas_smrExisting', not 'dallas'
             constraint = (m.prod_h[node] >= 0)
         else:
-            constraint = (m.prod_h[node] >= m.H.min_h * m.prod_exists[node])
+            constraint = (m.prod_h[node] >= m.H.min_prod_h * m.prod_exists[node])
         return constraint
     m.constr_minProductionCapacity1 = pe.Constraint(m.producer_set, rule=rule_minProductionCapacity1)
     def rule_minProductionCapacity2(m,node):
