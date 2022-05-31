@@ -159,7 +159,7 @@ class hydrogen_inputs:
         self.e_price = industrial_electricity_usd_per_kwh
         self.ng_price = industrial_ng_usd_per_mmbtu
         self.time_slices = float(time_slices) 
-        self.E = float(carbon_price_dollars_per_ton)
+        self.carbon_price = float(carbon_price_dollars_per_ton)
         self.carbon_capture_credit = carbon_capture_credit_dollars_per_ton
         self.A = (((1+investment_interest)**investment_period)-1)/(investment_interest*(1+investment_interest)**investment_period) #yearly amortized payment = capital cost / A
         self.carbon_g_MJ_to_t_tH2 = 120000./1000000. #unit conversion 120,000 MJ/tonH2, 1,000,000 g/tonCO2
@@ -330,14 +330,14 @@ def build_h2_model(inputs, input_parameters):
     #maximize total surplus
     def obj_rule(m):
         U_hydrogen = sum(m.cons_h[c] * m.cons_price[c] for c in m.consumer_set) #consumer daily utility from buying hydrogen
-        U_carbon = sum(m.cons_hblack[c] * m.cons_breakevenCarbon[c] * m.H.E for c in m.consumer_set) #consumer daily utility from buying hydrogen black
+        U_carbon = sum(m.cons_hblack[c] * m.cons_breakevenCarbon[c] * m.H.carbon_price for c in m.consumer_set) #consumer daily utility from buying hydrogen black
         U_carbon_capture_credit = sum((m.ccs1_hblack[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs1','percent_CO2_captured'])) + m.ccs2_hblack[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs2','percent_CO2_captured']))) * m.H.carbon_capture_credit for p in m.producer_set)
         P_variable = sum(m.prod_h[p] * m.prod_cost_variable[p] for p in m.producer_set) #production variable cost per ton
         P_electricity = sum((m.prod_h[p] * m.prod_kwh_variable_coeff[p]) * m.H.e_price for p in m.producer_set) #daily electricity cost
         P_naturalGas = sum((m.prod_h[p] * m.prod_ng_variable_coeff[p]) * m.H.ng_price for p in m.producer_set)
         P_fixed = sum(m.prod_capacity[p] * m.prod_cost_fixed[p] for p in m.producer_set) #production daily fixed cost per ton
         P_capital = sum((m.prod_capacity[p] * m.prod_cost_capital_coeff[p]) / m.H.A / m.H.time_slices for p in m.producer_set) #production daily capital cost per ton
-        P_carbon = sum((m.prod_hblack[p]*m.prod_carbonRate[p] + m.ccs1_hblack[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs1','percent_CO2_captured'])) + m.ccs2_hblack[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs2','percent_CO2_captured']))) * m.H.E for p in m.producer_set) #cost to produce hydrogen black
+        P_carbon = sum((m.prod_hblack[p]*m.prod_carbonRate[p] + m.ccs1_hblack[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs1','percent_CO2_captured'])) + m.ccs2_hblack[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs2','percent_CO2_captured']))) * m.H.carbon_price for p in m.producer_set) #cost to produce hydrogen black
         CCS_variable = sum((m.ccs1_capacity_co2[p] * m.H.ccs_data.loc['ccs1', 'variable_usdPerTonCO2']) + (m.ccs2_capacity_co2[p] * m.H.ccs_data.loc['ccs2', 'variable_usdPerTonCO2'])  for p in m.producer_set) #ccs variable cost per ton of produced hydrogen
         #distribution
         D_variable = sum(m.dist_h[d] * m.dist_cost_variable[d] for d in m.distribution_arcs_variable_set) #daily variable cost
