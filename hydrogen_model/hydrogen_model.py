@@ -322,7 +322,7 @@ def build_h2_model(inputs, input_parameters):
     m.ccs1_hblack = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily production of hydrogen black for CCS1 for each producer
     m.ccs2_hblack = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily production of hydrogen black for CCS2 for each producer
     m.co2_nonHydrogenConsumer = pe.Var(m.consumer_set, domain=pe.Reals) #carbon emissions for each consumer that is not using hydrogen
-    m.co2_producer = pe.Var(m.producer_set, domain=pe.Reals) #carbon emissions for each hydrogen producer
+    m.co2_emitted = pe.Var(m.producer_set, domain=pe.Reals) #carbon emissions for each hydrogen producer
     #infrastructure subsidy
     m.fuelStation_cost_capital_subsidy = pe.Var(m.fuelStation_set, domain=pe.NonNegativeReals) #subsidy dollars used to reduce the capital cost of converter[cv]
 
@@ -459,7 +459,7 @@ def build_h2_model(inputs, input_parameters):
     #track the co2 emissions
     #co2 emissions for hydrogen producers
     def rule_co2Producers(m, node):
-        constraint = (m.co2_producer[node]  == m.prod_carbonRate[node] * (m.prod_h[node] - m.ccs1_capacity_h2[node] * m.H.ccs_data.loc['ccs1', 'percent_CO2_captured'] - m.ccs2_capacity_h2[node] * m.H.ccs_data.loc['ccs2', 'percent_CO2_captured']))
+        constraint = (m.co2_emitted[node]  == m.prod_carbonRate[node] * (m.prod_h[node] - m.ccs1_capacity_h2[node] * m.H.ccs_data.loc['ccs1', 'percent_CO2_captured'] - m.ccs2_capacity_h2[node] * m.H.ccs_data.loc['ccs2', 'percent_CO2_captured']))
         return constraint
     m.constr_co2Producers = pe.Constraint(m.producer_set, rule=rule_co2Producers)
 
@@ -510,7 +510,7 @@ def build_h2_model(inputs, input_parameters):
     #output
     # output = {}
 
-    # for output_var in ['cons_h', 'cons_hblack', 'prod_capacity', 'prod_h', 'prod_hblack', 'ccs1_hblack', 'ccs2_hblack', 'arc_class', 'dist_h', 'co2_producer', 'co2_nonHydrogenConsumer', 'conv_capacity']: #'dist_capacity'
+    # for output_var in ['cons_h', 'cons_hblack', 'prod_capacity', 'prod_h', 'prod_hblack', 'ccs1_hblack', 'ccs2_hblack', 'arc_class', 'dist_h', 'co2_emitted', 'co2_nonHydrogenConsumer', 'conv_capacity']: #'dist_capacity'
     #     if output_var == 'dist_capacity':
     #         output_var_dict = {}
     #         for i, v in m.dist_capacity.items():
@@ -532,7 +532,7 @@ def build_h2_model(inputs, input_parameters):
     # r_production = r_production.merge(output['prod_hblack'], left_index=True, right_index=True)
     # r_production = r_production.merge(output['ccs1_hblack'], left_index=True, right_index=True)
     # r_production = r_production.merge(output['ccs2_hblack'], left_index=True, right_index=True)
-    # r_production = r_production.merge(output['co2_producer'], left_index=True, right_index=True)
+    # r_production = r_production.merge(output['co2_emitted'], left_index=True, right_index=True)
     # r_production.columns=['producer', 'capacity', 'production', 'hblack', 'hblack_ccs1', 'hblack_ccs2', 'co2_tons']
     # r_production = r_production[r_production['capacity'] > 0]
     # r_production = r_production.reset_index(drop=True)

@@ -106,7 +106,7 @@ def main(m, nodes_list, parameters):
     # join relevant dataframes
     merge_lists = {}
     merge_lists['production'] = ['can_ccs1','can_ccs2','ccs1_capacity_co2','ccs1_capacity_h2','ccs1_hblack',
-                                    'ccs2_capacity_co2','ccs2_capacity_h2','ccs2_hblack','co2_producer',
+                                    'ccs2_capacity_co2','ccs2_capacity_h2','ccs2_hblack','co2_emitted',
                                     'prod_capacity','prod_carbonRate','prod_cost_capital_coeff','prod_cost_fixed','prod_cost_variable',
                                     'prod_h','prod_hblack','prod_kwh_variable_coeff','prod_ng_variable_coeff','prod_utilization']
     merge_lists['conversion'] = ['conv_capacity','conv_cost_capital_coeff','conv_cost_fixed','conv_cost_variable',
