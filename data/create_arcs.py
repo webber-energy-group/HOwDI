@@ -7,6 +7,7 @@ from shapely.geometry import LineString
 import matplotlib.pyplot as plt
 import requests
 import json
+from pathlib import Path
 
 s = requests.Session() # improve performance over API calls
 
@@ -40,19 +41,21 @@ def make_route(row):
 
 def main():
     # read files and establish parameters
-    current_dir = ''
+    current_dir = Path('.')
+    nodes_dir = current_dir / 'nodes'
     
-    nodes_df = pd.read_csv(current_dir+'nodes/nodes.csv').set_index('node')
+    nodes_df = pd.read_csv(nodes_dir/'nodes.csv').set_index('node')
     nodes_df = nodes_df.sort_values(by=['minor'],ascending=False) # sort by minor; important for indexing direction
     nodes = nodes_df.index.tolist()
 
     epsg=3082
-    geonodes=gpd.read_file(current_dir+'nodes/nodes.geojson')
+    geonodes=gpd.read_file(nodes_dir/'nodes.geojson')
     lat_long_crs = geonodes.crs
     geonodes = geonodes.set_index('node')
     geonodes = geonodes.to_crs(epsg=epsg)
 
-    existing_arcs = pd.read_csv(current_dir+'nodes/existing_arcs.csv')
+    existing_arcs = pd.read_csv(nodes_dir/'existing_arcs.csv')
+    blacklist_arcs = pd.read_csv(nodes_dir/'blacklist_arcs.csv')
 
     # length factors (lf) are effective reach
     # length factor > 1, restricts max distance to min*lf
@@ -66,7 +69,7 @@ def main():
 
     # Initialize Figure with Texas base
     fig, ax = plt.subplots(figsize=(10,10),dpi=300)
-    us_county = gpd.read_file(current_dir+'US_COUNTY_SHPFILE/US_county_cont.shp')
+    us_county = gpd.read_file(current_dir/'US_COUNTY_SHPFILE/US_county_cont.shp')
     tx_county = us_county[us_county['STATE_NAME'] == 'Texas']
     tx = tx_county.dissolve().to_crs(epsg=epsg)
     tx.plot(ax=ax,color='white',edgecolor='black')
@@ -182,10 +185,13 @@ def main():
                 if distance > max_length:
                     _nodeA.remove_connection(nodal_c[_nodeB])
 
+    # remove blacklisted arcs
+    [nodal_c[_nodeA].remove_connection(nodal_c[_nodeB]) for _nodeA, _nodeB in zip(blacklist_arcs['nodeA'],blacklist_arcs['nodeB'])]
+    
     valid_connections = []
     [valid_connections.extend(nodal_c[node].connections) for node in nodal_c]
     
-    # add arcs from existing arcs and correspoindg 'exist_pipeline'
+    # add arcs from existing arcs and corresponding 'exist_pipeline'
     gdf['exist_pipeline'] = 0
     for _, row in existing_arcs.iterrows():
         nodeA_str = row['startNode']
@@ -206,6 +212,7 @@ def main():
 
         gdf.at[connection,'exist_pipeline'] = 1
     
+
     # make connections unique
     valid_connections = list(set(valid_connections))
 
@@ -220,11 +227,11 @@ def main():
     # save roads data
     roads_df = gdf_roads.to_crs(crs=lat_long_crs)
     roads_df = pd.DataFrame(roads_df.geometry)
-    roads_df.to_csv('nodes/roads.csv')
+    roads_df.to_csv(nodes_dir/'roads.csv')
 
     gdf_trimmed.plot(ax=ax,color='grey')
     gdf_roads.plot(ax=ax)
-    fig.savefig('nodes/fig.png')
+    fig.savefig(nodes_dir/'fig.png')
 
     # convert to df and format
     df = pd.DataFrame(gdf_roads)
