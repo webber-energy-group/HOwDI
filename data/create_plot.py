@@ -40,8 +40,31 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
         else:
             return None
     prod_data = {node: get_relevant_p_or_c_data(nodal_data['production']) for node, nodal_data in data.items()} 
-    cons_data = {node: get_relevant_p_or_c_data(nodal_data['consumption']) for node, nodal_data in data.items()} 
+    cons_data = {node: get_relevant_p_or_c_data(nodal_data['consumption']) for node, nodal_data in data.items()}
+
+    def get_production_capacity(nodal_data_prod):
+        if nodal_data_prod != {}:
+            return sum([prod_data_by_type['prod_h'] for _, prod_data_by_type in nodal_data_prod.items()])
+        else:
+            return 0
+    prod_capacity = {node: get_production_capacity(nodal_data['production']) for node, nodal_data in data.items()}
     
+    marker_size_default = 20
+    prod_capacity_values = list(prod_capacity.values())
+    number_of_producers = sum([1 for prod_capacity_value in prod_capacity_values if prod_capacity_value > 0])
+    avg_prod_value = sum(prod_capacity_values)/number_of_producers
+    marker_size_factor = marker_size_default/avg_prod_value # the default marker size / the average production value across non-zero producers
+
+    def get_marker_size(prod_capacity):
+        if prod_capacity != 0:
+            size = marker_size_factor*prod_capacity
+        else:
+            # prod capacity is zero for non-producers, which would correspond to a size of zero.
+            # Thus, we use the default size for non-producers
+            size = marker_size_default
+        return size
+    prod_capacity_marker_size = {node: get_marker_size(prod_capacity) for node, prod_capacity in prod_capacity.items()}
+
     features = []
     for node, nodal_connections in dist_data.items():
         node_latlng = locations[node]
@@ -53,8 +76,10 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
             },
             'properties' : {
                 'name' : node,
-                'production' : prod_data[node], # potential to lose data if 'island' that produces but not distributes
+                'production' : prod_data[node],
                 'consumption' : cons_data[node],
+                'production_capacity': prod_capacity[node],
+                'production_marker_size' : prod_capacity_marker_size[node]
             }
         }
         features.append(node_geodata)
@@ -176,7 +201,7 @@ def main(data, path='data/base/',us_county_shp_file='data/US_COUNTY_SHPFILE/US_c
     # in short, iterates over both of the above option dictionaries
     # the 'b' (boolean) key is a lambda function that returns the locations of where the nodes dataframe 
     #   matches the specifications. An iterable way of doing stuff like df[df['production'] == 'smr']
-    [nodes[type_plot['b'](nodes) & tech_plot['b'](nodes)].plot(ax=ax, color=tech_plot['color'],marker=type_plot['marker'],zorder=5) for tech, tech_plot in node_plot_tech.items() for type_name, type_plot in node_plot_type.items()]
+    [nodes[type_plot['b'](nodes) & tech_plot['b'](nodes)].plot(ax=ax, color=tech_plot['color'],marker=type_plot['marker'],zorder=5,markersize=nodes[type_plot['b'](nodes) & tech_plot['b'](nodes)]['production_marker_size']) for tech, tech_plot in node_plot_tech.items() for type_name, type_plot in node_plot_type.items()]
 
 
     # Plot connections: 
