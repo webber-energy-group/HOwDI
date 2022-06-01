@@ -317,6 +317,8 @@ def build_h2_model(inputs, input_parameters):
     m.cons_h = pe.Var(m.consumer_set, domain=pe.NonNegativeReals) #consumer's daily demand for hydrogen
     m.cons_hblack = pe.Var(m.consumer_set, domain=pe.NonNegativeReals) #consumer's daily demand for hydrogen black
     #ccs
+    m.ccs1_built = pe.Var(m.producer_set, domain=pe.Binary)
+    m.ccs2_built = pe.Var(m.producer_set, domain=pe.Binary)
     m.ccs1_capacity_co2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily capacity of CCS1 for each producer in tons CO2
     m.ccs2_capacity_co2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily capacity of CCS2 for each producer in tons CO2
     m.ccs1_capacity_h2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily capacity of CCS1 for each producer in tons h2
@@ -430,6 +432,21 @@ def build_h2_model(inputs, input_parameters):
         return constraint
     m.constr_minProductionCapacity2 = pe.Constraint(m.producer_set, rule=rule_minProductionCapacity2)
 
+    # existing producers can not build both cc1 and ccs
+    def rule_onlyOneCCS(m,node):
+        # constraint = (not (m.ccs1_built[node] and m.ccs2_built[node]) == True) # does not work
+        constraint = (m.ccs1_built[node] + m.ccs2_built[node] <= 1) # hacky way of doing NAND(ccs1_built,ccs2_built)
+        return constraint
+    m.constr_onlyOneCCS = pe.Constraint(m.producer_set, rule=rule_onlyOneCCS)
+    # enforces that CCS must be built over entire capacity
+    def rule_mustBuildAllCCS1(m,node):
+        constraint = (m.ccs1_capacity_h2[node] ==m.ccs1_built[node] * m.prod_h[node])
+        return constraint
+    m.constr_mustBuildAllCCS1 = pe.Constraint(m.producer_set, rule=rule_mustBuildAllCCS1)
+    def rule_mustBuildAllCCS2(m,node):
+        constraint = (m.ccs2_capacity_h2[node] == m.ccs2_built[node] * m.prod_h[node])
+        return constraint
+    m.constr_mustBuildAllCCS2 = pe.Constraint(m.producer_set, rule=rule_mustBuildAllCCS2)
     #ccs capacity in terms of CO2 is related to its capacity in terms of H2, which must be zero if m.ccs#_can==0
     def rule_ccs1CapacityRelationship(m, node):
         constraint = (m.ccs1_capacity_co2[node] * m.can_ccs1[node] == m.ccs1_capacity_h2[node] * m.prod_carbonRate[node] * m.H.ccs_data.loc['ccs1', 'percent_CO2_captured'])
@@ -440,10 +457,10 @@ def build_h2_model(inputs, input_parameters):
         return constraint
     m.constr_ccs2CapacityRelationship = pe.Constraint(m.producer_set, rule=rule_ccs2CapacityRelationship)
     #each producer's ccs capacity (h2) cannot exceed its production capacity 
-    def rule_ccsCapacity(m, node):  
-        constraint = (m.ccs1_capacity_h2[node] + m.ccs2_capacity_h2[node] <= m.prod_capacity[node])
-        return constraint
-    m.constr_ccsCapacity = pe.Constraint(m.producer_set, rule=rule_ccsCapacity)
+    # def rule_ccsCapacity(m, node):  
+    #     constraint = (m.ccs1_capacity_h2[node] + m.ccs2_capacity_h2[node] <= m.prod_capacity[node])
+    #     return constraint
+    # m.constr_ccsCapacity = pe.Constraint(m.producer_set, rule=rule_ccsCapacity)
     #ccs hydrogen black production cannot exceed ccs capacity (h2)
     def rule_ccs1HBlack(m, node):
         constraint = (m.ccs1_hblack[node] <= m.ccs1_capacity_h2[node])
