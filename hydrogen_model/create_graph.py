@@ -7,6 +7,10 @@ takes input csvs and creates the networkx graph object needed to run the pyomo-b
 import networkx
 import pandas
 
+def cap_first(s):
+    # capitalizes the first letter of a string w/o putting other letters in lowercase
+    return s[0].upper() + s[1:]
+
 class hydrogen_network:
     '''
     uses the hydrogen_inputs object to create a networkx directional graph of the hydrogen network
@@ -378,22 +382,23 @@ class hydrogen_network:
                     #add nodes to store pricing information
                     for p in price_range:
                         #1) fuelStation prices
-                        price_node_dict = {'node': ph + '_priceFuelStation_%f'%p,
-                                           'sector': 'price',
-                                           'hub_name': ph, 
-                                           'breakevenPrice': p*1000,
-                                           'size': total_hub_demand_tons,
-                                           'carbonSensitiveFraction': 0,
-                                           'breakevenCarbon_g_MJ': 0,
-                                           'demandType': 'fuelStation',
-                                           'class': 'price'}
-                        g.add_node(price_node_dict['node'], **price_node_dict)
-                        #add the accompanying edge
-                        price_edge_dict = {'startNode': ph + '_demand_fuelStation',
-                                          'endNode': price_node_dict['node'],
-                                          'kmLength': 0.0,
-                                          'capital_usdPerUnit': 0.0}
-                        g.add_edge(price_edge_dict['startNode'], price_edge_dict['endNode'], **price_edge_dict)    
+                        for demand_type in ['fuelStation','lowPurity','highPurity']:
+                            price_node_dict = {'node': ph + '_price{}_{}'.format(cap_first(demand_type),p),
+                                            'sector': 'price',
+                                            'hub_name': ph, 
+                                            'breakevenPrice': p*1000,
+                                            'size': total_hub_demand_tons,
+                                            'carbonSensitiveFraction': 0,
+                                            'breakevenCarbon_g_MJ': 0,
+                                            'demandType': demand_type,
+                                            'class': 'price'}
+                            g.add_node(price_node_dict['node'], **price_node_dict)
+                            #add the accompanying edge
+                            price_edge_dict = {'startNode': ph + '_demand_{}'.format(demand_type),
+                                            'endNode': price_node_dict['node'],
+                                            'kmLength': 0.0,
+                                            'capital_usdPerUnit': 0.0}
+                            g.add_edge(price_edge_dict['startNode'], price_edge_dict['endNode'], **price_edge_dict)    
                 return g
                     
 

@@ -3,7 +3,7 @@ Converts outputs of Hydrogen model into dataframes and a dictionary
 Author: Braden Pecora
 """
 
-from numpy import int64
+from numpy import int64, isclose
 import pandas as pd
 from idaes.core.util import to_json
 from functools import reduce
@@ -136,17 +136,20 @@ def main(m, nodes_list, parameters):
 
         price_demand = parameters['price_demand']
 
-        price_hubs_df_all = dfs['consumption'][(dfs['consumption'].index.str.contains('priceFuelStation')) & (dfs['consumption']['cons_h'] == price_demand)]
-
-        #initialize empty df
-        price_hub_min = pd.DataFrame(columns=price_hubs_df_all.columns)
+        price_hub_min = pd.DataFrame(columns=dfs['consumption'].columns) # empty df that will contain smallest price hub utilized
         price_hub_min.index.name = 'consumer'
-        for price_hub in price_hubs:
-            local_price_hub_df = price_hubs_df_all[price_hubs_df_all.index.str.contains(price_hub)]
-            if not local_price_hub_df.empty:
-                breakeven_price_at_hub = local_price_hub_df[local_price_hub_df['cons_price'] == local_price_hub_df['cons_price'].min()]
-                price_hub_min = pd.concat([price_hub_min, breakeven_price_at_hub])
+        
+        for demand_type in ['priceFuelStation','priceLowPurity','priceHighPurity']:
+            # get all price hubs of specific demand type
+            price_hubs_df_all = dfs['consumption'][(dfs['consumption'].index.str.contains(demand_type)) & (isclose(dfs['consumption']['cons_h'],price_demand))]
 
+            for price_hub in price_hubs:
+                # get price hub matching 'price_hub', which are nodal hubs that have price_hubs
+                local_price_hub_df = price_hubs_df_all[price_hubs_df_all.index.str.contains(price_hub)]
+                if not local_price_hub_df.empty:
+                    # find minimum valued price hub that still buys hydrogen
+                    breakeven_price_at_hub = local_price_hub_df[local_price_hub_df['cons_price'] == local_price_hub_df['cons_price'].min()]
+                    price_hub_min = pd.concat([price_hub_min, breakeven_price_at_hub])
     # remove null data
 
     # find_prices is a binary, price_demand is the demand amount used with price nodes, thus,
@@ -156,11 +159,11 @@ def main(m, nodes_list, parameters):
     tol = 1e-6
 
     dfs['production'] = dfs['production'][dfs['production']['prod_capacity']>tol]
-    dfs['consumption'] = dfs['consumption'][(dfs['consumption']['cons_h']>tol) & (dfs['consumption']['cons_h']!=price_hub_demand)]
+    dfs['consumption'] = dfs['consumption'][(dfs['consumption']['cons_h']>tol) & (~isclose(dfs['consumption']['cons_h'],price_hub_demand))]
     dfs['conversion'] = dfs['conversion'][dfs['conversion']['conv_capacity']>tol]
 
     dfs['distribution'] = dfs['distribution'].replace(['n/a'],-99.99) # change na to -99.99 for conditional
-    dfs['distribution'] = dfs['distribution'][(dfs['distribution']['dist_capacity']>tol) | (( dfs['distribution']['dist_h']>tol)&( dfs['distribution']['dist_h']!=price_hub_demand))]
+    dfs['distribution'] = dfs['distribution'][(dfs['distribution']['dist_capacity']>tol) | (( dfs['distribution']['dist_h']>tol)&(~isclose(dfs['distribution']['dist_h'],price_hub_demand)))]
     dfs['distribution'] = dfs['distribution'].replace([-99.99],'n/a') # and change back
 
     # re add price hub data
