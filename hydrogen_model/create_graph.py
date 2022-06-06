@@ -59,6 +59,8 @@ class hydrogen_network:
         for num,arow in node_df.iterrows():
             #1.1) add a node for each of the hubs, separating low-purity from high-purity (i.e., fuel cell quality)
             hub_name = arow['node'] #the name of the hub where the production, demand, terminals, etc. are located, e.g., "baytown"
+            capital_price_multiplier = arow['capital_pm']
+
             for purity_type in ['lowPurity', 'highPurity']:
                 arow['node'] = '%s_hub_%s'%(hub_name, purity_type)
                 arow['class'] = arow['node'].replace('%s_'%hub_name, '') #drop the hub name from the node name
@@ -120,7 +122,7 @@ class hydrogen_network:
                             depot_char = {'startNode': '%s_hub_highPurity'%hub_name,
                                           'endNode': '%s_dist_%s'%(hub_name, truck_type),
                                           'kmLength': 0.0,
-                                          'capital_usdPerUnit': capital_usdPerUnit,
+                                          'capital_usdPerUnit': capital_usdPerUnit*capital_price_multiplier,
                                           'fixed_usdPerUnitPerDay': fixed_usdPerUnitPerDay,
                                           'variable_usdPerTon': 0.0,
                                           'flowLimit_tonsPerDay': flowLimit_tonsPerDay,
@@ -163,20 +165,26 @@ class hydrogen_network:
             
             pipeline_length = arow['kmLength_road'] #TODO adjust this value, `arow['kmLength_euclid]` is the straight line distance
             road_length = arow['kmLength_road']
+
+            start_node = arow_dict['startNode']
+            end_node = arow_dict['endNode']
+
+            # take the average of the two nodes' capital price multiplier to ge the multiplier of the arc
+            capital_price_multiplier = node_df[(node_df['node']==start_node) | (node_df['node'] == end_node)]['capital_pm'].sum()/2
             #for each low purity and high purity distribution hub
             for purity_type in ['LowPurity', 'HighPurity']:
                 #2.1) add a pipeline going in each direction to allow bi-directional flow
                 #if it's an existing pipeline, we assume it's a low purity pipeline
                 if purity_type=='HighPurity':
                     arow['exist_pipeline'] = 0
-                for arc in [(arow_dict['startNode'], arow_dict['endNode']), 
-                            (arow_dict['endNode'], arow_dict['startNode'])]:
+                for arc in [(start_node,end_node), 
+                            (end_node,start_node)]:
                     pipeline_char = {'startNode': arc[0]+'_dist_pipeline%s'%purity_type,
                                      'endNode': arc[1]+'_dist_pipeline%s'%purity_type,
                                      # alternate way of connecting nodes, remove the second half of 2.1 if this is used
                                      #'endNode': arc[1]+'_hub_%s'%(purity_type[0].lower()+purity_type[1:]), #lowercase for the first letter of purity type
                                      'kmLength': pipeline_length,
-                                     'capital_usdPerUnit': pipeline_df['capital_usdPerUnit'].iloc[0]*pipeline_length,
+                                     'capital_usdPerUnit': pipeline_df['capital_usdPerUnit'].iloc[0]*pipeline_length*capital_price_multiplier,
                                      'fixed_usdPerUnitPerDay': pipeline_df['fixed_usdPerUnitPerDay'].iloc[0]*pipeline_length,
                                      'variable_usdPerTon': pipeline_df['variable_usdPerKilometer-Ton'].iloc[0]*pipeline_length,
                                      'flowLimit_tonsPerDay': pipeline_df['flowLimit_tonsPerDay'].iloc[0],
@@ -284,6 +292,9 @@ class hydrogen_network:
         '''
         #loop through the nodes and producers to add the necessary nodes and arcs
         for ni,nrow in node_df.iterrows():
+            capital_price_multiplier = nrow['capital_pm']
+            ng_price_multiplier = nrow['ng_pm']
+            e_price_multiplier = nrow['e_pm']
             for pi,prow in producers_df.iterrows():
                 #if the node is unable to build that producer type, pass
                 if nrow['build_%s'%prow['type']] == 0:
@@ -294,6 +305,9 @@ class hydrogen_network:
                     prow['class'] = 'producer'
                     prow['existing'] = 0
                     prow['hub_name'] = nrow['node']
+                    prow['capital_usd_coefficient']  = prow['capital_usd_coefficient'] * capital_price_multiplier
+                    prow['kWh_coefficient'] = prow['kWh_coefficient'] * e_price_multiplier
+                    prow['ng_coefficient'] = prow['ng_coefficient'] * ng_price_multiplier
                     g.add_node(prow['node'], **(dict(prow)))
                     #add edge
                     production_purity = prow['purity']
@@ -348,7 +362,11 @@ class hydrogen_network:
                         hub_name = nrow['hub_name'] 
                         cvrow['hub_name'] = hub_name
                         cvrow['node'] = hub_name + '_converter_' + str(cvrow['converter'])
-                        cvrow['class'] = cvrow['node'].replace('%s_'%hub_name, '')          
+                        cvrow['class'] = cvrow['node'].replace('%s_'%hub_name, '')      
+                        
+                        hub_data = dict(node_df[node_df['node'] == hub_name].iloc[0])
+                        cvrow['capital_usd_coefficient'] = cvrow['capital_usd_coefficient'] * hub_data['capital_pm'] #multiply by regional capital price modifier
+                        cvrow['kWh_coefficient'] = cvrow['kWh_coefficient'] * hub_data['e_pm'] # multiply by electricity regional price modifier
                         g.add_node(cvrow['node'], **(dict(cvrow)))
                         #grab the tuples of any edges that have the correct arc_end type--i.e., any edges where the start_node is equal to the node we are working on in our for loop, and where the end_node has a class equal to the "arc_end_class" parameter in converters_df           
                         change_edges_list = [s for s in list(g.edges) if ((nrow['node']==s[0]) & (cvrow['arc_end_class'] == g.nodes[s[1]]['class']))]
