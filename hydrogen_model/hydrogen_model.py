@@ -299,8 +299,8 @@ def build_h2_model(inputs, input_parameters):
     m.cons_carbonSensitive = pe.Param(m.consumer_set, initialize=lambda m, i: m.g.nodes[i].get('carbonSensitive',0))
     m.cons_breakevenCarbon = pe.Param(m.consumer_set, initialize=lambda m, i: m.g.nodes[i].get('breakevenCarbon_g_MJ',0) * m.H.carbon_g_MJ_to_t_tH2)
     #ccs
-    m.can_ccs1 = pe.Param(m.producer_set, initialize=lambda m, i: m.g.nodes[i].get('can_ccs1',0)) #binary, 1: producer can build CCS1
-    m.can_ccs2 = pe.Param(m.producer_set, initialize=lambda m, i: m.g.nodes[i].get('can_ccs2',0)) #binary, 1: producer can build CCS2
+    m.can_ccs1 = pe.Param(m.producer_set, initialize=lambda m, i: m.g.nodes[i].get('can_ccs1',0)) #binary, 1: producer can build CCS1, defaults to zero
+    m.can_ccs2 = pe.Param(m.producer_set, initialize=lambda m, i: m.g.nodes[i].get('can_ccs2',0)) #binary, 1: producer can build CCS2, defaults to zero
 
 
     #variables

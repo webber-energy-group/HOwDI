@@ -157,6 +157,7 @@ class hydrogen_network:
             g.add_edge('%s_hub_lowPurity'%hub_name, '%s_hub_highPurity'%hub_name, **(connection_char)) 
                 
         #3) create the arcs and associated data that connect hub_names to each other (e.g., baytown to montBelvieu): i.e., add pipelines and truck routes between connected hub_names
+        pipeline_df = distributors_df[distributors_df['distributor']=='pipeline']
         for num,arow in arcs_df.iterrows():
             arow_dict = dict(arow)
             
@@ -169,16 +170,16 @@ class hydrogen_network:
                 if purity_type=='HighPurity':
                     arow['exist_pipeline'] = 0
                 for arc in [(arow_dict['startNode'], arow_dict['endNode']), 
-                            (arow_dict['endNode'], arow_dict['startNode'])]:  
+                            (arow_dict['endNode'], arow_dict['startNode'])]:
                     pipeline_char = {'startNode': arc[0]+'_dist_pipeline%s'%purity_type,
                                      'endNode': arc[1]+'_dist_pipeline%s'%purity_type,
                                      # alternate way of connecting nodes, remove the second half of 2.1 if this is used
                                      #'endNode': arc[1]+'_hub_%s'%(purity_type[0].lower()+purity_type[1:]), #lowercase for the first letter of purity type
                                      'kmLength': pipeline_length,
-                                     'capital_usdPerUnit': distributors_df[distributors_df['distributor']=='pipeline']['capital_usdPerUnit'].iloc[0]*pipeline_length,
-                                     'fixed_usdPerUnitPerDay': distributors_df[distributors_df['distributor']=='pipeline']['fixed_usdPerUnitPerDay'].iloc[0]*pipeline_length,
-                                     'variable_usdPerTon': distributors_df[distributors_df['distributor']=='pipeline']['variable_usdPerKilometer-Ton'].iloc[0]*pipeline_length,
-                                     'flowLimit_tonsPerDay': distributors_df[distributors_df['distributor']=='pipeline']['flowLimit_tonsPerDay'].iloc[0],
+                                     'capital_usdPerUnit': pipeline_df['capital_usdPerUnit'].iloc[0]*pipeline_length,
+                                     'fixed_usdPerUnitPerDay': pipeline_df['fixed_usdPerUnitPerDay'].iloc[0]*pipeline_length,
+                                     'variable_usdPerTon': pipeline_df['variable_usdPerKilometer-Ton'].iloc[0]*pipeline_length,
+                                     'flowLimit_tonsPerDay': pipeline_df['flowLimit_tonsPerDay'].iloc[0],
                                      'class': 'arc_pipeline%s'%purity_type,
                                      'existing': arow['exist_pipeline']}
                     #add the edge to the graph
