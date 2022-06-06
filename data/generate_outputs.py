@@ -105,14 +105,14 @@ def main(m, nodes_list, parameters):
 
     # join relevant dataframes
     merge_lists = {}
-    merge_lists['production'] = ['can_ccs1','can_ccs2','ccs1_capacity_co2','ccs1_capacity_h2','ccs1_hblack',
-                                    'ccs2_capacity_co2','ccs2_capacity_h2','ccs2_hblack','co2_emitted',
+    merge_lists['production'] = ['can_ccs1','can_ccs2','ccs1_capacity_co2','ccs1_capacity_h2','ccs1_checs',
+                                    'ccs2_capacity_co2','ccs2_capacity_h2','ccs2_checs','co2_emitted',
                                     'prod_capacity','prod_carbonRate','prod_cost_capital_coeff','prod_cost_fixed','prod_cost_variable',
-                                    'prod_h','prod_hblack','prod_kwh_variable_coeff','prod_ng_variable_coeff','prod_utilization']
+                                    'prod_h','prod_checs','prod_kwh_variable_coeff','prod_ng_variable_coeff','prod_utilization']
     merge_lists['conversion'] = ['conv_capacity','conv_cost_capital_coeff','conv_cost_fixed','conv_cost_variable',
                                     'conv_kwh_variable_coeff','conv_utilization','fuelStation_cost_capital_subsidy']
     merge_lists['consumption'] = ['co2_nonHydrogenConsumer','cons_breakevenCarbon','cons_carbonSensitive','cons_h',
-                                'cons_hblack','cons_price','cons_size']
+                                'cons_checs','cons_price','cons_size']
     merge_lists['distribution'] = ['dist_capacity','dist_cost_capital','dist_cost_fixed','dist_cost_variable','dist_flowLimit','dist_h']
     dfs = {name : join_multiple_dfs(df_whitelist, all_dfs) for name, df_whitelist in merge_lists.items()}
 

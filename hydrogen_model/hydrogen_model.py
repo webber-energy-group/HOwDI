@@ -315,7 +315,7 @@ def build_h2_model(inputs, input_parameters):
     m.conv_capacity = pe.Var(m.converter_set, domain=pe.NonNegativeReals) #daily capacity of each converter
     #consumption
     m.cons_h = pe.Var(m.consumer_set, domain=pe.NonNegativeReals) #consumer's daily demand for hydrogen
-    m.cons_hblack = pe.Var(m.consumer_set, domain=pe.NonNegativeReals) #consumer's daily demand for hydrogen black
+    m.cons_checs = pe.Var(m.consumer_set, domain=pe.NonNegativeReals) #consumer's daily demand for checs
     #ccs
     m.ccs1_built = pe.Var(m.producer_set, domain=pe.Binary)
     m.ccs2_built = pe.Var(m.producer_set, domain=pe.Binary)
@@ -324,9 +324,9 @@ def build_h2_model(inputs, input_parameters):
     m.ccs1_capacity_h2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily capacity of CCS1 for each producer in tons h2
     m.ccs2_capacity_h2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily capacity of CCS2 for each producer in tons h2
     #carbon
-    m.prod_hblack = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily production of hydrogen black for each producer
-    m.ccs1_hblack = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily production of hydrogen black for CCS1 for each producer
-    m.ccs2_hblack = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily production of hydrogen black for CCS2 for each producer
+    m.prod_checs = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily production of checs for each producer
+    m.ccs1_checs = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily production of checs for CCS1 for each producer
+    m.ccs2_checs = pe.Var(m.producer_set, domain=pe.NonNegativeReals) #daily production of checs for CCS2 for each producer
     m.co2_nonHydrogenConsumer = pe.Var(m.consumer_set, domain=pe.Reals) #carbon emissions for each consumer that is not using hydrogen
     m.co2_emitted = pe.Var(m.producer_set, domain=pe.Reals) #carbon emissions for each hydrogen producer
     #infrastructure subsidy
@@ -336,14 +336,14 @@ def build_h2_model(inputs, input_parameters):
     #maximize total surplus
     def obj_rule(m):
         U_hydrogen = sum(m.cons_h[c] * m.cons_price[c] for c in m.consumer_set) #consumer daily utility from buying hydrogen
-        U_carbon = sum(m.cons_hblack[c] * m.cons_breakevenCarbon[c] * m.H.carbon_price for c in m.consumer_set) #consumer daily utility from buying hydrogen black
-        U_carbon_capture_credit = sum((m.ccs1_hblack[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs1','percent_CO2_captured'])) + m.ccs2_hblack[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs2','percent_CO2_captured']))) * m.H.carbon_capture_credit for p in m.producer_set)
+        U_carbon = sum(m.cons_checs[c] * m.cons_breakevenCarbon[c] * m.H.carbon_price for c in m.consumer_set) #consumer daily utility from buying checs
+        U_carbon_capture_credit = sum((m.ccs1_checs[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs1','percent_CO2_captured'])) + m.ccs2_checs[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs2','percent_CO2_captured']))) * m.H.carbon_capture_credit for p in m.producer_set)
         P_variable = sum(m.prod_h[p] * m.prod_cost_variable[p] for p in m.producer_set) #production variable cost per ton
         P_electricity = sum((m.prod_h[p] * m.prod_kwh_variable_coeff[p]) * m.H.e_price for p in m.producer_set) #daily electricity cost
         P_naturalGas = sum((m.prod_h[p] * m.prod_ng_variable_coeff[p]) * m.H.ng_price for p in m.producer_set)
         P_fixed = sum(m.prod_capacity[p] * m.prod_cost_fixed[p] for p in m.producer_set) #production daily fixed cost per ton
         P_capital = sum((m.prod_capacity[p] * m.prod_cost_capital_coeff[p]) / m.H.A / m.H.time_slices for p in m.producer_set) #production daily capital cost per ton
-        P_carbon = sum((m.prod_hblack[p]*m.prod_carbonRate[p] + m.ccs1_hblack[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs1','percent_CO2_captured'])) + m.ccs2_hblack[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs2','percent_CO2_captured']))) * m.H.carbon_price for p in m.producer_set) #cost to produce hydrogen black
+        P_carbon = sum((m.prod_checs[p]*m.prod_carbonRate[p] + m.ccs1_checs[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs1','percent_CO2_captured'])) + m.ccs2_checs[p]*(m.prod_carbonRate[p]*(1-m.H.ccs_data.loc['ccs2','percent_CO2_captured']))) * m.H.carbon_price for p in m.producer_set) #cost to produce checs
         CCS_variable = sum((m.ccs1_capacity_co2[p] * m.H.ccs_data.loc['ccs1', 'variable_usdPerTonCO2']) + (m.ccs2_capacity_co2[p] * m.H.ccs_data.loc['ccs2', 'variable_usdPerTonCO2'])  for p in m.producer_set) #ccs variable cost per ton of produced hydrogen
         #distribution
         D_variable = sum(m.dist_h[d] * m.dist_cost_variable[d] for d in m.distribution_arcs_variable_set) #daily variable cost
@@ -461,20 +461,20 @@ def build_h2_model(inputs, input_parameters):
     #     constraint = (m.ccs1_capacity_h2[node] + m.ccs2_capacity_h2[node] <= m.prod_capacity[node])
     #     return constraint
     # m.constr_ccsCapacity = pe.Constraint(m.producer_set, rule=rule_ccsCapacity)
-    #ccs hydrogen black production cannot exceed ccs capacity (h2)
-    def rule_ccs1HBlack(m, node):
-        constraint = (m.ccs1_hblack[node] <= m.ccs1_capacity_h2[node])
+    #ccs chec production cannot exceed ccs capacity (h2)
+    def rule_ccs1Checs(m, node):
+        constraint = (m.ccs1_checs[node] <= m.ccs1_capacity_h2[node])
         return constraint
-    m.constr_ccs1HBlack = pe.Constraint(m.producer_set, rule=rule_ccs1HBlack)
-    def rule_ccs2HBlack(m, node):
-        constraint = (m.ccs2_hblack[node] <= m.ccs2_capacity_h2[node])
+    m.constr_ccs1Checs = pe.Constraint(m.producer_set, rule=rule_ccs1Checs)
+    def rule_ccs2Checs(m, node):
+        constraint = (m.ccs2_checs[node] <= m.ccs2_capacity_h2[node])
         return constraint
-    m.constr_ccs2HBlack = pe.Constraint(m.producer_set, rule=rule_ccs2HBlack)
-    #each producer's total hydrogen black production cannot exceed its hydrogen production
-    def rule_productionHBlack(m, node):
-        constraint = (m.prod_hblack[node] + m.ccs1_hblack[node] + m.ccs2_hblack[node] <= m.prod_h[node])
+    m.constr_ccs2Checs = pe.Constraint(m.producer_set, rule=rule_ccs2Checs)
+    #each producer's total checs production cannot exceed its hydrogen production
+    def rule_productionChec(m, node):
+        constraint = (m.prod_checs[node] + m.ccs1_checs[node] + m.ccs2_checs[node] <= m.prod_h[node])
         return constraint
-    m.constr_productionHBlack = pe.Constraint(m.producer_set, rule=rule_productionHBlack)
+    m.constr_productionChec = pe.Constraint(m.producer_set, rule=rule_productionChec)
 
     #consumption
     #each consumer's consumption cannot exceed its size
@@ -482,20 +482,20 @@ def build_h2_model(inputs, input_parameters):
         constraint = (m.cons_h[node] <= m.cons_size[node])
         return constraint
     m.constr_consumerSize = pe.Constraint(m.consumer_set, rule=rule_consumerSize)
-    #each consumer's consumption of hydrogen black equals its consumption of hydrogen if it is a carbon-sensitive consumer
-    def rule_consumerHBlack(m, node):
-        constraint = (m.cons_hblack[node] == m.cons_h[node] * m.cons_carbonSensitive[node])
+    #each consumer's consumption of checs equals its consumption of hydrogen if it is a carbon-sensitive consumer
+    def rule_consumerChecs(m, node):
+        constraint = (m.cons_checs[node] == m.cons_h[node] * m.cons_carbonSensitive[node])
         return constraint
-    m.constr_consumerHBlack = pe.Constraint(m.consumer_set, rule=rule_consumerHBlack)
+    m.constr_consumerChec = pe.Constraint(m.consumer_set, rule=rule_consumerChecs)
 
     #carbon
-    #total hydrogen black produced must exceed total hydrogen black consumed
-    def rule_hBlackBalance(m):
-        hblack_produced = sum(m.prod_hblack[p] + m.ccs1_hblack[p] + m.ccs2_hblack[p] for p in m.producer_set)
-        hblack_consumed = sum(m.cons_hblack[c] for c in m.consumer_set)
-        constraint = (hblack_consumed <= hblack_produced)
+    #total checs produced must exceed total checs consumed
+    def rule_checsBalance(m):
+        checs_produced = sum(m.prod_checs[p] + m.ccs1_checs[p] + m.ccs2_checs[p] for p in m.producer_set)
+        checs_consumed = sum(m.cons_checs[c] for c in m.consumer_set)
+        constraint = (checs_consumed <= checs_produced)
         return constraint
-    m.constr_hBlackBalance = pe.Constraint(rule=rule_hBlackBalance)
+    m.constr_checsBalance = pe.Constraint(rule=rule_checsBalance)
 
     #track the co2 emissions
     #co2 emissions for hydrogen producers

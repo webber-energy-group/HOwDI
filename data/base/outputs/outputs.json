@@ -8,7 +8,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             }
@@ -75,10 +75,10 @@
                 "can_ccs2": 1,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 4164.48,
                 "prod_capacity": 482.0,
                 "prod_carbonRate": 9.6,
@@ -86,7 +86,7 @@
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100.0,
                 "prod_h": 433.8,
-                "prod_hblack": 433.8,
+                "prod_checs": 433.8,
                 "prod_kwh_variable_coeff": 600.0,
                 "prod_ng_variable_coeff": 165.0,
                 "prod_utilization": 0.9,
@@ -102,7 +102,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             }
@@ -191,7 +191,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             }
@@ -258,10 +258,10 @@
                 "can_ccs2": 1,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 28097.280000000002,
                 "prod_capacity": 3252.0,
                 "prod_carbonRate": 9.6,
@@ -269,7 +269,7 @@
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100.0,
                 "prod_h": 2926.8,
-                "prod_hblack": 2926.8,
+                "prod_checs": 2926.8,
                 "prod_kwh_variable_coeff": 600.0,
                 "prod_ng_variable_coeff": 165.0,
                 "prod_utilization": 0.9,
@@ -285,7 +285,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             }
@@ -371,10 +371,10 @@
                 "can_ccs2": 1,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 10920.960000000001,
                 "prod_capacity": 1264.0,
                 "prod_carbonRate": 9.6,
@@ -382,7 +382,7 @@
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100.0,
                 "prod_h": 1137.6000000000001,
-                "prod_hblack": 1137.6000000000001,
+                "prod_checs": 1137.6000000000001,
                 "prod_kwh_variable_coeff": 600.0,
                 "prod_ng_variable_coeff": 165.0,
                 "prod_utilization": 0.9,
@@ -398,7 +398,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             }
@@ -487,7 +487,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             }
@@ -554,10 +554,10 @@
                 "can_ccs2": 0,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 2842.1999999999953,
                 "prod_capacity": 350.88888888888835,
                 "prod_carbonRate": 9.0,
@@ -565,7 +565,7 @@
                 "prod_cost_fixed": 70.0,
                 "prod_cost_variable": 90.0,
                 "prod_h": 315.7999999999995,
-                "prod_hblack": 315.7999999999995,
+                "prod_checs": 315.7999999999995,
                 "prod_kwh_variable_coeff": 570.0,
                 "prod_ng_variable_coeff": 156.25,
                 "prod_utilization": 0.9,
@@ -609,7 +609,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             }
@@ -746,10 +746,10 @@
                 "can_ccs2": 0,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 980.0999999999926,
                 "prod_capacity": 120.99999999999909,
                 "prod_carbonRate": 9.0,
@@ -757,7 +757,7 @@
                 "prod_cost_fixed": 70.0,
                 "prod_cost_variable": 90.0,
                 "prod_h": 108.89999999999918,
-                "prod_hblack": 108.89999999999918,
+                "prod_checs": 108.89999999999918,
                 "prod_kwh_variable_coeff": 570.0,
                 "prod_ng_variable_coeff": 156.25,
                 "prod_utilization": 0.9,
@@ -770,10 +770,10 @@
                 "can_ccs2": 1,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 4164.48,
                 "prod_capacity": 482.0,
                 "prod_carbonRate": 9.6,
@@ -781,7 +781,7 @@
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100.0,
                 "prod_h": 433.8,
-                "prod_hblack": 433.8,
+                "prod_checs": 433.8,
                 "prod_kwh_variable_coeff": 600.0,
                 "prod_ng_variable_coeff": 165.0,
                 "prod_utilization": 0.9,
@@ -825,7 +825,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             },
@@ -834,7 +834,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 37.5,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 37.5
             },
@@ -843,7 +843,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 12.5,
-                "cons_hblack": 12.5,
+                "cons_checs": 12.5,
                 "cons_price": 10000.0,
                 "cons_size": 12.5
             },
@@ -852,7 +852,7 @@
                 "cons_breakevenCarbon": 0.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 0.01,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 7499.999999999984,
                 "cons_size": 0.01
             },
@@ -861,7 +861,7 @@
                 "cons_breakevenCarbon": 0.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 0.01,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 3000.0,
                 "cons_size": 0.01
             },
@@ -870,7 +870,7 @@
                 "cons_breakevenCarbon": 0.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 0.01,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 3000.0,
                 "cons_size": 0.01
             }
@@ -1053,10 +1053,10 @@
                 "can_ccs2": 0,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 2889.9,
                 "prod_capacity": 356.7777777777778,
                 "prod_carbonRate": 9.0,
@@ -1064,7 +1064,7 @@
                 "prod_cost_fixed": 70.0,
                 "prod_cost_variable": 90.0,
                 "prod_h": 321.1,
-                "prod_hblack": 321.1,
+                "prod_checs": 321.1,
                 "prod_kwh_variable_coeff": 570.0,
                 "prod_ng_variable_coeff": 156.25,
                 "prod_utilization": 0.9,
@@ -1077,10 +1077,10 @@
                 "can_ccs2": 1,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 2082.24,
                 "prod_capacity": 241.0,
                 "prod_carbonRate": 9.6,
@@ -1088,7 +1088,7 @@
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100.0,
                 "prod_h": 216.9,
-                "prod_hblack": 216.9,
+                "prod_checs": 216.9,
                 "prod_kwh_variable_coeff": 600.0,
                 "prod_ng_variable_coeff": 165.0,
                 "prod_utilization": 0.9,
@@ -1104,7 +1104,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             }
@@ -1173,10 +1173,10 @@
                 "can_ccs2": 0,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 2889.8999999999996,
                 "prod_capacity": 356.77777777777777,
                 "prod_carbonRate": 9.0,
@@ -1184,7 +1184,7 @@
                 "prod_cost_fixed": 70.0,
                 "prod_cost_variable": 90.0,
                 "prod_h": 321.09999999999997,
-                "prod_hblack": 321.09999999999997,
+                "prod_checs": 321.09999999999997,
                 "prod_kwh_variable_coeff": 570.0,
                 "prod_ng_variable_coeff": 156.25,
                 "prod_utilization": 0.9,
@@ -1197,10 +1197,10 @@
                 "can_ccs2": 1,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 2082.24,
                 "prod_capacity": 241.0,
                 "prod_carbonRate": 9.6,
@@ -1208,7 +1208,7 @@
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100.0,
                 "prod_h": 216.9,
-                "prod_hblack": 216.9,
+                "prod_checs": 216.9,
                 "prod_kwh_variable_coeff": 600.0,
                 "prod_ng_variable_coeff": 165.0,
                 "prod_utilization": 0.9,
@@ -1224,7 +1224,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             }
@@ -1293,10 +1293,10 @@
                 "can_ccs2": 0,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 937.8,
                 "prod_capacity": 115.77777777777777,
                 "prod_carbonRate": 9.0,
@@ -1304,7 +1304,7 @@
                 "prod_cost_fixed": 70.0,
                 "prod_cost_variable": 90.0,
                 "prod_h": 104.19999999999999,
-                "prod_hblack": 104.19999999999999,
+                "prod_checs": 104.19999999999999,
                 "prod_kwh_variable_coeff": 570.0,
                 "prod_ng_variable_coeff": 156.25,
                 "prod_utilization": 0.9,
@@ -1317,10 +1317,10 @@
                 "can_ccs2": 1,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 4164.48,
                 "prod_capacity": 482.0,
                 "prod_carbonRate": 9.6,
@@ -1328,7 +1328,7 @@
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100.0,
                 "prod_h": 433.8,
-                "prod_hblack": 433.8,
+                "prod_checs": 433.8,
                 "prod_kwh_variable_coeff": 600.0,
                 "prod_ng_variable_coeff": 165.0,
                 "prod_utilization": 0.9,
@@ -1344,7 +1344,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             }
@@ -1413,10 +1413,10 @@
                 "can_ccs2": 1,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 16649.28,
                 "prod_capacity": 1927.0,
                 "prod_carbonRate": 9.6,
@@ -1424,7 +1424,7 @@
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100.0,
                 "prod_h": 1734.3,
-                "prod_hblack": 1734.3,
+                "prod_checs": 1734.3,
                 "prod_kwh_variable_coeff": 600.0,
                 "prod_ng_variable_coeff": 165.0,
                 "prod_utilization": 0.9,
@@ -1440,7 +1440,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             }
@@ -1566,7 +1566,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             }
@@ -1706,10 +1706,10 @@
                 "can_ccs2": 0,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 7917.300000000105,
                 "prod_capacity": 977.4444444444574,
                 "prod_carbonRate": 9.0,
@@ -1717,7 +1717,7 @@
                 "prod_cost_fixed": 70.0,
                 "prod_cost_variable": 90.0,
                 "prod_h": 879.7000000000116,
-                "prod_hblack": 879.7000000000116,
+                "prod_checs": 879.7000000000116,
                 "prod_kwh_variable_coeff": 570.0,
                 "prod_ng_variable_coeff": 156.25,
                 "prod_utilization": 0.9,
@@ -1770,7 +1770,7 @@
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 5000.0,
                 "cons_size": 538.0
             },
@@ -1779,7 +1779,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -1788,7 +1788,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -1964,10 +1964,10 @@
                 "can_ccs2": 0,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 9000.0,
                 "prod_capacity": 1111.111111111111,
                 "prod_carbonRate": 9.0,
@@ -1975,7 +1975,7 @@
                 "prod_cost_fixed": 70.0,
                 "prod_cost_variable": 90.0,
                 "prod_h": 1000.0,
-                "prod_hblack": 1000.0,
+                "prod_checs": 1000.0,
                 "prod_kwh_variable_coeff": 570.0,
                 "prod_ng_variable_coeff": 156.25,
                 "prod_utilization": 0.9,
@@ -2028,7 +2028,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -2037,7 +2037,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -2182,7 +2182,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -2191,7 +2191,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -2276,7 +2276,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -2285,7 +2285,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -2384,7 +2384,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -2393,7 +2393,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -2478,7 +2478,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -2487,7 +2487,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -2572,7 +2572,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -2581,7 +2581,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -2666,7 +2666,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -2675,7 +2675,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -2774,7 +2774,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -2783,7 +2783,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -2868,7 +2868,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -2877,7 +2877,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -2962,7 +2962,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -2971,7 +2971,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -3056,7 +3056,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -3065,7 +3065,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -3177,7 +3177,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -3186,7 +3186,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -3363,7 +3363,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -3372,7 +3372,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }
@@ -3538,10 +3538,10 @@
                 "can_ccs2": 0,
                 "ccs1_capacity_co2": 0.0,
                 "ccs1_capacity_h2": 0.0,
-                "ccs1_hblack": 0.0,
+                "ccs1_checs": 0.0,
                 "ccs2_capacity_co2": 0.0,
                 "ccs2_capacity_h2": 0.0,
-                "ccs2_hblack": 0.0,
+                "ccs2_checs": 0.0,
                 "co2_emitted": 45024.299999999996,
                 "prod_capacity": 5558.555555555556,
                 "prod_carbonRate": 9.0,
@@ -3549,7 +3549,7 @@
                 "prod_cost_fixed": 70.0,
                 "prod_cost_variable": 90.0,
                 "prod_h": 5002.7,
-                "prod_hblack": 5002.7,
+                "prod_checs": 5002.7,
                 "prod_kwh_variable_coeff": 570.0,
                 "prod_ng_variable_coeff": 156.25,
                 "prod_utilization": 0.9,
@@ -3611,7 +3611,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -3620,7 +3620,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             },
@@ -3629,7 +3629,7 @@
                 "cons_breakevenCarbon": 0.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 0.01,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 7499.999999999984,
                 "cons_size": 0.01
             },
@@ -3638,7 +3638,7 @@
                 "cons_breakevenCarbon": 0.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 0.01,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 3000.0,
                 "cons_size": 0.01
             },
@@ -3647,7 +3647,7 @@
                 "cons_breakevenCarbon": 0.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 0.01,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 3000.0,
                 "cons_size": 0.01
             }
@@ -3878,7 +3878,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
-                "cons_hblack": 0.0,
+                "cons_checs": 0.0,
                 "cons_price": 10000.0,
                 "cons_size": 375.0
             },
@@ -3887,7 +3887,7 @@
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
-                "cons_hblack": 125.0,
+                "cons_checs": 125.0,
                 "cons_price": 10000.0,
                 "cons_size": 125.0
             }

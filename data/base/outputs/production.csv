@@ -1,4 +1,4 @@
-producer,can_ccs1,can_ccs2,ccs1_capacity_co2,ccs1_capacity_h2,ccs1_hblack,ccs2_capacity_co2,ccs2_capacity_h2,ccs2_hblack,co2_emitted,prod_capacity,prod_carbonRate,prod_cost_capital_coeff,prod_cost_fixed,prod_cost_variable,prod_h,prod_hblack,prod_kwh_variable_coeff,prod_ng_variable_coeff,prod_utilization,total_co2_produced,co2_captured,%co2_captured
+producer,can_ccs1,can_ccs2,ccs1_capacity_co2,ccs1_capacity_h2,ccs1_checs,ccs2_capacity_co2,ccs2_capacity_h2,ccs2_checs,co2_emitted,prod_capacity,prod_carbonRate,prod_cost_capital_coeff,prod_cost_fixed,prod_cost_variable,prod_h,prod_checs,prod_kwh_variable_coeff,prod_ng_variable_coeff,prod_utilization,total_co2_produced,co2_captured,%co2_captured
 austin_production_smr,0,0,0.0,0.0,0.0,0.0,0.0,0.0,45024.299999999996,5558.555555555556,9.0,425000.0,70.0,90.0,5002.7,5002.7,570.0,156.25,0.9,45024.299999999996,0.0,0.0
 baytown_production_smr,0,0,0.0,0.0,0.0,0.0,0.0,0.0,937.8,115.77777777777777,9.0,425000.0,70.0,90.0,104.19999999999999,104.19999999999999,570.0,156.25,0.9,937.8,0.0,0.0
 baytown_production_smrExisting,1,1,0.0,0.0,0.0,0.0,0.0,0.0,4164.48,482.0,9.6,0.0,0.0,100.0,433.8,433.8,600.0,165.0,0.9,4164.48,0.0,0.0

@@ -1,4 +1,4 @@
-consumer,co2_nonHydrogenConsumer,cons_breakevenCarbon,cons_carbonSensitive,cons_h,cons_hblack,cons_price,cons_size
+consumer,co2_nonHydrogenConsumer,cons_breakevenCarbon,cons_carbonSensitive,cons_h,cons_checs,cons_price,cons_size
 abilene_demandSector_transportationFuel,0.0,17.4,0,375.0,0.0,10000.0,375.0
 abilene_demandSector_transportationFuel_carbonSensitive,0.0,17.4,1,125.0,125.0,10000.0,125.0
 austin_demandSector_transportationFuel,0.0,17.4,0,375.0,0.0,10000.0,375.0
