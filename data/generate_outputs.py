@@ -183,4 +183,15 @@ def main(m, nodes_list, parameters):
         node_dict[node]['consumption'] = create_nodal_data(dfs['consumption'], node,1)
         node_dict[node]['distribution'] = create_nodal_distribution_data(dfs['distribution'], node)
 
+
+    ## Post Processing print
+    print("Summary Results:")
+    
+    total_h_consumed = dfs['consumption']['cons_h'].sum()
+    total_h_produced = dfs['production']['prod_h'].sum()
+    print("Hydrogen Consumed (Tonnes/day): {}".format(total_h_consumed))
+    print("Hydrogen Produced (Tonnes/day): {}".format(total_h_produced))
+
+
+
     return dfs, node_dict

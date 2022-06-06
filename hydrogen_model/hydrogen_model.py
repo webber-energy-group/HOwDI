@@ -434,11 +434,11 @@ def build_h2_model(inputs, input_parameters):
 
     # existing producers can not build both cc1 and ccs
     def rule_onlyOneCCS(m,node):
-        # constraint = (not (m.ccs1_built[node] and m.ccs2_built[node]) == True) # does not work
+        # binaries can't be used as binaries in pyomo, thus:
         constraint = (m.ccs1_built[node] + m.ccs2_built[node] <= 1) # hacky way of doing NAND(ccs1_built,ccs2_built)
         return constraint
     m.constr_onlyOneCCS = pe.Constraint(m.producer_set, rule=rule_onlyOneCCS)
-    # enforces that CCS must be built over entire capacity
+    # enforces that CCS must be built over entire capacity and not a fraction
     def rule_mustBuildAllCCS1(m,node):
         constraint = (m.ccs1_capacity_h2[node] ==m.ccs1_built[node] * m.prod_h[node])
         return constraint
