@@ -120,7 +120,6 @@ class hydrogen_inputs:
                     time_slices, 
                     subsidy_dollar_billion, 
                     subsidy_cost_share_fraction,
-                    minimum_producer_size_tonnes_per_day,
                     **kwargs):
                     # industrial_electricity_usd_per_kwh=0.05, 
                     # industrial_ng_usd_per_mmbtu=3.50, 
@@ -171,8 +170,6 @@ class hydrogen_inputs:
         #for the scenario where hydrogen infrastructure is subsidized
         self.subsidy_dollar_billion = subsidy_dollar_billion #how many billions of dollars are available to subsidize infrastructure
         self.subsidy_cost_share_fraction = subsidy_cost_share_fraction #what fraction of dollars must industry spend on new infrastructure--e.g., if = 0.6, then for a $10Billion facility, industry must spend $6Billion (which counts toward the objective function) and the subsidy will cover $4Billion (which is excluded from the objective function).
-        
-        self.min_prod_h = minimum_producer_size_tonnes_per_day # define a minimum amount of hydrogen that can be produced
 
 def build_h2_model(inputs, input_parameters):
     print ('Building model')
@@ -418,19 +415,27 @@ def build_h2_model(inputs, input_parameters):
         return constraint
     m.constr_productionCapacity = pe.Constraint(m.producer_set, rule=rule_productionCapacity)
     # production must exceed minimum production value, if not already existing
-    def rule_minProductionCapacity1(m,node):
+    def rule_minProductionCapacity(m,node):
         if node in m.producer_existing_set:
             # if producer is an existing producer, don't constrain by minimum value
             # note - do not confuse node with hub. node in this case would be something akin to 'dallas_smrExisting', not 'dallas'
             constraint = (m.prod_h[node] >= 0)
         else:
-            constraint = (m.prod_h[node] >= m.H.min_prod_h * m.prod_exists[node])
+            # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
+            # this gives the model the option to not build the producer
+            constraint = (m.prod_h[node] >= m.g.nodes[node]['min_h2'] * m.prod_exists[node])
         return constraint
-    m.constr_minProductionCapacity1 = pe.Constraint(m.producer_set, rule=rule_minProductionCapacity1)
-    def rule_minProductionCapacity2(m,node):
-        constraint = (m.prod_h[node] <= 1e12 * m.prod_exists[node]) #1e12 is just a large number, not specific since python doesn't have anything like int.max
+    m.constr_minProductionCapacity = pe.Constraint(m.producer_set, rule=rule_minProductionCapacity)
+    def rule_maxProductionCapacity(m,node):
+        if node in m.producer_existing_set:
+            # if producer is an existing producer, don't constrain by minimum value
+            constraint = (m.prod_h[node] <= 1e12) #arbitrarily large number
+        else:
+            # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
+            # with the prior constraint, forces 0 production if producer DNE
+            constraint = (m.prod_h[node] <= m.g.nodes[node]['max_h2'] * m.prod_exists[node])
         return constraint
-    m.constr_minProductionCapacity2 = pe.Constraint(m.producer_set, rule=rule_minProductionCapacity2)
+    m.constr_maxProductionCapacity = pe.Constraint(m.producer_set, rule=rule_maxProductionCapacity)
 
     # existing producers can not build both cc1 and ccs
     def rule_onlyOneCCS(m,node):

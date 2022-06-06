@@ -301,7 +301,9 @@ class hydrogen_network:
                                  'endNode':'%s_hub_%sPurity'%(nrow['node'], production_purity), 
                                  'kmLength':0.0, 
                                  'capital_usdPerUnit':0.0, 
-                                 'class':'flow_from_producer'}
+                                 'class':'flow_from_producer',
+                                 'min_h2': prow['min_h2'],
+                                 'max_h2': prow['max_h2']}
                     g.add_edge(prow['node'], '%s_hub_%sPurity'%(nrow['node'], production_purity), **(edge_dict))
         #loop through the existing producers and add them       
         for pi,prow in existing_producers_df.iterrows(): 

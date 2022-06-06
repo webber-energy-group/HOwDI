@@ -11,8 +11,6 @@
     "industrial_electricity_usd_per_kwh":0.075,
     "industrial_ng_usd_per_mmbtu":3.50,
 
-    "minimum_producer_size_tonnes_per_day": 100,
-
     "carbon_price_dollars_per_ton":0,
     "carbon_capture_credit_dollars_per_ton":50,
     "subsidy_dollar_billion":0,
