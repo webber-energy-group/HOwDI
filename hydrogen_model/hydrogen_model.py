@@ -196,9 +196,7 @@ def build_h2_model(inputs, input_parameters):
 
     # set of node names where all nodes are producers
     producer_nodes = [
-        node
-        for node, node_class in nodes_with_class
-        if node_class == "producer"
+        node for node, node_class in nodes_with_class if node_class == "producer"
     ]
     m.producer_set = pe.Set(initialize=producer_nodes)
 
@@ -221,31 +219,22 @@ def build_h2_model(inputs, input_parameters):
 
     # set of node names where all nodes are converters
     conversion_nodes = [
-        node
-        for node, node_class in nodes_with_class
-        if "converter" in node_class
+        node for node, node_class in nodes_with_class if "converter" in node_class
     ]
     m.converter_set = pe.Set(initialize=conversion_nodes)
 
     # set of node names where all nodes are fuelDispensers
     fuelStation_nodes = [
-        node
-        for node, node_class in nodes_with_class
-        if "fuelDispenser" in node_class
+        node for node, node_class in nodes_with_class if "fuelDispenser" in node_class
     ]
     m.fuelStation_set = pe.Set(initialize=fuelStation_nodes)
 
-
     # set of node names where all nodes are truck distribution nodes
     truck_nodes = [
-        node
-        for node, node_class in nodes_with_class
-        if "dist_truck" in node_class
+        node for node, node_class in nodes_with_class if "dist_truck" in node_class
     ]
     m.truck_set = pe.Set(initialize=truck_nodes)
 
-    
-    
     # set of all arcs
     m.arc_set = pe.Set(initialize=list(m.g.edges()), dimen=None)
 
@@ -267,7 +256,6 @@ def build_h2_model(inputs, input_parameters):
     ]
     m.distribution_arc_existing_set = pe.Set(initialize=distribution_arcs_existing)
 
-
     # set of all arcs that have flow to a demand sector
     consumer_arcs = [
         (node1, node2)
@@ -284,16 +272,6 @@ def build_h2_model(inputs, input_parameters):
         or ("converter" in m.g.nodes[node2]["class"])
     ]
     m.converter_arc_set = pe.Set(initialize=conversion_arcs)
-
-
-    
-    
-   
-    
-    
-    
-   
-    
 
     # parameters
     # tracking
