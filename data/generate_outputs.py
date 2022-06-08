@@ -162,9 +162,7 @@ def main(m, nodes_list, parameters):
     dfs['consumption'] = dfs['consumption'][(dfs['consumption']['cons_h']>tol) & (~isclose(dfs['consumption']['cons_h'],price_hub_demand))]
     dfs['conversion'] = dfs['conversion'][dfs['conversion']['conv_capacity']>tol]
 
-    dfs['distribution'] = dfs['distribution'].replace(['n/a'],-99.99) # change na to -99.99 for conditional
-    dfs['distribution'] = dfs['distribution'][(dfs['distribution']['dist_capacity']>tol) | (( dfs['distribution']['dist_h']>tol)&(~isclose(dfs['distribution']['dist_h'],price_hub_demand)))]
-    dfs['distribution'] = dfs['distribution'].replace([-99.99],'n/a') # and change back
+    dfs['distribution'] = dfs['distribution'][(( dfs['distribution']['dist_h']>tol)&(~isclose(dfs['distribution']['dist_h'],price_hub_demand)))]
 
     # re add price hub data
     if parameters['find_prices']:

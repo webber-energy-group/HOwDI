@@ -328,6 +328,7 @@ class hydrogen_network:
                                  'capital_usdPerUnit':0.0, 
                                  'fixed_usdPerUnitPerDay':0.0,
                                  'variable_usdPerTon':0.0,
+                                 'flowLimit_tonsPerDay':999999.999,
                                  'class':'flow_from_producer',
                                  'min_h2': prow['min_h2'],
                                  'max_h2': prow['max_h2']}
@@ -348,6 +349,7 @@ class hydrogen_network:
                          'capital_usdPerUnit':0.0, 
                          'fixed_usdPerUnitPerDay':0.0,
                          'variable_usdPerTon':0.0,
+                         'flowLimit_tonsPerDay':999999.999,
                          'class':'flow_from_producer'}
             g.add_edge(prow['node'], '%s_hub_%sPurity'%(hub_name, production_purity), **(edge_dict))
         return g
