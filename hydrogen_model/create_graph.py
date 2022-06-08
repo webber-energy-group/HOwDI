@@ -135,19 +135,28 @@ class hydrogen_network:
                                'variable_usdPerTon': 0.0,
                                'flowLimit_tonsPerDay': 99999999.9,
                                'class': 'flow_to_demand_node'}
+
+            ########### TODO BAD CODE PLEASE REFACTOR
+            truck_Liquefied_char = {'kmLength': 0.0,
+                               'capital_usdPerUnit': 0.0,
+                               'fixed_usdPerUnitPerDay': 0.0,
+                               'variable_usdPerTon': 0.0,
+                               'flowLimit_tonsPerDay': 8.0,
+                               'class': 'flow_to_demand_node'}
+            ###########
             #demand_fuelStation requires high purity hydrogen
             g.add_edge('%s_dist_pipelineHighPurity'%hub_name, '%s_demand_fuelStation'%hub_name, **(connection_char)) 
             g.add_edge('%s_dist_truckCompressed'%hub_name, '%s_demand_fuelStation'%hub_name, **(connection_char)) 
-            g.add_edge('%s_dist_truckLiquefied'%hub_name, '%s_demand_fuelStation'%hub_name, **(connection_char)) 
+            g.add_edge('%s_dist_truckLiquefied'%hub_name, '%s_demand_fuelStation'%hub_name, **(truck_Liquefied_char)) 
             #demand_highPurity requires high purity hydrogen
             g.add_edge('%s_dist_pipelineHighPurity'%hub_name, '%s_demand_highPurity'%hub_name, **(connection_char)) 
             g.add_edge('%s_dist_truckCompressed'%hub_name, '%s_demand_highPurity'%hub_name, **(connection_char)) 
-            g.add_edge('%s_dist_truckLiquefied'%hub_name, '%s_demand_highPurity'%hub_name, **(connection_char))
+            g.add_edge('%s_dist_truckLiquefied'%hub_name, '%s_demand_highPurity'%hub_name, **(truck_Liquefied_char))
             #demand_lowPurity can use low or high purity hydrogen
             g.add_edge('%s_dist_pipelineLowPurity'%hub_name, '%s_demand_lowPurity'%hub_name, **(connection_char)) 
             g.add_edge('%s_dist_pipelineHighPurity'%hub_name, '%s_demand_lowPurity'%hub_name, **(connection_char)) 
             g.add_edge('%s_dist_truckCompressed'%hub_name, '%s_demand_lowPurity'%hub_name, **(connection_char)) 
-            g.add_edge('%s_dist_truckLiquefied'%hub_name, '%s_demand_lowPurity'%hub_name, **(connection_char))
+            g.add_edge('%s_dist_truckLiquefied'%hub_name, '%s_demand_lowPurity'%hub_name, **(truck_Liquefied_char))
             #2.4) connect the hub_lowPurity to the hub_highPurity. We will add a purifier between the two using the add_converters function
             connection_char = {'kmLength': 0.0,
                                'capital_usdPerUnit': 0.0,
@@ -197,11 +206,13 @@ class hydrogen_network:
                     if purity_type == 'HighPurity':
                         for truck_type in list(distributors_df[distributors_df['distributor'].str.contains('truck')]['distributor']):
                             #information for the trucking routes between hydrogen hubs
+                            flowLimit_tonsPerDay = distributors_df[distributors_df['distributor']==truck_type]['flowLimit_tonsPerDay'].iloc[0]
                             truck_route_dict = {'startNode': arc[0]+'_dist_%s'%truck_type,
                                           'endNode': arc[1]+'_dist_%s'%truck_type,
                                           'kmLength': road_length,
                                           'capital_usdPerUnit': 0.0,
                                           'fixed_usdPerUnitPerDay': 0.0,
+                                          'flowLimit_tonsPerDay':flowLimit_tonsPerDay,
                                           'variable_usdPerTon': distributors_df[distributors_df['distributor']==truck_type]['variable_usdPerKilometer-Ton'].iloc[0]*road_length,
                                           'class': 'arc_%s'%truck_type}
                             #add the distribution arc for the truck
@@ -315,6 +326,8 @@ class hydrogen_network:
                                  'endNode':'%s_hub_%sPurity'%(nrow['node'], production_purity), 
                                  'kmLength':0.0, 
                                  'capital_usdPerUnit':0.0, 
+                                 'fixed_usdPerUnitPerDay':0.0,
+                                 'variable_usdPerTon':0.0,
                                  'class':'flow_from_producer',
                                  'min_h2': prow['min_h2'],
                                  'max_h2': prow['max_h2']}
@@ -333,6 +346,8 @@ class hydrogen_network:
                          'endNode':'%s_hub_%sPurity'%(hub_name, production_purity), 
                          'kmLength':0.0, 
                          'capital_usdPerUnit':0.0, 
+                         'fixed_usdPerUnitPerDay':0.0,
+                         'variable_usdPerTon':0.0,
                          'class':'flow_from_producer'}
             g.add_edge(prow['node'], '%s_hub_%sPurity'%(hub_name, production_purity), **(edge_dict))
         return g
@@ -375,6 +390,10 @@ class hydrogen_network:
                             g.add_edge(g.edges[ce]['startNode'], cvrow['node'], **{'startNode':g.edges[ce]['startNode'],
                                                                                    'endNode':cvrow['node'],
                                                                                    'kmLength':0.0,
+                                                                                   'capital_usdPerUnit':0.0,
+                                                                                   'fixed_usdPerUnitPerDay':0.0,
+                                                                                   'variable_usdPerTon':0.0,
+                                                                                   'flowLimit_tonsPerDay': g.edges[ce]['flowLimit_tonsPerDay'],
                                                                                    'class':cvrow['class']})
                             #change the original arc's start node to the new conversion node
                             g.add_edge(cvrow['node'], g.edges[ce]['endNode'], **g.edges[ce])

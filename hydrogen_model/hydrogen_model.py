@@ -233,17 +233,17 @@ def build_h2_model(inputs, input_parameters):
     for e in m.g.edges:
         if 'class' in m.g.edges[e].keys():
             if 'capital_usdPerUnit' in m.g.edges[e].keys():
-                if m.g.edges[e]['capital_usdPerUnit'] > 0:
-                    distribution_arcs_capital.append(e)
+                # if m.g.edges[e]['capital_usdPerUnit'] > 0:
+                distribution_arcs_capital.append(e)
             if 'fixed_usdPerUnitPerDay' in m.g.edges[e].keys():
-                if m.g.edges[e]['fixed_usdPerUnitPerDay'] > 0:
-                    distribution_arcs_fixed.append(e)    
+                # if m.g.edges[e]['fixed_usdPerUnitPerDay'] > 0:
+                distribution_arcs_fixed.append(e)    
             if 'variable_usdPerTon' in m.g.edges[e].keys():
-                if m.g.edges[e]['variable_usdPerTon'] > 0:
-                    distribution_arcs_variable.append(e)    
+                # if m.g.edges[e]['variable_usdPerTon'] > 0:
+                distribution_arcs_variable.append(e)    
             if 'flowLimit_tonsPerDay' in m.g.edges[e].keys():
-                if m.g.edges[e]['flowLimit_tonsPerDay'] != 0:
-                    distribution_arcs_flowConstrained.append(e)                                   
+                # if m.g.edges[e]['flowLimit_tonsPerDay'] != 0:
+                distribution_arcs_flowConstrained.append(e)                                   
             if 'existing' in m.g.edges[e].keys():
                 if m.g.edges[e]['existing']==1:
                     distribution_arcs_existing.append(e)  
