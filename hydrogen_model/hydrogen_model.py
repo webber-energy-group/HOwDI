@@ -89,6 +89,7 @@ breakeven for different distribution methods, approximately:
     
 '''
 
+from operator import index
 import pyomo
 import pyomo.environ as pe
 import pandas
@@ -208,6 +209,7 @@ def build_h2_model(inputs, input_parameters):
     #calculate sets and subsets
     producer_nodes = []
     producer_existing_nodes = []
+    truck_nodes = []
     consumer_nodes = []
     consumer_arcs = []
     distribution_arcs_capital = []
@@ -229,6 +231,8 @@ def build_h2_model(inputs, input_parameters):
             conversion_nodes.append(n)
         if 'fuelDispenser' in (m.g.nodes[n]['class']):
             fuelStation_nodes.append(n)
+        if 'dist_truck' in (m.g.nodes[n]['class']):
+            truck_nodes.append(n)
                 
     for e in m.g.edges:
         if 'class' in m.g.edges[e].keys():
@@ -256,6 +260,7 @@ def build_h2_model(inputs, input_parameters):
     m.arc_set = pe.Set(initialize=list(m.g.edges()), dimen=None)      
     m.producer_set = pe.Set(initialize=producer_nodes)
     m.producer_existing_set = pe.Set(initialize=producer_existing_nodes)
+    m.truck_set = pe.Set(initialize=truck_nodes)
     m.consumer_set = pe.Set(initialize=consumer_nodes)
     m.consumer_arc_set = pe.Set(initialize=consumer_arcs)
     m.distribution_arcs_capital_set = pe.Set(initialize=distribution_arcs_capital)
@@ -387,6 +392,15 @@ def build_h2_model(inputs, input_parameters):
         return constraint
     m.constr_flowCapacity = pe.Constraint(m.distribution_arcs_flowConstrained_set, rule=rule_flowCapacity)
 
+    # the amount of trucks entering a hub's `truck{type}` node must be the same amount that is leaving
+    def rule_truckConsistency(m, truck_dist_node):
+        in_trucks = pe.summation(m.dist_capacity, index=m.g.in_edges(truck_dist_node))
+        out_trucks = pe.summation(m.dist_capacity, index=m.g.out_edges(truck_dist_node))
+
+        constraint = (in_trucks - out_trucks >= 0)
+        return constraint
+    m.const_truckConsistency = pe.Constraint(m.truck_set, rule=rule_truckConsistency)
+
 
     #flow across conversion arcs is limited by the capacity of the conversion node
     def rule_flowCapacityConverters(m, converterNode):
@@ -395,6 +409,15 @@ def build_h2_model(inputs, input_parameters):
         return constraint
     m.constr_flowCapacityConverters = pe.Constraint(m.converter_set, rule=rule_flowCapacityConverters)
 
+    # flow in and out of a convertor must have consistent capacity; 
+    # that is, conversion capacity into an arc must equal the capacity out of an arc
+    # <= used because capacity was often dropped (in_capacity > out_capacity)in the approximate solution
+    def rule_flowCapacityBetweenConverters(m, converterNode):
+        in_capacity = pe.summation(m.dist_capacity, index=m.g.in_edges(converterNode))
+        out_capacity = pe.summation(m.dist_capacity, index=m.g.out_edges(converterNode))
+        constraint = (in_capacity -out_capacity <= 0)
+        return constraint
+    m.constr_flowCapacityBetweenConverters = pe.Constraint(m.converter_set, rule=rule_flowCapacityBetweenConverters)
 
 
 
