@@ -88,7 +88,6 @@ breakeven for different distribution methods, approximately:
     note that compared to the ~10,000 tons per day daily H2 demand, these numbers are quite small, but a refueling station might only consume 4 tons per day, so it's possible that if the model has a series of refueling stations that are each 50+ km away from each other, that trucks will win out over pipelines.
     
 """
-from platform import node
 import pyomo
 import pyomo.environ as pe
 import pandas
@@ -170,23 +169,8 @@ class hydrogen_inputs:
         self.subsidy_cost_share_fraction = subsidy_cost_share_fraction  # what fraction of dollars must industry spend on new infrastructure--e.g., if = 0.6, then for a $10Billion facility, industry must spend $6Billion (which counts toward the objective function) and the subsidy will cover $4Billion (which is excluded from the objective function).
 
 
-def build_h2_model(inputs, input_parameters):
-    print("Building model")
-    ## Load inputs into `hydrogen_inputs` object,
-    ## which contains all input data
-    H = hydrogen_inputs(inputs=inputs, **input_parameters)
-
-    ## create the network graph object
-    H_network = create_graph.hydrogen_network(H)
-    g = H_network.g
-
-    ## create the pyomo model object and load the inputs and graph objects into it
-    m = pe.ConcreteModel()
-    m.H = H
-    m.g = g
-
-    ## Define sets, which are efficient ways of classifying nodes and arcs
-
+def create_node_sets(m):
+    """Creates all pe.Sets associated with nodes used by the model"""
     # set of all nodes
     m.node_set = pe.Set(initialize=list(m.g.nodes()))
 
@@ -235,6 +219,9 @@ def build_h2_model(inputs, input_parameters):
     ]
     m.truck_set = pe.Set(initialize=truck_nodes)
 
+
+def create_arc_sets(m):
+    """Creates all pe.Sets associated with arcs used by the model"""
     # set of all arcs
     m.arc_set = pe.Set(initialize=list(m.g.edges()), dimen=None)
 
@@ -273,14 +260,12 @@ def build_h2_model(inputs, input_parameters):
     ]
     m.converter_arc_set = pe.Set(initialize=conversion_arcs)
 
-    # parameters
-    # tracking
-    m.arc_class = pe.Param(
-        m.arc_set,
-        initialize=lambda m, i, j: m.g.adj[i][j].get("class", 0),
-        within=pe.Any,
-    )
-    # distribution
+
+def create_params(m):
+    """Loads parameters from network object (m.g) into pe.Param objects, which are used as coefficients in the model objective"""
+    # TODO once we have definitions written out for all of these, add the definitions and units here
+
+    ## Distribution
     m.dist_cost_capital = pe.Param(
         m.distribution_arcs,
         initialize=lambda m, i, j: m.g.adj[i][j].get("capital_usdPerUnit", 0),
@@ -297,7 +282,8 @@ def build_h2_model(inputs, input_parameters):
         m.distribution_arcs,
         initialize=lambda m, i, j: m.g.adj[i][j].get("flowLimit_tonsPerDay", 0),
     )
-    # production
+
+    ## Production
     m.prod_cost_capital_coeff = pe.Param(
         m.producer_set,
         initialize=lambda m, i: m.g.nodes[i].get("capital_usd_coefficient", 0),
@@ -323,7 +309,8 @@ def build_h2_model(inputs, input_parameters):
     m.prod_utilization = pe.Param(
         m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("utilization", 0)
     )
-    # conversion
+
+    ## Conversion
     m.conv_cost_capital_coeff = pe.Param(
         m.converter_set,
         initialize=lambda m, i: m.g.nodes[i].get("capital_usd_coefficient", 0),
@@ -342,7 +329,8 @@ def build_h2_model(inputs, input_parameters):
     m.conv_utilization = pe.Param(
         m.converter_set, initialize=lambda m, i: m.g.nodes[i].get("utilization", 0)
     )
-    # consumption
+
+    ## Consumption
     m.cons_price = pe.Param(
         m.consumer_set, initialize=lambda m, i: m.g.nodes[i].get("breakevenPrice", 0)
     )
@@ -357,211 +345,281 @@ def build_h2_model(inputs, input_parameters):
         initialize=lambda m, i: m.g.nodes[i].get("breakevenCarbon_g_MJ", 0)
         * m.H.carbon_g_MJ_to_t_tH2,
     )
-    # ccs
+
+    ## CCS Retrofitting
+    # binary, 1: producer can build CCS1, defaults to zero
     m.can_ccs1 = pe.Param(
         m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("can_ccs1", 0)
-    )  # binary, 1: producer can build CCS1, defaults to zero
+    )
+    # binary, 1: producer can build CCS2, defaults to zero
     m.can_ccs2 = pe.Param(
         m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("can_ccs2", 0)
-    )  # binary, 1: producer can build CCS2, defaults to zero
+    )
 
-    # variables
-    # distribution
-    m.dist_capacity = pe.Var(
-        m.arc_set, domain=pe.NonNegativeIntegers
-    )  # daily capacity of each arc
-    m.dist_h = pe.Var(
-        m.arc_set, domain=pe.NonNegativeReals
-    )  # daily flow along each arc
-    # production
-    m.prod_exists = pe.Var(
-        m.producer_set, domain=pe.Binary
-    )  # binary that tracks if a producer was built or not
-    m.prod_capacity = pe.Var(
-        m.producer_set, domain=pe.NonNegativeReals
-    )  # daily capacity of each producer
-    m.prod_h = pe.Var(
-        m.producer_set, domain=pe.NonNegativeReals
-    )  # daily production of each producer
-    # conversion
-    m.conv_capacity = pe.Var(
-        m.converter_set, domain=pe.NonNegativeReals
-    )  # daily capacity of each converter
-    # consumption
-    m.cons_h = pe.Var(
-        m.consumer_set, domain=pe.NonNegativeReals
-    )  # consumer's daily demand for hydrogen
-    m.cons_checs = pe.Var(
-        m.consumer_set, domain=pe.NonNegativeReals
-    )  # consumer's daily demand for checs
-    # ccs
+
+def create_variables(m):
+    """Creates variables associated with model"""
+    # TODO once we have definitions written out for all of these, add the definitions and units here
+
+    ## Distribution
+    # daily capacity of each arc
+    m.dist_capacity = pe.Var(m.arc_set, domain=pe.NonNegativeIntegers)
+    # daily flow along each arc
+    m.dist_h = pe.Var(m.arc_set, domain=pe.NonNegativeReals)
+
+    ## Production
+    # binary that tracks if a producer was built or not
+    m.prod_exists = pe.Var(m.producer_set, domain=pe.Binary)
+    # daily capacity of each producer
+    m.prod_capacity = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+    # daily production of each producer
+    m.prod_h = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+
+    ## Conversion
+    # daily capacity of each converter
+    m.conv_capacity = pe.Var(m.converter_set, domain=pe.NonNegativeReals)
+
+    # Consumption
+    # consumer's daily demand for hydrogen
+    m.cons_h = pe.Var(m.consumer_set, domain=pe.NonNegativeReals)
+    # consumer's daily demand for checs
+    m.cons_checs = pe.Var(m.consumer_set, domain=pe.NonNegativeReals)
+
+    ## CCS Retrofitting
     m.ccs1_built = pe.Var(m.producer_set, domain=pe.Binary)
     m.ccs2_built = pe.Var(m.producer_set, domain=pe.Binary)
-    m.ccs1_capacity_co2 = pe.Var(
-        m.producer_set, domain=pe.NonNegativeReals
-    )  # daily capacity of CCS1 for each producer in tons CO2
-    m.ccs2_capacity_co2 = pe.Var(
-        m.producer_set, domain=pe.NonNegativeReals
-    )  # daily capacity of CCS2 for each producer in tons CO2
-    m.ccs1_capacity_h2 = pe.Var(
-        m.producer_set, domain=pe.NonNegativeReals
-    )  # daily capacity of CCS1 for each producer in tons h2
-    m.ccs2_capacity_h2 = pe.Var(
-        m.producer_set, domain=pe.NonNegativeReals
-    )  # daily capacity of CCS2 for each producer in tons h2
-    # carbon
-    m.prod_checs = pe.Var(
-        m.producer_set, domain=pe.NonNegativeReals
-    )  # daily production of checs for each producer
-    m.ccs1_checs = pe.Var(
-        m.producer_set, domain=pe.NonNegativeReals
-    )  # daily production of checs for CCS1 for each producer
-    m.ccs2_checs = pe.Var(
-        m.producer_set, domain=pe.NonNegativeReals
-    )  # daily production of checs for CCS2 for each producer
-    m.co2_nonHydrogenConsumer = pe.Var(
-        m.consumer_set, domain=pe.Reals
-    )  # carbon emissions for each consumer that is not using hydrogen
-    m.co2_emitted = pe.Var(
-        m.producer_set, domain=pe.Reals
-    )  # carbon emissions for each hydrogen producer
-    # infrastructure subsidy
+    # daily capacity of CCS1 for each producer in tons CO2
+    m.ccs1_capacity_co2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+    # daily capacity of CCS2 for each producer in tons CO2
+    m.ccs2_capacity_co2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+    # daily capacity of CCS1 for each producer in tons h2
+    m.ccs1_capacity_h2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+    # daily capacity of CCS2 for each producer in tons h2
+    m.ccs2_capacity_h2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+
+    ## Carbon accounting
+    # daily production of checs for each producer
+    m.prod_checs = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+    # daily production of checs for CCS1 for each producer
+    m.ccs1_checs = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+    # daily production of checs for CCS2 for each producer
+    m.ccs2_checs = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+    # carbon emissions for each consumer that is not using hydrogen
+    m.co2_nonHydrogenConsumer = pe.Var(m.consumer_set, domain=pe.Reals)
+    # carbon emissions for each hydrogen producer
+    m.co2_emitted = pe.Var(m.producer_set, domain=pe.Reals)
+
+    ## Infrastructure subsidy
+    # subsidy dollars used to reduce the capital cost of converter[cv]
     m.fuelStation_cost_capital_subsidy = pe.Var(
         m.fuelStation_set, domain=pe.NonNegativeReals
-    )  # subsidy dollars used to reduce the capital cost of converter[cv]
+    )
+
+
+def obj_rule(m):
+    """Defines the objective function.
+
+    Some values are described as "regional prices", which means that a
+    regional cost multiplier was used in `create_graph.py` to get
+    the regional coefficient
+    """
+    # TODO once we have definitions written out for all of these, add the definitions and units here
+
+    # get data needed from m.H:
+    ccs1_percent_co2_captured = m.H.ccs_data.loc["ccs1", "percent_CO2_captured"]
+    ccs2_percent_co2_captured = m.H.ccs_data.loc["ccs2", "percent_CO2_captured"]
+    ccs1_varible_usdPerTon = m.H.ccs_data.loc["ccs1", "variable_usdPerTonCO2"]
+    ccs2_varible_usdPerTon = m.H.ccs_data.loc["ccs2", "variable_usdPerTonCO2"]
+
+    ## Utility
+
+    # consumer daily utility from buying hydrogen is the sum of
+    # [(consumption of hydrogen at a node) * (price of hydrogen at a node)]
+    # over all consumers
+    U_hydrogen = sum(m.cons_h[c] * m.cons_price[c] for c in m.consumer_set)
+
+    # consumer daily utility from buying checs (clean hydrogen energy credits) is the sum of
+    # [(amount of checs consumed at a node * TODO ... at a node * carbon price)]
+    # over all consumers
+    U_carbon = (
+        sum(m.cons_checs[c] * m.cons_breakevenCarbon[c] for c in m.consumer_set)
+        * m.H.carbon_price
+    )
+
+    # TODO describe this equation
+    U_carbon_capture_credit = (
+        sum(
+            m.ccs1_checs[p] * (m.prod_carbonRate[p] * (1 - ccs1_percent_co2_captured))
+            + m.ccs2_checs[p] * (m.prod_carbonRate[p] * (1 - ccs2_percent_co2_captured))
+            for p in m.producer_set
+        )
+        * m.H.carbon_capture_credit
+    )
+
+    ## Production
+
+    # Variable costs of production per ton is the sum of
+    # (the produced hydrogen at a node) * (the cost to produce hydrogen at that node)
+    # over all producers
+    P_variable = sum(m.prod_h[p] * m.prod_cost_variable[p] for p in m.producer_set)
+
+    # daily electricity cost
+    # TODO this is going to change
+    P_electricity = (
+        sum(m.prod_h[p] * m.prod_kwh_variable_coeff[p] for p in m.producer_set)
+        * m.H.e_price
+    )
+
+    # daily natural gas cost
+    # TODO this is going to change
+    P_naturalGas = (
+        sum(m.prod_h[p] * m.prod_ng_variable_coeff[p] for p in m.producer_set)
+        * m.H.ng_price
+    )
+
+    # The fixed cost of production per ton is the sum of
+    # (the capacity of a producer) * (the fixed regional cost of a producer)
+    # for each producer
+    P_fixed = sum(m.prod_capacity[p] * m.prod_cost_fixed[p] for p in m.producer_set)
+
+    # The daily capital costs of production per ton are
+    # (the production capacity of a node) * (the regional capital cost coefficient of a node) / amortization factor
+    # for each producer
+    P_capital = (
+        sum(m.prod_capacity[p] * m.prod_cost_capital_coeff[p] for p in m.producer_set)
+        / m.H.A
+        / m.H.time_slices
+    )
+
+    # Daily price of producing checs (clean hydrogen energy credits) is the sum of
+    # TODO
+    P_carbon = (
+        sum(
+            m.prod_checs[p] * m.prod_carbonRate[p]
+            + m.ccs1_checs[p] * (m.prod_carbonRate[p] * (1 - ccs1_percent_co2_captured))
+            + m.ccs2_checs[p] * (m.prod_carbonRate[p] * (1 - ccs2_percent_co2_captured))
+            for p in m.producer_set
+        )
+        * m.H.carbon_price
+    )
+
+    # ccs variable cost per ton of produced hydrogen
+    # TODO
+    CCS_variable = sum(
+        (m.ccs1_capacity_co2[p] * ccs1_varible_usdPerTon)
+        + (m.ccs2_capacity_co2[p] * ccs2_varible_usdPerTon)
+        for p in m.producer_set
+    )
+
+    ## Distribution
+
+    # The daily variable cost of distribution is the sum of
+    # (hydrogen distributed) * (variable cost of distribution)
+    # for each distribution arc
+    D_variable = sum(m.dist_h[d] * m.dist_cost_variable[d] for d in m.distribution_arcs)
+
+    # The daily fixed cost of distribution is the sum of
+    # (distribution capacity) * (regional fixed cost)
+    # for each distribution arc
+    D_fixed = sum(
+        m.dist_capacity[d] * m.dist_cost_fixed[d] for d in m.distribution_arcs
+    )
+
+    # The daily capital cost of distribution is the sum of
+    # (distribution capacity) * (regional capital cost) / amortization factor
+    D_capital = sum(
+        (m.dist_capacity[d] * m.dist_cost_capital[d]) / m.H.A / m.H.time_slices
+        for d in m.distribution_arcs
+    )
+
+    ## Converters
+
+    # The daily variable cost of conversion is the sum of
+    # (conversion capacity) * (conversion utilization) * (conversion variable costs)
+    # for each convertor
+    CV_variable = sum(
+        m.conv_capacity[cv] * m.conv_utilization[cv] * m.conv_cost_variable[cv]
+        for cv in m.converter_set
+    )
+
+    # TODO will change once electricity format is changed
+    CV_electricity = sum(
+        (m.conv_capacity[cv] * m.conv_utilization[cv] * m.conv_kwh_variable_coeff[cv])
+        * m.H.e_price
+        for cv in m.converter_set
+    )
+
+    # The daily fixed cost of conversion is the sum of
+    # (convertor capacity) * (regional fixed cost)
+    # for each convertor
+    CV_fixed = sum(
+        m.conv_capacity[cv] * m.conv_cost_fixed[cv] for cv in m.converter_set
+    )
+
+    # The daily fixed cost of conversion is the sum of
+    # (convertor capacity) * (regional capital cost) / (amortization factor)
+    # for each convertor
+    CV_capital = sum(
+        (m.conv_capacity[cv] * m.conv_cost_capital_coeff[cv]) / m.H.A / m.H.time_slices
+        for cv in m.converter_set
+    )
+
+    # TODO fuel station subsidy
+    CV_fuelStation_subsidy = sum(
+        m.fuelStation_cost_capital_subsidy[fs] / m.H.A / m.H.time_slices
+        for fs in m.fuelStation_set
+    )
+
+    totalSurplus = (
+        U_hydrogen
+        + U_carbon
+        + U_carbon_capture_credit
+        - P_variable
+        - P_electricity
+        - P_naturalGas
+        - P_fixed
+        - P_capital
+        - P_carbon
+        - CCS_variable
+        - D_variable
+        - D_fixed
+        - D_capital
+        - CV_variable
+        - CV_electricity
+        - CV_fixed
+        - CV_capital
+        + CV_fuelStation_subsidy
+    )
+    return totalSurplus
+
+
+def build_h2_model(inputs, input_parameters):
+    print("Building model")
+    ## Load inputs into `hydrogen_inputs` object,
+    ## which contains all input data
+    H = hydrogen_inputs(inputs=inputs, **input_parameters)
+
+    ## create the network graph object
+    H_network = create_graph.hydrogen_network(H)
+    g = H_network.g
+
+    ## create the pyomo model object and load the inputs and graph objects into it
+    m = pe.ConcreteModel()
+    m.H = H
+    m.g = g
+
+    ## Define sets, which are efficient ways of classifying nodes and arcs
+    create_node_sets(m)
+    create_arc_sets(m)
+
+    # Create parameters, which are the coefficients in the equation
+    create_params(m)
+
+    # Create variables
+    create_variables(m)
 
     # objective function
     # maximize total surplus
-    def obj_rule(m):
-        U_hydrogen = sum(
-            m.cons_h[c] * m.cons_price[c] for c in m.consumer_set
-        )  # consumer daily utility from buying hydrogen
-        U_carbon = sum(
-            m.cons_checs[c] * m.cons_breakevenCarbon[c] * m.H.carbon_price
-            for c in m.consumer_set
-        )  # consumer daily utility from buying checs
-        U_carbon_capture_credit = sum(
-            (
-                m.ccs1_checs[p]
-                * (
-                    m.prod_carbonRate[p]
-                    * (1 - m.H.ccs_data.loc["ccs1", "percent_CO2_captured"])
-                )
-                + m.ccs2_checs[p]
-                * (
-                    m.prod_carbonRate[p]
-                    * (1 - m.H.ccs_data.loc["ccs2", "percent_CO2_captured"])
-                )
-            )
-            * m.H.carbon_capture_credit
-            for p in m.producer_set
-        )
-        P_variable = sum(
-            m.prod_h[p] * m.prod_cost_variable[p] for p in m.producer_set
-        )  # production variable cost per ton
-        P_electricity = sum(
-            (m.prod_h[p] * m.prod_kwh_variable_coeff[p]) * m.H.e_price
-            for p in m.producer_set
-        )  # daily electricity cost
-        P_naturalGas = sum(
-            (m.prod_h[p] * m.prod_ng_variable_coeff[p]) * m.H.ng_price
-            for p in m.producer_set
-        )
-        P_fixed = sum(
-            m.prod_capacity[p] * m.prod_cost_fixed[p] for p in m.producer_set
-        )  # production daily fixed cost per ton
-        P_capital = sum(
-            (m.prod_capacity[p] * m.prod_cost_capital_coeff[p])
-            / m.H.A
-            / m.H.time_slices
-            for p in m.producer_set
-        )  # production daily capital cost per ton
-        P_carbon = sum(
-            (
-                m.prod_checs[p] * m.prod_carbonRate[p]
-                + m.ccs1_checs[p]
-                * (
-                    m.prod_carbonRate[p]
-                    * (1 - m.H.ccs_data.loc["ccs1", "percent_CO2_captured"])
-                )
-                + m.ccs2_checs[p]
-                * (
-                    m.prod_carbonRate[p]
-                    * (1 - m.H.ccs_data.loc["ccs2", "percent_CO2_captured"])
-                )
-            )
-            * m.H.carbon_price
-            for p in m.producer_set
-        )  # cost to produce checs
-        CCS_variable = sum(
-            (m.ccs1_capacity_co2[p] * m.H.ccs_data.loc["ccs1", "variable_usdPerTonCO2"])
-            + (
-                m.ccs2_capacity_co2[p]
-                * m.H.ccs_data.loc["ccs2", "variable_usdPerTonCO2"]
-            )
-            for p in m.producer_set
-        )  # ccs variable cost per ton of produced hydrogen
-        # distribution
-        D_variable = sum(
-            m.dist_h[d] * m.dist_cost_variable[d] for d in m.distribution_arcs
-        )  # daily variable cost
-        D_fixed = sum(
-            m.dist_capacity[d] * m.dist_cost_fixed[d] for d in m.distribution_arcs
-        )  # daily fixed cost
-        D_capital = sum(
-            (m.dist_capacity[d] * m.dist_cost_capital[d]) / m.H.A / m.H.time_slices
-            for d in m.distribution_arcs
-        )  # daily capital cost
-        # converters
-        CV_variable = sum(
-            m.conv_capacity[cv] * m.conv_utilization[cv] * m.conv_cost_variable[cv]
-            for cv in m.converter_set
-        )  # daily variable cost
-        CV_electricity = sum(
-            (
-                m.conv_capacity[cv]
-                * m.conv_utilization[cv]
-                * m.conv_kwh_variable_coeff[cv]
-            )
-            * m.H.e_price
-            for cv in m.converter_set
-        )  # daily electricity cost
-        CV_fixed = sum(
-            m.conv_capacity[cv] * m.conv_cost_fixed[cv] for cv in m.converter_set
-        )  # daily fixed cost
-        CV_capital = sum(
-            (m.conv_capacity[cv] * m.conv_cost_capital_coeff[cv])
-            / m.H.A
-            / m.H.time_slices
-            for cv in m.converter_set
-        )  # daily amortized capital cost
-        CV_fuelStation_subsidy = sum(
-            m.fuelStation_cost_capital_subsidy[fs] / m.H.A / m.H.time_slices
-            for fs in m.fuelStation_set
-        )
-
-        totalSurplus = (
-            U_hydrogen
-            + U_carbon
-            + U_carbon_capture_credit
-            - P_variable
-            - P_electricity
-            - P_naturalGas
-            - P_fixed
-            - P_capital
-            - P_carbon
-            - CCS_variable
-            - D_variable
-            - D_fixed
-            - D_capital
-            - CV_variable
-            - CV_electricity
-            - CV_fixed
-            - CV_capital
-            + CV_fuelStation_subsidy
-        )
-        return totalSurplus
-
     m.OBJ = pe.Objective(rule=obj_rule, sense=pe.maximize)
 
     # constraints
