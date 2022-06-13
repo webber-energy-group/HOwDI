@@ -20,6 +20,7 @@
     "investment_period":20,
     "time_slices":365,
 
-    "solver":"gurobi"
+    "solver":"gurobi",
+    "solver_debug":0
 
 }

@@ -1093,7 +1093,7 @@ def build_h2_model(inputs, input_parameters):
     print("Solving model")
     solver = pyomo.opt.SolverFactory(input_parameters["solver"])
     solver.options["mipgap"] = 0.01
-    results = solver.solve(m, tee=False)
+    results = solver.solve(m, tee=input_parameters["solver_debug"])
     # m.solutions.store_to(results)
     # results.write(filename='results.json', format='json')
     print("Model Solved with objective value {}".format(m.OBJ()))
