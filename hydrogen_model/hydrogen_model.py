@@ -88,11 +88,13 @@ breakeven for different distribution methods, approximately:
     note that compared to the ~10,000 tons per day daily H2 demand, these numbers are quite small, but a refueling station might only consume 4 tons per day, so it's possible that if the model has a series of refueling stations that are each 50+ km away from each other, that trucks will win out over pipelines.
     
 """
+import time
+
+import numpy
+import pandas
 import pyomo
 import pyomo.environ as pe
-import pandas
-import time
-import numpy
+
 import hydrogen_model.create_graph as create_graph
 
 start = time.time()
@@ -263,7 +265,7 @@ def create_arc_sets(m):
 
 def create_params(m):
     """Loads parameters from network object (m.g) into pe.Param objects, which are used as coefficients in the model objective"""
-    # TODO once we have definitions written out for all of these, add the definitions and units here
+    # TODO Add units ?
 
     ## Distribution
     m.dist_cost_capital = pe.Param(
@@ -382,7 +384,7 @@ def create_variables(m):
     # Consumption
     # consumer's daily demand for hydrogen
     m.cons_h = pe.Var(m.consumer_set, domain=pe.NonNegativeReals)
-    # consumer's daily demand for checs
+    # consumer's daily demand for CHECs
     m.cons_checs = pe.Var(m.consumer_set, domain=pe.NonNegativeReals)
 
     ## CCS Retrofitting
@@ -398,11 +400,11 @@ def create_variables(m):
     m.ccs2_capacity_h2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
 
     ## Carbon accounting
-    # daily production of checs for each producer
+    # daily production of CHECs for each producer (sans retrofitted CCS)
     m.prod_checs = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
-    # daily production of checs for CCS1 for each producer
+    # daily production of CHECs for CCS1 for each producer
     m.ccs1_checs = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
-    # daily production of checs for CCS2 for each producer
+    # daily production of CHECs for CCS2 for each producer
     m.ccs2_checs = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
     # carbon emissions for each consumer that is not using hydrogen
     m.co2_nonHydrogenConsumer = pe.Var(m.consumer_set, domain=pe.Reals)
@@ -423,7 +425,7 @@ def obj_rule(m):
     regional cost multiplier was used in `create_graph.py` to get
     the regional coefficient
     """
-    # TODO once we have definitions written out for all of these, add the definitions and units here
+    # TODO units?
 
     # get data needed from m.H:
     ccs1_percent_co2_captured = m.H.ccs_data.loc["ccs1", "percent_CO2_captured"]
@@ -593,6 +595,557 @@ def obj_rule(m):
     return totalSurplus
 
 
+def apply_constraints(m):
+    """Applies constraints to the model"""
+
+    ## Distribution
+
+    def rule_flowBalance(m, node):
+        """Mass conservation for each node
+
+        Constraint:
+            sum of(
+                + flow into a node
+                - flow out a node
+                + flow produced by a node
+                - flow consumed by a node
+                ) == 0
+
+        Set:
+            All nodes
+        """
+        expr = 0
+        if m.g.in_edges(node):
+            expr += pe.summation(m.dist_h, index=m.g.in_edges(node))
+        if m.g.out_edges(node):
+            expr += -pe.summation(m.dist_h, index=m.g.out_edges(node))
+        # the equality depends on whether the node is a producer, consumer, or hub
+        if node in m.producer_set:  # if producer:
+            constraint = m.prod_h[node] + expr == 0.0
+        elif node in m.consumer_set:  # if consumer:
+            constraint = expr - m.cons_h[node] == 0.0
+        else:  # if hub:
+            constraint = expr == 0.0
+        return constraint
+
+    m.constr_flowBalance = pe.Constraint(m.node_set, rule=rule_flowBalance)
+
+    def rule_flowCapacityExisting(m, startNode, endNode):
+        """Force existing pipelines
+
+        Constraint:
+            Existing pipelines' capacity is greater than or equal to 1
+
+        Set:
+            Existing distribution arcs (existing pipelines)
+        """
+        constraint = (
+            m.dist_capacity[startNode, endNode]
+            >= m.g.edges[startNode, endNode]["existing"]
+        )
+        return constraint
+
+    m.constr_flowCapacityExisting = pe.Constraint(
+        m.distribution_arc_existing_set, rule=rule_flowCapacityExisting
+    )
+
+    def rule_flowCapacity(m, startNode, endNode):
+        """Capacity-distribution relationship
+
+        Constraint:
+            (amount of hydrogen through a distribution arc)
+            <=
+            (capacity of the arc (# of pipelines or trucks))
+            * (the allowable flow through one unit of capacity)
+
+        Set:
+            All distribution arcs
+        """
+        constraint = (
+            m.dist_h[startNode, endNode]
+            <= m.dist_capacity[startNode, endNode]
+            * m.dist_flowLimit[startNode, endNode]
+        )
+        return constraint
+
+    m.constr_flowCapacity = pe.Constraint(m.distribution_arcs, rule=rule_flowCapacity)
+
+    def rule_truckConsistency(m, truck_dist_node):
+        """Truck mass balance
+
+        Constraint:
+            The number of trucks entering a node must be >=
+            the number of trucks leaving a node
+
+        Set:
+            All nodes relevant to trucks (all distribution
+            nodes in distribution.csv that include truck)
+        """
+        in_trucks = pe.summation(m.dist_capacity, index=m.g.in_edges(truck_dist_node))
+        out_trucks = pe.summation(m.dist_capacity, index=m.g.out_edges(truck_dist_node))
+
+        constraint = in_trucks - out_trucks >= 0
+        return constraint
+
+    m.const_truckConsistency = pe.Constraint(m.truck_set, rule=rule_truckConsistency)
+
+    def rule_flowCapacityConverters(m, converterNode):
+        """Flow across a convertor is limited
+        by the capacity of the conversion node
+
+        Note: utilization =/= efficiency
+
+        Constraint:
+            flow out of a conversion node <=
+            (capacity of convertor) * (utilization of convertor)
+
+        Set:
+            All convertor nodes
+        """
+        flow_out = pe.summation(m.dist_h, index=m.g.out_edges(converterNode))
+        constraint = (
+            flow_out
+            <= m.conv_capacity[converterNode] * m.conv_utilization[converterNode]
+        )
+        return constraint
+
+    m.constr_flowCapacityConverters = pe.Constraint(
+        m.converter_set, rule=rule_flowCapacityConverters
+    )
+
+    def rule_flowCapacityBetweenConverters(m, converterNode):
+        """Convertor mass balance
+
+        TODO Work on this constraint as I don't think it is correct yet.
+        If the <= is changed to == or >=, the number of trucks at a distribution
+        node is not correct. But with the constraint, the it build too much capacity at
+        other convertors.
+
+        For convertors, the capacity is the de facto
+        distribution capacity at the end of the chain of conversion.
+
+        A conversion capacity of x would mean that the convertor is supplying
+        x dist_pipeline (always 1 since this is a local node) or
+        x dist_trucks (which is the number of trucks)
+
+        Constraint:
+            Flow capacity in <= flow capacity out (?)
+
+        Set:
+            All convertors (?)
+        """
+        in_capacity = pe.summation(m.dist_capacity, index=m.g.in_edges(converterNode))
+        out_capacity = pe.summation(m.dist_capacity, index=m.g.out_edges(converterNode))
+        constraint = in_capacity - out_capacity <= 0
+        return constraint
+
+    m.constr_flowCapacityBetweenConverters = pe.Constraint(
+        m.converter_set, rule=rule_flowCapacityBetweenConverters
+    )
+
+    ## production and ccs
+
+    def rule_forceExistingProduction(m, node):
+        """Existing production must be built
+
+        Constraint:
+            Binary tracking if producer built or not == 1
+
+        Set:
+            Existing producers
+        """
+        constraint = m.prod_exists[node] == True
+        return constraint
+
+    m.const_forceExistingProduction = pe.Constraint(
+        m.producer_existing_set, rule=rule_forceExistingProduction
+    )
+
+    def rule_productionCapacityExisting(m, node):
+        """Capacity of existing producers equals their existing capacity
+
+        Constrains:
+            Model's variable tracking capacity == existing capacity
+
+        Set:
+            Existing producers
+        """
+        constraint = m.prod_capacity[node] == m.g.nodes[node]["capacity_tonPerDay"]
+        return constraint
+
+    m.constr_productionCapacityExisting = pe.Constraint(
+        m.producer_existing_set, rule=rule_productionCapacityExisting
+    )
+
+    def rule_productionCapacity(m, node):
+        """Each producer's production capacity
+        cannot exceed its capacity
+
+        Constraint:
+            production of hydrogen <=
+            producer's capacity * producers utilization
+
+        Set:
+            All producers
+        """
+        constraint = m.prod_h[node] <= m.prod_capacity[node] * m.prod_utilization[node]
+        return constraint
+
+    m.constr_productionCapacity = pe.Constraint(
+        m.producer_set, rule=rule_productionCapacity
+    )
+
+    def rule_minProductionCapacity(m, node):
+        """Minimum bound of production for a producer
+        (only on new producers)
+
+        Constraint:
+            Produced hydrogen >=
+            allowed minimum value * binary tracking if producer is built
+
+            If prod_exists is zero, the minimum allowed hydrogen production is zero.
+            Paired with the maximum constraint, the forces capacity of producers
+            not built to be zero.
+
+        Set:
+            All producer nodes, but all potential producer nodes in effect
+        """
+        if node in m.producer_existing_set:
+            # if producer is an existing producer, don't constrain by minimum value
+            constraint = m.prod_h[node] >= 0
+        else:
+            # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
+            # this gives the model the option to not build the producer
+            constraint = (
+                m.prod_h[node] >= m.g.nodes[node]["min_h2"] * m.prod_exists[node]
+            )
+        return constraint
+
+    m.constr_minProductionCapacity = pe.Constraint(
+        m.producer_set, rule=rule_minProductionCapacity
+    )
+
+    def rule_maxProductionCapacity(m, node):
+        """M bound of production for a producer
+        (only on new producers)
+
+        Constraint:
+            Produced hydrogen <=
+            allowed maximum value * binary tracking if producer is built
+
+            If prod_exists is zero, the maximum allowed hydrogen production is zero
+            Paired with the minimum constraint, the forces capacity of producers
+            not built to be zero.
+
+        Set:
+            All producer nodes, but all potential producer nodes in effect
+        """
+        if node in m.producer_existing_set:
+            # if producer is an existing producer, don't constrain by minimum value
+            constraint = m.prod_h[node] <= 1e12  # arbitrarily large number
+        else:
+            # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
+            # with the prior constraint, forces 0 production if producer DNE
+            constraint = (
+                m.prod_h[node] <= m.g.nodes[node]["max_h2"] * m.prod_exists[node]
+            )
+        return constraint
+
+    m.constr_maxProductionCapacity = pe.Constraint(
+        m.producer_set, rule=rule_maxProductionCapacity
+    )
+
+    def rule_onlyOneCCS(m, node):
+        """Existing producers can only build one of the ccs tech options
+
+        Constraint:
+            NAND(ccs1_built, ccs2_built)
+            - but this can't be solved numerically, thus
+
+            sum of (binary tracking if a ccs technology was built)
+            over all ccs techs <= 1
+
+        Set:
+            All producers, defacto existing producers
+
+        """
+        constraint = m.ccs1_built[node] + m.ccs2_built[node] <= 1
+        return constraint
+
+    m.constr_onlyOneCCS = pe.Constraint(m.producer_set, rule=rule_onlyOneCCS)
+
+    ccs1_percent_CO2_captured = m.H.ccs_data.loc["ccs1", "percent_CO2_captured"]
+
+    def rule_ccs1CapacityRelationship(m, node):
+        """Define CCS1 CO2 Capacity
+
+        Constraint:
+            Amount of CO2 captured ==
+            the amount of hydrogen produced that went through CCS1
+            * the amount of CO2 produced per unit of hydrogen produced
+            * the efficiency of CCS1
+
+        Set:
+            All producers, defacto existing producers
+        """
+        constraint = (
+            m.ccs1_capacity_co2[node] * m.can_ccs1[node]
+            == m.ccs1_capacity_h2[node]
+            * m.prod_carbonRate[node]
+            * ccs1_percent_CO2_captured
+        )
+        return constraint
+
+    m.constr_ccs1CapacityRelationship = pe.Constraint(
+        m.producer_set, rule=rule_ccs1CapacityRelationship
+    )
+
+    ccs2_percent_CO2_captured = m.H.ccs_data.loc["ccs2", "percent_CO2_captured"]
+
+    def rule_ccs2CapacityRelationship(m, node):
+        """Define CCS1 CO2 Capacity
+
+        Constraint:
+            Amount of CO2 captured ==
+            the amount of hydrogen produced that went through CCS1
+            * the amount of CO2 produced per unit of hydrogen produced
+            * the efficiency of CCS1
+
+        Set:
+            All producers, defacto existing producers
+        """
+        constraint = (
+            m.ccs2_capacity_co2[node] * m.can_ccs2[node]
+            == m.ccs2_capacity_h2[node]
+            * m.prod_carbonRate[node]
+            * ccs2_percent_CO2_captured
+        )
+        return constraint
+
+    m.constr_ccs2CapacityRelationship = pe.Constraint(
+        m.producer_set, rule=rule_ccs2CapacityRelationship
+    )
+
+    def rule_mustBuildAllCCS1(m, node):
+        """To build CCS1, it must be built over the entire possible capacity
+
+        Constraint:
+            If CCS1 is built:
+                Amount of hydrogen through CCS1 == Amount of hydrogen produced
+
+        Set:
+            All producers, defacto existing producers
+        """
+        constraint = m.ccs1_capacity_h2[node] == m.ccs1_built[node] * m.prod_h[node]
+        return constraint
+
+    m.constr_mustBuildAllCCS1 = pe.Constraint(
+        m.producer_set, rule=rule_mustBuildAllCCS1
+    )
+
+    def rule_mustBuildAllCCS2(m, node):
+        """To build CCS2, it must be built over the entire possible capacity
+
+        Constraint:
+            If CCS2 is built:
+                Amount of hydrogen through CCS2 == Amount of hydrogen produced
+
+        Set:
+            All producers, defacto existing producers
+        """
+        constraint = m.ccs2_capacity_h2[node] == m.ccs2_built[node] * m.prod_h[node]
+        return constraint
+
+    m.constr_mustBuildAllCCS2 = pe.Constraint(
+        m.producer_set, rule=rule_mustBuildAllCCS2
+    )
+
+    def rule_ccs1Checs(m, node):
+        """CHECs produced from CCS1 cannot exceed the clean hydrogen from CCS1
+
+        Constraint:
+            CHECs from CCS1 <= Clean Hydrogen as a result of CCS1
+
+        Set:
+            All producers, defacto existing producers
+        """
+        constraint = m.ccs1_checs[node] <= m.ccs1_capacity_h2[node]
+        return constraint
+
+    m.constr_ccs1Checs = pe.Constraint(m.producer_set, rule=rule_ccs1Checs)
+
+    def rule_ccs2Checs(m, node):
+        """CHECs produced from CCS2 cannot exceed the clean hydrogen from CCS2
+
+        Constraint:
+            CHECs from CCS2 <= Clean Hydrogen as a result of CCS2
+
+        Set:
+            All producers, defacto existing producers
+        """
+        constraint = m.ccs2_checs[node] <= m.ccs2_capacity_h2[node]
+        return constraint
+
+    m.constr_ccs2Checs = pe.Constraint(m.producer_set, rule=rule_ccs2Checs)
+
+    def rule_productionChec(m, node):
+        """CHEC production cannot exceed hydrogen production
+
+        Constraint:
+            CHECs produced <= hydrogen produced
+
+        Set:
+            All producers
+        """
+
+        total_checs_produced = (
+            m.prod_checs[node] + m.ccs1_checs[node] + m.ccs2_checs[node]
+        )
+
+        constraint = total_checs_produced <= m.prod_h[node]
+        return constraint
+
+    m.constr_productionChecs = pe.Constraint(m.producer_set, rule=rule_productionChec)
+
+    ## Consumption
+
+    def rule_consumerSize(m, node):
+        """Each consumer's consumption cannot exceed its size
+
+        Constraint:
+            consumed hydrogen <= consumption size
+
+        Set:
+            All consumers
+        """
+        constraint = m.cons_h[node] <= m.cons_size[node]
+        return constraint
+
+    m.constr_consumerSize = pe.Constraint(m.consumer_set, rule=rule_consumerSize)
+
+    def rule_consumerChecs(m, node):
+        """Each carbon-sensitive consumer's consumption of CHECs
+            equals its consumption of hydrogen
+
+        Constraint:
+            consumer CHECs ==
+                consumed hydrogen * binary tracking if consumer is carbon-sensitive
+
+        Set:
+            ALl consumers
+        """
+        constraint = m.cons_checs[node] == m.cons_h[node] * m.cons_carbonSensitive[node]
+        return constraint
+
+    m.constr_consumerChec = pe.Constraint(m.consumer_set, rule=rule_consumerChecs)
+
+    ## Carbon Accounting
+
+    def rule_checsBalance(m):
+        """CHECs mass balance
+
+        Constraint:
+            total CHECs consumed <= checs produced
+
+        Set:
+            All producers and consumers
+
+        TODO prod_checs not fully implemented
+        """
+        checs_produced = sum(
+            m.prod_checs[p] + m.ccs1_checs[p] + m.ccs2_checs[p] for p in m.producer_set
+        )
+        checs_consumed = sum(m.cons_checs[c] for c in m.consumer_set)
+        constraint = checs_consumed <= checs_produced
+        return constraint
+
+    m.constr_checsBalance = pe.Constraint(rule=rule_checsBalance)
+
+    def rule_co2Producers(m, node):
+        """CO2 Production
+
+        Constraint:
+            CO2 emitted ==
+                carbon produced per ton of hydrogen * (
+                    hydrogen produced - clean hydrogen produced by CCS
+                )
+
+        Set:
+            All producers
+        """
+        ccs1_clean_hydrogen = (
+            m.ccs1_capacity_h2[node] * m.H.ccs_data.loc["ccs1", "percent_CO2_captured"]
+        )
+        cc2_clean_hydrogen = (
+            m.ccs2_capacity_h2[node] * m.H.ccs_data.loc["ccs2", "percent_CO2_captured"]
+        )
+
+        constraint = m.co2_emitted[node] == m.prod_carbonRate[node] * (
+            m.prod_h[node] - (ccs1_clean_hydrogen + cc2_clean_hydrogen)
+        )
+        return constraint
+
+    m.constr_co2Producers = pe.Constraint(m.producer_set, rule=rule_co2Producers)
+
+    # co2 emissions for consumers that are not using hydrogen
+    def rule_co2Consumers(m, node):
+        """CO2 from consumption that was not satisfied with Hydrogen -
+            i.e., CO2 from the existing methods of satisfying demand
+            that were not displaced by hydrogen infrastructure
+
+        Constraint:
+            Amount of CO2 produced by demand not satisfied with H2 ==
+
+        Set:
+            All consumers
+
+        TODO Double check description
+        """
+        consumer_co2_rate = m.cons_breakevenCarbon[node]
+        consumption_not_satisfied_by_h2 = m.cons_size[node] - m.cons_h[node]
+
+        constraint = (
+            m.co2_nonHydrogenConsumer[node]
+            == consumption_not_satisfied_by_h2 * consumer_co2_rate
+        )
+        return constraint
+
+    m.constr_co2Consumers = pe.Constraint(m.consumer_set, rule=rule_co2Consumers)
+
+    ###subsidy for infrastructure
+    # total subsidy dollars must be less than or equal to the available subsidy funds
+    # =============================================================================
+    # def rule_subsidyTotal(m, node):
+    #     constraint = sum(m.fuelStation_cost_capital_subsidy[fs] for fs in m.fuelStation_set) <= (m.H.subsidy_dollar_billion * 1E9)
+    #     return constraint
+    # m.constr_subsidyTotal = pe.Constraint(rule=rule_subsidyTotal)
+    # =============================================================================
+
+    # conversion facility subsidies
+    def rule_subsidyConverter(m, node):
+        """Subsidies for a convertor is equal to the cost share fraction
+
+        Constraint:
+            Subsidies from conversion ==
+                Cost of conversion * fraction of cost paid by subsidies
+
+        Set:
+            All fuel stations
+        """
+
+        conversion_cost = m.conv_capacity[node] * m.conv_cost_capital_coeff[node]
+
+        constraint = m.fuelStation_cost_capital_subsidy[node] == conversion_cost * (
+            1 - m.H.subsidy_cost_share_fraction
+        )
+        # note that existing production facilities have a cost_capital_coeff of zero, so they cannot be subsidized
+        return constraint
+
+    m.constr_subsidyConverter = pe.Constraint(
+        m.fuelStation_set, rule=rule_subsidyConverter
+    )
+
+
 def build_h2_model(inputs, input_parameters):
     print("Building model")
     ## Load inputs into `hydrogen_inputs` object,
@@ -622,296 +1175,10 @@ def build_h2_model(inputs, input_parameters):
     # maximize total surplus
     m.OBJ = pe.Objective(rule=obj_rule, sense=pe.maximize)
 
-    # constraints
-    # distribution and conversion
-    # flow balance constraints for each node
-    def rule_flowBalance(m, node):
-        expr = 0
-        if m.g.in_edges(node):
-            expr += pe.summation(m.dist_h, index=m.g.in_edges(node))
-        if m.g.out_edges(node):
-            expr += -pe.summation(m.dist_h, index=m.g.out_edges(node))
-        # the equality depends on whether the node is a producer, consumer, or hub
-        if node in m.producer_set:  # if producer:
-            constraint = m.prod_h[node] + expr == 0.0
-        elif node in m.consumer_set:  # if consumer:
-            constraint = expr - m.cons_h[node] == 0.0
-        else:  # if hub:
-            constraint = expr == 0.0
-        return constraint
+    # apply constraints
+    apply_constraints(m)
 
-    m.constr_flowBalance = pe.Constraint(m.node_set, rule=rule_flowBalance)
-    # existing pipelines' capacity is greater than or equal to 1
-    def rule_flowCapacityExisting(m, startNode, endNode):
-        constraint = (
-            m.dist_capacity[startNode, endNode]
-            >= m.g.edges[startNode, endNode]["existing"]
-        )
-        return constraint
-
-    m.constr_flowCapacityExisting = pe.Constraint(
-        m.distribution_arc_existing_set, rule=rule_flowCapacityExisting
-    )
-    # each distributor's flow cannot exceed its capacity * flowLimit
-    def rule_flowCapacity(m, startNode, endNode):
-        constraint = (
-            m.dist_h[startNode, endNode]
-            <= m.dist_capacity[startNode, endNode]
-            * m.dist_flowLimit[startNode, endNode]
-        )
-        return constraint
-
-    m.constr_flowCapacity = pe.Constraint(m.distribution_arcs, rule=rule_flowCapacity)
-
-    # the amount of trucks entering a hub's `truck{type}` node must be the same amount that is leaving
-    def rule_truckConsistency(m, truck_dist_node):
-        in_trucks = pe.summation(m.dist_capacity, index=m.g.in_edges(truck_dist_node))
-        out_trucks = pe.summation(m.dist_capacity, index=m.g.out_edges(truck_dist_node))
-
-        constraint = in_trucks - out_trucks >= 0
-        return constraint
-
-    m.const_truckConsistency = pe.Constraint(m.truck_set, rule=rule_truckConsistency)
-
-    # flow across conversion arcs is limited by the capacity of the conversion node
-    def rule_flowCapacityConverters(m, converterNode):
-        expr = pe.summation(m.dist_h, index=m.g.out_edges(converterNode))
-        constraint = (
-            expr <= m.conv_capacity[converterNode] * m.conv_utilization[converterNode]
-        )
-        return constraint
-
-    m.constr_flowCapacityConverters = pe.Constraint(
-        m.converter_set, rule=rule_flowCapacityConverters
-    )
-
-    # flow in and out of a convertor must have consistent capacity;
-    # that is, conversion capacity into an arc must equal the capacity out of an arc
-    # <= used because capacity was often dropped (in_capacity > out_capacity)in the approximate solution
-    def rule_flowCapacityBetweenConverters(m, converterNode):
-        in_capacity = pe.summation(m.dist_capacity, index=m.g.in_edges(converterNode))
-        out_capacity = pe.summation(m.dist_capacity, index=m.g.out_edges(converterNode))
-        constraint = in_capacity - out_capacity <= 0
-        return constraint
-
-    m.constr_flowCapacityBetweenConverters = pe.Constraint(
-        m.converter_set, rule=rule_flowCapacityBetweenConverters
-    )
-
-    # production and ccs
-    # Prohibit model from not deploying existing producers
-    def rule_forceExistingProduction(m, node):
-        constraint = m.prod_exists[node] == True
-        return constraint
-
-    m.const_forceExistingProduction = pe.Constraint(
-        m.producer_existing_set, rule=rule_forceExistingProduction
-    )
-    # existing producers' capacity equals their existing capacity
-    def rule_productionCapacityExisting(m, node):
-        constraint = m.prod_capacity[node] == m.g.nodes[node]["capacity_tonPerDay"]
-        return constraint
-
-    m.constr_productionCapacityExisting = pe.Constraint(
-        m.producer_existing_set, rule=rule_productionCapacityExisting
-    )
-    # each producer's production cannot exceed its capacity
-    def rule_productionCapacity(m, node):
-        constraint = m.prod_h[node] <= m.prod_capacity[node] * m.prod_utilization[node]
-        return constraint
-
-    m.constr_productionCapacity = pe.Constraint(
-        m.producer_set, rule=rule_productionCapacity
-    )
-    # production must exceed minimum production value, if not already existing
-    def rule_minProductionCapacity(m, node):
-        if node in m.producer_existing_set:
-            # if producer is an existing producer, don't constrain by minimum value
-            # note - do not confuse node with hub. node in this case would be something akin to 'dallas_smrExisting', not 'dallas'
-            constraint = m.prod_h[node] >= 0
-        else:
-            # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
-            # this gives the model the option to not build the producer
-            constraint = (
-                m.prod_h[node] >= m.g.nodes[node]["min_h2"] * m.prod_exists[node]
-            )
-        return constraint
-
-    m.constr_minProductionCapacity = pe.Constraint(
-        m.producer_set, rule=rule_minProductionCapacity
-    )
-
-    def rule_maxProductionCapacity(m, node):
-        if node in m.producer_existing_set:
-            # if producer is an existing producer, don't constrain by minimum value
-            constraint = m.prod_h[node] <= 1e12  # arbitrarily large number
-        else:
-            # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
-            # with the prior constraint, forces 0 production if producer DNE
-            constraint = (
-                m.prod_h[node] <= m.g.nodes[node]["max_h2"] * m.prod_exists[node]
-            )
-        return constraint
-
-    m.constr_maxProductionCapacity = pe.Constraint(
-        m.producer_set, rule=rule_maxProductionCapacity
-    )
-
-    # existing producers can not build both cc1 and ccs
-    def rule_onlyOneCCS(m, node):
-        # binaries can't be used as binaries in pyomo, thus:
-        constraint = (
-            m.ccs1_built[node] + m.ccs2_built[node] <= 1
-        )  # hacky way of doing NAND(ccs1_built,ccs2_built)
-        return constraint
-
-    m.constr_onlyOneCCS = pe.Constraint(m.producer_set, rule=rule_onlyOneCCS)
-    # enforces that CCS must be built over entire capacity and not a fraction
-    def rule_mustBuildAllCCS1(m, node):
-        constraint = m.ccs1_capacity_h2[node] == m.ccs1_built[node] * m.prod_h[node]
-        return constraint
-
-    m.constr_mustBuildAllCCS1 = pe.Constraint(
-        m.producer_set, rule=rule_mustBuildAllCCS1
-    )
-
-    def rule_mustBuildAllCCS2(m, node):
-        constraint = m.ccs2_capacity_h2[node] == m.ccs2_built[node] * m.prod_h[node]
-        return constraint
-
-    m.constr_mustBuildAllCCS2 = pe.Constraint(
-        m.producer_set, rule=rule_mustBuildAllCCS2
-    )
-    # ccs capacity in terms of CO2 is related to its capacity in terms of H2, which must be zero if m.ccs#_can==0
-    def rule_ccs1CapacityRelationship(m, node):
-        constraint = (
-            m.ccs1_capacity_co2[node] * m.can_ccs1[node]
-            == m.ccs1_capacity_h2[node]
-            * m.prod_carbonRate[node]
-            * m.H.ccs_data.loc["ccs1", "percent_CO2_captured"]
-        )
-        return constraint
-
-    m.constr_ccs1CapacityRelationship = pe.Constraint(
-        m.producer_set, rule=rule_ccs1CapacityRelationship
-    )
-
-    def rule_ccs2CapacityRelationship(m, node):
-        constraint = (
-            m.ccs2_capacity_co2[node] * m.can_ccs2[node]
-            == m.ccs2_capacity_h2[node]
-            * m.prod_carbonRate[node]
-            * m.H.ccs_data.loc["ccs2", "percent_CO2_captured"]
-        )
-        return constraint
-
-    m.constr_ccs2CapacityRelationship = pe.Constraint(
-        m.producer_set, rule=rule_ccs2CapacityRelationship
-    )
-    # each producer's ccs capacity (h2) cannot exceed its production capacity
-    # def rule_ccsCapacity(m, node):
-    #     constraint = (m.ccs1_capacity_h2[node] + m.ccs2_capacity_h2[node] <= m.prod_capacity[node])
-    #     return constraint
-    # m.constr_ccsCapacity = pe.Constraint(m.producer_set, rule=rule_ccsCapacity)
-    # ccs chec production cannot exceed ccs capacity (h2)
-    def rule_ccs1Checs(m, node):
-        constraint = m.ccs1_checs[node] <= m.ccs1_capacity_h2[node]
-        return constraint
-
-    m.constr_ccs1Checs = pe.Constraint(m.producer_set, rule=rule_ccs1Checs)
-
-    def rule_ccs2Checs(m, node):
-        constraint = m.ccs2_checs[node] <= m.ccs2_capacity_h2[node]
-        return constraint
-
-    m.constr_ccs2Checs = pe.Constraint(m.producer_set, rule=rule_ccs2Checs)
-    # each producer's total checs production cannot exceed its hydrogen production
-    def rule_productionChec(m, node):
-        constraint = (
-            m.prod_checs[node] + m.ccs1_checs[node] + m.ccs2_checs[node]
-            <= m.prod_h[node]
-        )
-        return constraint
-
-    m.constr_productionChec = pe.Constraint(m.producer_set, rule=rule_productionChec)
-
-    # consumption
-    # each consumer's consumption cannot exceed its size
-    def rule_consumerSize(m, node):
-        constraint = m.cons_h[node] <= m.cons_size[node]
-        return constraint
-
-    m.constr_consumerSize = pe.Constraint(m.consumer_set, rule=rule_consumerSize)
-    # each consumer's consumption of checs equals its consumption of hydrogen if it is a carbon-sensitive consumer
-    def rule_consumerChecs(m, node):
-        constraint = m.cons_checs[node] == m.cons_h[node] * m.cons_carbonSensitive[node]
-        return constraint
-
-    m.constr_consumerChec = pe.Constraint(m.consumer_set, rule=rule_consumerChecs)
-
-    # carbon
-    # total checs produced must exceed total checs consumed
-    def rule_checsBalance(m):
-        checs_produced = sum(
-            m.prod_checs[p] + m.ccs1_checs[p] + m.ccs2_checs[p] for p in m.producer_set
-        )
-        checs_consumed = sum(m.cons_checs[c] for c in m.consumer_set)
-        constraint = checs_consumed <= checs_produced
-        return constraint
-
-    m.constr_checsBalance = pe.Constraint(rule=rule_checsBalance)
-
-    # track the co2 emissions
-    # co2 emissions for hydrogen producers
-    def rule_co2Producers(m, node):
-        constraint = m.co2_emitted[node] == m.prod_carbonRate[node] * (
-            m.prod_h[node]
-            - m.ccs1_capacity_h2[node]
-            * m.H.ccs_data.loc["ccs1", "percent_CO2_captured"]
-            - m.ccs2_capacity_h2[node]
-            * m.H.ccs_data.loc["ccs2", "percent_CO2_captured"]
-        )
-        return constraint
-
-    m.constr_co2Producers = pe.Constraint(m.producer_set, rule=rule_co2Producers)
-
-    # co2 emissions for consumers that are not using hydrogen
-    def rule_co2Consumers(m, node):
-        # consumer_co2_rate = m.H.consumers.loc[node, 'breakevenCarbon_g_MJ'] * m.H.carbon_g_MJ_to_t_tH2 #this threw errors after we added the price nodes, but the price nodes were not included in H.consumers
-        consumer_co2_rate = m.cons_breakevenCarbon[node]
-        constraint = (
-            m.co2_nonHydrogenConsumer[node]
-            == (m.cons_size[node] - m.cons_h[node]) * consumer_co2_rate
-        )
-        return constraint
-
-    m.constr_co2Consumers = pe.Constraint(m.consumer_set, rule=rule_co2Consumers)
-
-    ###subsidy for infrastructure
-    # total subsidy dollars must be less than or equal to the available subsidy funds
-    # =============================================================================
-    # def rule_subsidyTotal(m, node):
-    #     constraint = sum(m.fuelStation_cost_capital_subsidy[fs] for fs in m.fuelStation_set) <= (m.H.subsidy_dollar_billion * 1E9)
-    #     return constraint
-    # m.constr_subsidyTotal = pe.Constraint(rule=rule_subsidyTotal)
-    # =============================================================================
-
-    # subsidy for a facility is equal to the cost share fraction
-    # conversion facility subsidies
-    def rule_subsidyConverter(m, node):
-        constraint = m.fuelStation_cost_capital_subsidy[node] == m.conv_capacity[
-            node
-        ] * m.conv_cost_capital_coeff[node] * (1 - m.H.subsidy_cost_share_fraction)
-        # note that existing production facilities have a cost_capital_coeff of zero, so they cannot be subsidized
-        return constraint
-
-    m.constr_subsidyConverter = pe.Constraint(
-        m.fuelStation_set, rule=rule_subsidyConverter
-    )
-
-    ###
-    ###solve the model
-    ###
+    # solve model
     print("Time elapsed: %f" % (time.time() - start))
     print("Solving model")
     solver = pyomo.opt.SolverFactory(input_parameters["solver"])
