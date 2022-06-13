@@ -5,12 +5,12 @@ import pandas
 import pyomo
 import pyomo.environ as pe
 
-import hydrogen_model.create_graph as create_graph
+from hydrogen_model.create_graph import build_hydrogen_network
 
 start = time.time()
 
 
-class hydrogen_inputs:
+class HydrogenInputs:
     """
     stores all of the input files needed to run the hydrogen model
     stores some hard coded variables used for the hydrogen model
@@ -1065,18 +1065,13 @@ def apply_constraints(m):
 
 def build_h2_model(inputs, input_parameters):
     print("Building model")
+    m = pe.ConcreteModel()
     ## Load inputs into `hydrogen_inputs` object,
     ## which contains all input data
-    H = hydrogen_inputs(inputs=inputs, **input_parameters)
+    m.H = HydrogenInputs(inputs=inputs, **input_parameters)
 
     ## create the network graph object
-    H_network = create_graph.hydrogen_network(H)
-    g = H_network.g
-
-    ## create the pyomo model object and load the inputs and graph objects into it
-    m = pe.ConcreteModel()
-    m.H = H
-    m.g = g
+    m.g = build_hydrogen_network(m.H)
 
     ## Define sets, which are efficient ways of classifying nodes and arcs
     create_node_sets(m)
