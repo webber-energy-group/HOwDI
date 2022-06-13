@@ -49,6 +49,18 @@ class hydrogen_inputs:
         self.demand = pandas.DataFrame(inputs["demand"])
         self.ccs_data = pandas.DataFrame(inputs["ccs"])
         self.ccs_data.set_index("type", inplace=True)
+        self.ccs1_percent_co2_captured = self.ccs_data.loc[
+            "ccs1", "percent_CO2_captured"
+        ]
+        self.ccs2_percent_co2_captured = self.ccs_data.loc[
+            "ccs2", "percent_CO2_captured"
+        ]
+        self.ccs1_variable_usdPerTon = self.ccs_data.loc[
+            "ccs1", "variable_usdPerTonCO2"
+        ]
+        self.ccs2_variable_usdPerTon = self.ccs_data.loc[
+            "ccs2", "variable_usdPerTonCO2"
+        ]
 
         # data specific to the real world network being analyzed
         self.nodes = pandas.DataFrame(inputs["{}nodes".format(csv_prefix)])
@@ -71,6 +83,7 @@ class hydrogen_inputs:
         )
         # unit conversion 120,000 MJ/tonH2, 1,000,000 g/tonCO2:
         self.carbon_g_MJ_to_t_tH2 = 120000.0 / 1000000.0
+
         self.price_tracking_array = numpy.arange(**price_tracking_array)
         self.price_hubs = price_hubs
         self.price_demand = price_demand
@@ -337,12 +350,6 @@ def obj_rule(m):
     """
     # TODO units?
 
-    # get data needed from m.H:
-    ccs1_percent_co2_captured = m.H.ccs_data.loc["ccs1", "percent_CO2_captured"]
-    ccs2_percent_co2_captured = m.H.ccs_data.loc["ccs2", "percent_CO2_captured"]
-    ccs1_varible_usdPerTon = m.H.ccs_data.loc["ccs1", "variable_usdPerTonCO2"]
-    ccs2_varible_usdPerTon = m.H.ccs_data.loc["ccs2", "variable_usdPerTonCO2"]
-
     ## Utility
 
     # consumer daily utility from buying hydrogen is the sum of
@@ -361,8 +368,10 @@ def obj_rule(m):
     # TODO describe this equation
     U_carbon_capture_credit = (
         sum(
-            m.ccs1_checs[p] * (m.prod_carbonRate[p] * (1 - ccs1_percent_co2_captured))
-            + m.ccs2_checs[p] * (m.prod_carbonRate[p] * (1 - ccs2_percent_co2_captured))
+            m.ccs1_checs[p]
+            * (m.prod_carbonRate[p] * (1 - m.H.ccs1_percent_co2_captured))
+            + m.ccs2_checs[p]
+            * (m.prod_carbonRate[p] * (1 - m.H.ccs2_percent_co2_captured))
             for p in m.producer_set
         )
         * m.H.carbon_capture_credit
@@ -408,8 +417,10 @@ def obj_rule(m):
     P_carbon = (
         sum(
             m.prod_checs[p] * m.prod_carbonRate[p]
-            + m.ccs1_checs[p] * (m.prod_carbonRate[p] * (1 - ccs1_percent_co2_captured))
-            + m.ccs2_checs[p] * (m.prod_carbonRate[p] * (1 - ccs2_percent_co2_captured))
+            + m.ccs1_checs[p]
+            * (m.prod_carbonRate[p] * (1 - m.H.ccs1_percent_co2_captured))
+            + m.ccs2_checs[p]
+            * (m.prod_carbonRate[p] * (1 - m.H.ccs2_percent_co2_captured))
             for p in m.producer_set
         )
         * m.H.carbon_price
@@ -418,8 +429,8 @@ def obj_rule(m):
     # ccs variable cost per ton of produced hydrogen
     # TODO
     CCS_variable = sum(
-        (m.ccs1_capacity_co2[p] * ccs1_varible_usdPerTon)
-        + (m.ccs2_capacity_co2[p] * ccs2_varible_usdPerTon)
+        (m.ccs1_capacity_co2[p] * m.H.ccs1_variable_usdPerTon)
+        + (m.ccs2_capacity_co2[p] * m.H.ccs2_variable_usdPerTon)
         for p in m.producer_set
     )
 
@@ -784,8 +795,6 @@ def apply_constraints(m):
 
     m.constr_onlyOneCCS = pe.Constraint(m.producer_set, rule=rule_onlyOneCCS)
 
-    ccs1_percent_CO2_captured = m.H.ccs_data.loc["ccs1", "percent_CO2_captured"]
-
     def rule_ccs1CapacityRelationship(m, node):
         """Define CCS1 CO2 Capacity
 
@@ -802,7 +811,7 @@ def apply_constraints(m):
             m.ccs1_capacity_co2[node] * m.can_ccs1[node]
             == m.ccs1_capacity_h2[node]
             * m.prod_carbonRate[node]
-            * ccs1_percent_CO2_captured
+            * m.H.ccs1_percent_co2_captured
         )
         return constraint
 
@@ -810,10 +819,8 @@ def apply_constraints(m):
         m.producer_set, rule=rule_ccs1CapacityRelationship
     )
 
-    ccs2_percent_CO2_captured = m.H.ccs_data.loc["ccs2", "percent_CO2_captured"]
-
     def rule_ccs2CapacityRelationship(m, node):
-        """Define CCS1 CO2 Capacity
+        """Define CCS2 CO2 Capacity
 
         Constraint:
             Amount of CO2 captured ==
@@ -828,7 +835,7 @@ def apply_constraints(m):
             m.ccs2_capacity_co2[node] * m.can_ccs2[node]
             == m.ccs2_capacity_h2[node]
             * m.prod_carbonRate[node]
-            * ccs2_percent_CO2_captured
+            * m.H.ccs2_percent_co2_captured
         )
         return constraint
 
