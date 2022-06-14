@@ -334,8 +334,8 @@ def add_producers(g: DiGraph, H):
     for _, hub_data in H.hubs.iterrows():
         hub_name = hub_data["hub"]
         capital_price_multiplier = hub_data["capital_pm"]
-        ng_price_multiplier = hub_data["ng_pm"]
-        e_price_multiplier = hub_data["e_pm"]
+        ng_price = hub_data["ng_usd_per_mmbtu"]
+        e_price = hub_data["e_usd_per_kwh"]
 
         for _, prod_data_series in H.producers.iterrows():
             prod_type = prod_data_series["type"]
@@ -356,12 +356,8 @@ def add_producers(g: DiGraph, H):
                 prod_data["capital_usd_coefficient"] = (
                     prod_data["capital_usd_coefficient"] * capital_price_multiplier
                 )
-                prod_data["kWh_coefficient"] = (
-                    prod_data["kWh_coefficient"] * e_price_multiplier
-                )
-                prod_data["ng_coefficient"] = (
-                    prod_data["ng_coefficient"] * ng_price_multiplier
-                )
+                prod_data["e_price"] = prod_data["kWh_coefficient"] * e_price
+                prod_data["ng_price"] = prod_data["ng_coefficient"] * ng_price
                 g.add_node(prod_node, **prod_data)
 
                 # add edge
@@ -411,6 +407,9 @@ def add_converters(g: DiGraph, H):
                 if node_b4_cv_class == converter_data_series["arc_start_class"]:
                     hub_name = g.nodes[node_b4_cv]["hub"]
                     hub_data = H.hubs.set_index("hub").loc[hub_name]
+                    # regional values:
+                    capital_pm = hub_data["capital_pm"]
+                    e_price = hub_data["e_usd_per_kwh"]
 
                     # add a new node for the converter at the hub
                     cv_data = converter_data_series.to_dict()
@@ -421,14 +420,10 @@ def add_converters(g: DiGraph, H):
                     cv_data["node"] = cv_node
                     cv_destination = cv_data["arc_end_class"]
 
-                    # multiply by regional capital price modifier TODO
                     cv_data["capital_usd_coefficient"] = (
-                        cv_data["capital_usd_coefficient"] * hub_data["capital_pm"]
+                        cv_data["capital_usd_coefficient"] * capital_pm
                     )
-                    # multiply by electricity regional price modifier TODO
-                    cv_data["kWh_coefficient"] = (
-                        cv_data["kWh_coefficient"] * hub_data["e_pm"]
-                    )
+                    cv_data["e_price"] = cv_data["kWh_coefficient"] * e_price
                     g.add_node(cv_node, **cv_data)
 
                     # grab the tuples of any edges that have the correct arc_end type--

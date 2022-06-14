@@ -7,8 +7,6 @@
     "price_hubs" : ["austin","pasadena"],
     "price_demand":0.01,
     "find_prices":1,
-    "industrial_electricity_usd_per_kwh":0.075,
-    "industrial_ng_usd_per_mmbtu":3.50,
 
     "carbon_price_dollars_per_ton":0,
     "carbon_capture_credit_dollars_per_ton":50,

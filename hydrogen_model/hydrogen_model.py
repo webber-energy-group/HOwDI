@@ -19,8 +19,6 @@ class HydrogenInputs:
     def __init__(
         self,
         inputs,
-        industrial_electricity_usd_per_kwh,
-        industrial_ng_usd_per_mmbtu,
         carbon_price_dollars_per_ton,
         carbon_capture_credit_dollars_per_ton,
         price_tracking_array,
@@ -70,8 +68,6 @@ class HydrogenInputs:
 
         # Scalars
         # get rid of:
-        self.e_price = industrial_electricity_usd_per_kwh
-        self.ng_price = industrial_ng_usd_per_mmbtu
         self.time_slices = float(time_slices)
         self.carbon_price = float(carbon_price_dollars_per_ton)
         self.carbon_capture_credit = carbon_capture_credit_dollars_per_ton
@@ -221,11 +217,11 @@ def create_params(m):
     m.prod_cost_fixed = pe.Param(
         m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("fixed_usdPerTon", 0)
     )
-    m.prod_kwh_variable_coeff = pe.Param(
-        m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("kWh_coefficient", 0)
+    m.prod_e_price = pe.Param(
+        m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("e_price", 0)
     )
-    m.prod_ng_variable_coeff = pe.Param(
-        m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("ng_coefficient", 0)
+    m.prod_ng_price = pe.Param(
+        m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("ng_price", 0)
     )
     m.prod_cost_variable = pe.Param(
         m.producer_set,
@@ -249,8 +245,8 @@ def create_params(m):
         m.converter_set,
         initialize=lambda m, i: m.g.nodes[i].get("fixed_usdPerTonPerDay", 0),
     )
-    m.conv_kwh_variable_coeff = pe.Param(
-        m.converter_set, initialize=lambda m, i: m.g.nodes[i].get("kWh_coefficient", 0)
+    m.conv_e_price = pe.Param(
+        m.converter_set, initialize=lambda m, i: m.g.nodes[i].get("e_price", 0)
     )
     m.conv_cost_variable = pe.Param(
         m.converter_set,
@@ -389,19 +385,11 @@ def obj_rule(m):
     # over all producers
     P_variable = sum(m.prod_h[p] * m.prod_cost_variable[p] for p in m.producer_set)
 
-    # daily electricity cost
-    # TODO this is going to change
-    P_electricity = (
-        sum(m.prod_h[p] * m.prod_kwh_variable_coeff[p] for p in m.producer_set)
-        * m.H.e_price
-    )
+    # daily electricity cost (regional value for e_price)
+    P_electricity = sum(m.prod_h[p] * m.prod_e_price[p] for p in m.producer_set)
 
-    # daily natural gas cost
-    # TODO this is going to change
-    P_naturalGas = (
-        sum(m.prod_h[p] * m.prod_ng_variable_coeff[p] for p in m.producer_set)
-        * m.H.ng_price
-    )
+    # daily natural gas cost (regioanl value for ng_price)
+    P_naturalGas = sum(m.prod_h[p] * m.prod_ng_price[p] for p in m.producer_set)
 
     # The fixed cost of production per ton is the sum of
     # (the capacity of a producer) * (the fixed regional cost of a producer)
@@ -470,10 +458,9 @@ def obj_rule(m):
         for cv in m.converter_set
     )
 
-    # TODO will change once electricity format is changed
+    # Cost of electricity, with a regional electricity price
     CV_electricity = sum(
-        (m.conv_capacity[cv] * m.conv_utilization[cv] * m.conv_kwh_variable_coeff[cv])
-        * m.H.e_price
+        (m.conv_capacity[cv] * m.conv_utilization[cv] * m.conv_e_price[cv])
         for cv in m.converter_set
     )
 

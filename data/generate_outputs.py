@@ -153,8 +153,8 @@ def main(m, hubs_list, parameters):
         "prod_cost_variable",
         "prod_h",
         "prod_checs",
-        "prod_kwh_variable_coeff",
-        "prod_ng_variable_coeff",
+        "prod_e_price",
+        "prod_ng_price",
         "prod_utilization",
     ]
     merge_lists["conversion"] = [
@@ -162,7 +162,7 @@ def main(m, hubs_list, parameters):
         "conv_cost_capital_coeff",
         "conv_cost_fixed",
         "conv_cost_variable",
-        "conv_kwh_variable_coeff",
+        "conv_e_price",
         "conv_utilization",
         "fuelStation_cost_capital_subsidy",
     ]
