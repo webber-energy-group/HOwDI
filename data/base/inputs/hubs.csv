@@ -1,4 +1,4 @@
-node,build_smr,build_electrolyzer,transportationFuel_tonnesperday,industrialFuel_tonnesperday,existing_tonnesperday,capital_pm,ng_pm,e_pm,
+hub,build_smr,build_electrolyzer,transportationFuel_tonnesperday,industrialFuel_tonnesperday,existing_tonnesperday,capital_pm,ng_pm,e_pm,
 brazoria,1,1,0,0,538,0.78,0.83,1.2,# price multipliers are random
 freeport,1,1,0,0,538,1.03,0.83,0.77,
 chocolateBay,1,1,0,0,538,1.04,1.14,1.09,

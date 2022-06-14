@@ -1,13 +1,13 @@
 import time
 
+start = time.time()
+
 import numpy
 import pandas
 import pyomo
 import pyomo.environ as pe
 
 from hydrogen_model.create_graph import build_hydrogen_network
-
-start = time.time()
 
 
 class HydrogenInputs:
@@ -27,7 +27,6 @@ class HydrogenInputs:
         price_hubs,
         price_demand,
         find_prices,
-        csv_prefix,
         investment_interest,
         investment_period,
         time_slices,
@@ -63,11 +62,9 @@ class HydrogenInputs:
         ]
 
         # data specific to the real world network being analyzed
-        self.nodes = pandas.DataFrame(inputs["{}nodes".format(csv_prefix)])
-        self.arcs = pandas.DataFrame(inputs["{}arcs".format(csv_prefix)])
-        self.producers_existing = pandas.DataFrame(
-            inputs["{}production_existing".format(csv_prefix)]
-        )
+        self.hubs = pandas.DataFrame(inputs["hubs"])
+        self.arcs = pandas.DataFrame(inputs["arcs"])
+        self.producers_existing = pandas.DataFrame(inputs["production_existing"])
 
         # Scalars
         # get rid of:
@@ -634,35 +631,35 @@ def apply_constraints(m):
         m.converter_set, rule=rule_flowCapacityConverters
     )
 
-    def rule_flowCapacityBetweenConverters(m, converterNode):
-        """Convertor mass balance
+    # def rule_flowCapacityBetweenConverters(m, converterNode):
+    #     """Convertor mass balance
 
-        TODO Work on this constraint as I don't think it is correct yet.
-        If the <= is changed to == or >=, the number of trucks at a distribution
-        node is not correct. But with the constraint, the it build too much capacity at
-        other convertors.
+    #     TODO Work on this constraint as I don't think it is correct yet.
+    #     If the <= is changed to == or >=, the number of trucks at a distribution
+    #     node is not correct. But with the constraint, the it build too much capacity at
+    #     other convertors.
 
-        For convertors, the capacity is the de facto
-        distribution capacity at the end of the chain of conversion.
+    #     For convertors, the capacity is the de facto
+    #     distribution capacity at the end of the chain of conversion.
 
-        A conversion capacity of x would mean that the convertor is supplying
-        x dist_pipeline (always 1 since this is a local node) or
-        x dist_trucks (which is the number of trucks)
+    #     A conversion capacity of x would mean that the convertor is supplying
+    #     x dist_pipeline (always 1 since this is a local node) or
+    #     x dist_trucks (which is the number of trucks)
 
-        Constraint:
-            Flow capacity in <= flow capacity out (?)
+    #     Constraint:
+    #         Flow capacity in <= flow capacity out (?)
 
-        Set:
-            All convertors (?)
-        """
-        in_capacity = pe.summation(m.dist_capacity, index=m.g.in_edges(converterNode))
-        out_capacity = pe.summation(m.dist_capacity, index=m.g.out_edges(converterNode))
-        constraint = in_capacity - out_capacity <= 0
-        return constraint
+    #     Set:
+    #         All convertors (?)
+    #     """
+    #     in_capacity = pe.summation(m.dist_capacity, index=m.g.in_edges(converterNode))
+    #     out_capacity = pe.summation(m.dist_capacity, index=m.g.out_edges(converterNode))
+    #     constraint = in_capacity - out_capacity <= 0
+    #     return constraint
 
-    m.constr_flowCapacityBetweenConverters = pe.Constraint(
-        m.converter_set, rule=rule_flowCapacityBetweenConverters
-    )
+    # m.constr_flowCapacityBetweenConverters = pe.Constraint(
+    #     m.converter_set, rule=rule_flowCapacityBetweenConverters
+    # )
 
     ## production and ccs
 

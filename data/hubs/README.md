@@ -1,6 +1,6 @@
-## nodes.csv
+## hubs.csv
 
-File describes nodes
+File describes hubs
 
 - build_smr
     - Binary 
@@ -11,10 +11,10 @@ File describes nodes
 - existing_tonnesperday
 - major
     - Binary
-    - True: Node can make large connections
+    - True: Hub can make large connections
 - minor
     - Binary
-    - True: Node can make small connections
+    - True: hub can make small connections
 
 ## existing_arcs.csv
 
@@ -22,4 +22,4 @@ Describes predefined arcs that are appended to output
 
 ## geocode.py
 
-Generates `nodes.geojson`, which is a GeoJSON containing the locations of each node
+Generates `hubs.geojson`, which is a GeoJSON containing the locations of each hub

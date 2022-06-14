@@ -1,4 +1,4 @@
-startNode,endNode,exist_pipeline
+startHub,endHub,exist_pipeline
 brazoria,freeport,1
 freeport,chocolateBay,1
 chocolateBay,texasCity,1

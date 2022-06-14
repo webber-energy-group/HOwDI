@@ -1,4 +1,4 @@
-node,build_smr,build_electrolyzer,transportationFuel_tonnesperday,industrialFuel_tonnesperday,existing_tonnesperday,major,minor
+hub,build_smr,build_electrolyzer,transportationFuel_tonnesperday,industrialFuel_tonnesperday,existing_tonnesperday,major,minor
 brazoria,1,1,0,0,538,0,0
 freeport,1,1,0,0,538,0,1
 chocolateBay,1,1,0,0,538,0,1
