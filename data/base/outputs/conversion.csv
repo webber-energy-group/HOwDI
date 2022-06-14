@@ -1,6 +1,6 @@
 convertor,conv_capacity,conv_cost_capital_coeff,conv_cost_fixed,conv_cost_variable,conv_kwh_variable_coeff,conv_utilization,fuelStation_cost_capital_subsidy
 abilene_converter_fuelDispenserLiquid,833.3333333333334,4862000.0,1500.0,0,408.8,0.6,405166666.66666657
-austin_converter_fuelDispenserLiquid,834.3666666666658,6851000.0,1500.0,0,677.6,0.6,571624603.3333327
+austin_converter_fuelDispenserLiquid,834.3499999999991,6851000.0,1500.0,0,677.6,0.6,571613184.9999993
 centerville_converter_fuelDispenserLiquid,833.3333333333334,5967000.0,1500.0,0,638.4,0.6,497249999.99999994
 corpusChristi_converter_fuelDispenserLiquid,833.3333333333334,4641000.0,1500.0,0,683.1999999999999,0.6,386749999.99999994
 dallas_converter_fuelDispenserLiquid,833.3333333333334,5193500.0,1500.0,0,666.4,0.6,432791666.66666657
