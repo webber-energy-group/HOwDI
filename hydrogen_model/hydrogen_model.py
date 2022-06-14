@@ -987,12 +987,8 @@ def apply_constraints(m):
         Set:
             All producers
         """
-        ccs1_clean_hydrogen = (
-            m.ccs1_capacity_h2[node] * m.H.ccs_data.loc["ccs1", "percent_CO2_captured"]
-        )
-        cc2_clean_hydrogen = (
-            m.ccs2_capacity_h2[node] * m.H.ccs_data.loc["ccs2", "percent_CO2_captured"]
-        )
+        ccs1_clean_hydrogen = m.ccs1_capacity_h2[node] * m.H.ccs1_percent_co2_captured
+        cc2_clean_hydrogen = m.ccs2_capacity_h2[node] * m.H.ccs2_percent_co2_captured
 
         constraint = m.co2_emitted[node] == m.prod_carbonRate[node] * (
             m.prod_h[node] - (ccs1_clean_hydrogen + cc2_clean_hydrogen)
