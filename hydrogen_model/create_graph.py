@@ -1,6 +1,7 @@
 """
 hydrogen model module
-takes input csvs and creates the networkx graph object needed to run the pyomo-based hydrogen model
+takes input csvs and creates the networkx graph object
+needed to run the pyomo-based hydrogen model
 """
 
 # import
@@ -44,7 +45,8 @@ def initialize_graph(H):
         hub_name = hub_data["hub"]
         capital_price_multiplier = hub_data["capital_pm"]
 
-        ## 1.1) add a node for each of the hubs, separating low-purity from high-purity (i.e., fuel cell quality)
+        ## 1.1) add a node for each of the hubs, separating low-purity
+        # from high-purity (i.e., fuel cell quality)
         for purity_type in ["lowPurity", "highPurity"]:
             hub_data["node"] = "{}_center_{}".format(hub_name, purity_type)
             hub_data["class"] = "center_{}".format(purity_type)
@@ -166,7 +168,8 @@ def initialize_graph(H):
         )
 
     ### 3) create the arcs and associated data that connect hub_names to each other
-    #  (e.g., baytown to montBelvieu): i.e., add pipelines and truck routes between connected hub_names
+    #  (e.g., baytown to montBelvieu): i.e., add pipelines and truck routes between
+    # connected hub_names
 
     pipeline_data = H.distributors.set_index("distributor").loc["pipeline"]
 
@@ -467,47 +470,73 @@ def add_converters(g: DiGraph, H):
 def add_price_nodes(g: DiGraph, H):
     """
     add price nodes to the graph
-    each price is a node that has very little demand and series of breakeven price points to help us estimate the price that customers are paying for hydrogen at that node.
+    each price is a node that has very little demand and series of breakeven
+    price points to help us estimate the price that customers are paying for
+    hydrogen at that node.
     ---
     #TODO maybe the below should be copied somewhere else:
 
-    H.price_range is a iterable array of prices. The model will use this array of discrete prices as fake consumers. In the solution, the price of hydrogen at that node is between the most expensive "price consumer" who does not use hydrogen and the least expensive "price consumer" who does.
-    H.price_hubs is a list of the hubs where we want to calculate prices for. if it equals 'all' then all of the hubs will be priced
-    H.price_demand is the total amount of pricing demand at each hub. this can be set to a higher value if you are trying to just test sensitivity to amount of demand
+    H.price_range is a iterable array of prices. The model will use this array
+    of discrete prices as fake consumers. In the solution, the price of
+    hydrogen at that node is between the most expensive "price consumer" who
+    does not use hydrogen and the least expensive "price consumer" who does.
+    H.price_hubs is a list of the hubs where we want to calculate prices for.
+    if it equals 'all' then all of the hubs will be priced H.price_demand is
+    the total amount of pricing demand at each hub. this can be set to a higher
+    value if you are trying to just test sensitivity to amount of demand
     """
+
     if not H.find_prices:
         return
     else:
+        demand_sector2type_map = H.demand.set_index("sector")["demandType"].to_dict()
+        # demand sectors are "transportationFuel, industrialFuel, existing"
+        # demand types are "fuelStation, lowPurity, highPurity"
+
         if H.price_hubs == "all":
             H.price_hubs = set([s[1] for s in list(g.nodes(data="hub"))])
         for ph in H.price_hubs:
+            # array to track demand types that have price hubs already.
+            # we don't want duplicate price hubs since sectors can
+            # share a price hub
+            demand_types_for_this_ph = []
             # add nodes to store pricing information
-            for p in H.price_tracking_array:
-                # 1) fuelStation prices
-                for demand_type in ["fuelStation", "lowPurity", "highPurity"]:
-                    ph_node = ph + "_price{}_{}".format(cap_first(demand_type), p)
-                    demand_node = ph + "_demand_{}".format(demand_type)
+            for demand_sector, demand_type in demand_sector2type_map.items():
+                # check if demand sector in nodes
+                demand_sector_node = "{}_demandSector_{}".format(ph, demand_sector)
+                if demand_sector_node in g.nodes():
+                    # check if demand type already has a price hub for this hub
+                    if demand_type not in demand_types_for_this_ph:
+                        # if not, add the price hub
+                        demand_types_for_this_ph.append(demand_type)
 
-                    price_node_dict = {
-                        "node": ph_node,
-                        "sector": "price",
-                        "hub": ph,
-                        "breakevenPrice": p * 1000,
-                        "size": H.price_demand,
-                        "carbonSensitiveFraction": 0,
-                        "breakevenCarbon_g_MJ": 0,
-                        "demandType": demand_type,
-                        "class": "price",
-                    }
-                    g.add_node(ph_node, **price_node_dict)
-                    # add the accompanying edge
-                    price_edge_dict = {
-                        "startNode": demand_node,
-                        "endNode": ph_node,
-                        "kmLength": 0.0,
-                        "capital_usdPerUnit": 0.0,
-                    }
-                    g.add_edge(demand_node, ph_node, **price_edge_dict)
+                        demand_node = ph + "_demand_{}".format(demand_type)
+                        for p in H.price_tracking_array:
+                            # 1) fuelStation prices
+                            ph_node = ph + "_price{}_{}".format(
+                                cap_first(demand_type), p
+                            )
+
+                            price_node_dict = {
+                                "node": ph_node,
+                                "sector": "price",
+                                "hub": ph,
+                                "breakevenPrice": p * 1000,
+                                "size": H.price_demand,
+                                "carbonSensitiveFraction": 0,
+                                "breakevenCarbon_g_MJ": 0,
+                                "demandType": demand_type,
+                                "class": "price",
+                            }
+                            g.add_node(ph_node, **price_node_dict)
+                            # add the accompanying edge
+                            price_edge_dict = {
+                                "startNode": demand_node,
+                                "endNode": ph_node,
+                                "kmLength": 0.0,
+                                "capital_usdPerUnit": 0.0,
+                            }
+                            g.add_edge(demand_node, ph_node, **price_edge_dict)
 
 
 def build_hydrogen_network(H):
