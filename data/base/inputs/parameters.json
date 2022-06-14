@@ -1,5 +1,4 @@
 {
-    "csv_prefix":"texas_",
     "price_tracking_array":{
         "start":3,
         "stop":9,
@@ -20,6 +19,7 @@
     "investment_period":20,
     "time_slices":365,
 
-    "solver":"gurobi"
+    "solver":"gurobi",
+    "solver_debug":0
 
 }

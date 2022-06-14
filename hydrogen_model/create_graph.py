@@ -3,447 +3,523 @@ hydrogen model module
 takes input csvs and creates the networkx graph object needed to run the pyomo-based hydrogen model
 """
 
-#import
-import networkx
-import pandas
+# import
+from itertools import permutations
+
+from networkx import DiGraph
+from pandas import Series
+
 
 def cap_first(s):
-    # capitalizes the first letter of a string w/o putting other letters in lowercase
+    """capitalizes the first letter of a string
+    without putting other letters in lowercase"""
     return s[0].upper() + s[1:]
 
-class hydrogen_network:
-    '''
-    uses the hydrogen_inputs object to create a networkx directional graph of the hydrogen network
-    '''
-    def __init__(self, H):
-        '''
-        H: a hydrogen_inputs object
-        '''
 
-        #define the data
-        self.nodes_csv = H.nodes
-        self.arcs_csv = H.arcs
-        self.distributors_csv = H.distributors
-        self.demand_csv = H.demand
-        self.producers_csv = H.producers
-        self.existing_producers_csv = H.producers_existing
-        self.converters_csv = H.converters
-        self.price_range = H.price_tracking_array
-        self.price_hubs = H.price_hubs
-        self.price_demand = H.price_demand
-        self.find_prices = H.find_prices
-        #run the scripts to create and expand the graph
-        self.g = self.create_graph(self.nodes_csv, self.arcs_csv, self.distributors_csv)
-        self.g = self.add_consumers(self.g, self.nodes_csv, self.demand_csv)  
-        self.g = self.add_producers(self.g, self.nodes_csv, self.producers_csv, self.existing_producers_csv)  
-        self.g = self.add_converters(self.g, self.nodes_csv, self.converters_csv) 
-        self.g = self.add_price_nodes(self.g, self.price_range, self.price_hubs, self.price_demand)
-        #self.g = self.add_storage(self.g, self.storage_csv)
+def free_flow_dict(class_of_flow=None):
+    """returns a dict with free flow values"""
+    free_flow = {
+        "kmLength": 0.0,
+        "capital_usdPerUnit": 0.0,
+        "fixed_usdPerUnitPerDay": 0.0,
+        "variable_usdPerTon": 0.0,
+        "flowLimit_tonsPerDay": 99999999.9,
+        "class": class_of_flow,
+    }
+    return free_flow
 
 
+def initialize_graph(H):
+    """
+    create a directional graph to represent the hydrogen distribution system
+    ---
+    returns g: a network.DiGraph object
+    """
+    g = DiGraph()
 
+    for _, hub_series in H.hubs.iterrows():
+        ### 1) create the nodes and associated data for each hub_name
+        hub_data = dict(hub_series)
 
+        hub_name = hub_data["hub"]
+        capital_price_multiplier = hub_data["capital_pm"]
 
-    def create_graph(self, node_df, arcs_df, distributors_df):
-        '''
-        create a directional graph to represent the hydrogen distribution system
-        ---
-        node_df = a pandas dataframe containing data for the nodes
-        arcs_df = a pandas dataframe containing data for the arcs
-        distributors_df = a pandas dataframe containing data for the distributors (i.e., the truck technologies)
-        '''
-        #create the directional graph object
-        g = networkx.DiGraph()
-        
-        #1) create the nodes and associated data for each hub_name
-        for num,arow in node_df.iterrows():
-            #1.1) add a node for each of the hubs, separating low-purity from high-purity (i.e., fuel cell quality)
-            hub_name = arow['node'] #the name of the hub where the production, demand, terminals, etc. are located, e.g., "baytown"
-            capital_price_multiplier = arow['capital_pm']
+        ## 1.1) add a node for each of the hubs, separating low-purity from high-purity (i.e., fuel cell quality)
+        for purity_type in ["lowPurity", "highPurity"]:
+            hub_data["node"] = "{}_center_{}".format(hub_name, purity_type)
+            hub_data["class"] = "center_{}".format(purity_type)
 
-            for purity_type in ['lowPurity', 'highPurity']:
-                arow['node'] = '%s_hub_%s'%(hub_name, purity_type)
-                arow['class'] = arow['node'].replace('%s_'%hub_name, '') #drop the hub name from the node name
-                arow['hub_name'] = hub_name
-                g.add_node(arow['node'], **(dict(arow)))
-            #1.2) add a node for each distribution type (i.e., pipelines and trucks)
-            for d in distributors_df['distributor']:
-                #add both low and high purity pipelines
-                if d == 'pipeline':
-                    for purity_type in ['LowPurity', 'HighPurity']:
-                        node_char = {}
-                        node_char['node'] = '%s_dist_%s%s'%(hub_name, d, purity_type)
-                        node_char['class'] = node_char['node'].replace('%s_'%hub_name, '')
-                        node_char['hub_name'] = hub_name
-                        g.add_node(node_char['node'], **(node_char))
-                #trucks are assumed to be high purity
-                else:
-                    node_char = {}
-                    node_char['node'] = '%s_dist_%s'%(hub_name, d)
-                    node_char['class'] = node_char['node'].replace('%s_'%hub_name, '')
-                    node_char['hub_name'] = hub_name
-                    g.add_node(node_char['node'], **(node_char))           
-            #1.3) add a node for each demand type
-            for demand_type in ['lowPurity', 'highPurity', 'fuelStation']:
-                node_char = {}
-                node_char['node'] = '%s_demand_%s'%(hub_name, demand_type)
-                node_char['class'] = node_char['node'].replace('%s_'%hub_name, '')
-                node_char['hub_name'] = hub_name
-                g.add_node(node_char['node'], **(node_char))    
-            
-            #2) connect the hub nodes, distribution nodes, and demand nodes
-            #2.1) the connection of hub node to pipeline distribution hub is a free arc with unlimited flow--it simply allows the model to flow hydrogen within the hub
-            connection_char = {'kmLength': 0.0,
-                               'capital_usdPerUnit': 0.0,
-                               'fixed_usdPerUnitPerDay': 0.0,
-                               'variable_usdPerTon': 0.0,
-                               'flowLimit_tonsPerDay': 99999999.9,
-                               'class': 'flow_within_hub'}
-            g.add_edge('%s_hub_lowPurity'%hub_name, '%s_dist_pipelineLowPurity'%hub_name, **(connection_char)) 
-            g.add_edge('%s_hub_highPurity'%hub_name, '%s_dist_pipelineHighPurity'%hub_name, **(connection_char)) 
+            g.add_node(hub_data["node"], **hub_data)
 
+        ## 1.2) add a node for each distribution type (i.e., pipelines and trucks)
+        for d in H.distributors["distributor"]:
+            # add both low and high purity pipelines
+            if d == "pipeline":
+                for purity_type in ["LowPurity", "HighPurity"]:
+                    node_char = {
+                        "node": "{}_dist_{}{}".format(hub_name, d, purity_type),
+                        "class": "dist_{}{}".format(d, purity_type),
+                        "hub": hub_name,
+                    }
+                    g.add_node(node_char["node"], **(node_char))
 
-            # bsp:, allows for h2 to be distributed through a pipeline and then converted
-            connection_char = {'kmLength': 0.0,
-                               'capital_usdPerUnit': 0.0,
-                               'fixed_usdPerUnitPerDay': 0.0,
-                               'variable_usdPerTon': 0.0,
-                               'flowLimit_tonsPerDay': 99999999.9,
-                               'class': 'reverse_flow_within_hub'}
-            g.add_edge('%s_dist_pipelineLowPurity'%hub_name, '%s_hub_lowPurity'%hub_name, **(connection_char)) 
-            g.add_edge('%s_dist_pipelineHighPurity'%hub_name, '%s_hub_highPurity'%hub_name, **(connection_char)) 
-            
-            #2.2) the connection of hub node to truck distribution hub incorporates the capital and fixed cost of the trucks--it represents the trucking fleet that is based out of that hub. The truck fleet size ultimately limits the amount of hydrogen that can flow from the hub node to the truck distribution hub.   
-            for truck_type in list(distributors_df[distributors_df['distributor'].str.contains('truck')]['distributor']):
-                            #costs and flow limits, (note the the unit for trucks is an individual truck, as compared to km for pipelines--i.e., when the model builds 1 truck unit, it is building 1 truck, but when it builds 1 pipeline unit, it is building 1km of pipeline. However, truck variable costs are in terms of km. This is why we separate the truck capital and fixed costs onto this arc, and the variable costs onto the arcs that go from one hub to another.)
-                            capital_usdPerUnit = distributors_df[distributors_df['distributor']==truck_type]['capital_usdPerUnit'].iloc[0]
-                            fixed_usdPerUnitPerDay = distributors_df[distributors_df['distributor']==truck_type]['fixed_usdPerUnitPerDay'].iloc[0]
-                            flowLimit_tonsPerDay = distributors_df[distributors_df['distributor']==truck_type]['flowLimit_tonsPerDay'].iloc[0]
-                            depot_char = {'startNode': '%s_hub_highPurity'%hub_name,
-                                          'endNode': '%s_dist_%s'%(hub_name, truck_type),
-                                          'kmLength': 0.0,
-                                          'capital_usdPerUnit': capital_usdPerUnit*capital_price_multiplier,
-                                          'fixed_usdPerUnitPerDay': fixed_usdPerUnitPerDay,
-                                          'variable_usdPerTon': 0.0,
-                                          'flowLimit_tonsPerDay': flowLimit_tonsPerDay,
-                                          'class': 'hub_depot_%s'%truck_type}
-                            g.add_edge(depot_char['startNode'], depot_char['endNode'], **(depot_char)) 
-            #2.3) the connection of distribution hub nodes to demand nodes is a free arc with unlimited flow--it simply allows the model to flow hydrogen within the hub
-            connection_char = {'kmLength': 0.0,
-                               'capital_usdPerUnit': 0.0,
-                               'fixed_usdPerUnitPerDay': 0.0,
-                               'variable_usdPerTon': 0.0,
-                               'flowLimit_tonsPerDay': 99999999.9,
-                               'class': 'flow_to_demand_node'}
-            #demand_fuelStation requires high purity hydrogen
-            g.add_edge('%s_dist_pipelineHighPurity'%hub_name, '%s_demand_fuelStation'%hub_name, **(connection_char)) 
-            g.add_edge('%s_dist_truckCompressed'%hub_name, '%s_demand_fuelStation'%hub_name, **(connection_char)) 
-            g.add_edge('%s_dist_truckLiquefied'%hub_name, '%s_demand_fuelStation'%hub_name, **(connection_char)) 
-            #demand_highPurity requires high purity hydrogen
-            g.add_edge('%s_dist_pipelineHighPurity'%hub_name, '%s_demand_highPurity'%hub_name, **(connection_char)) 
-            g.add_edge('%s_dist_truckCompressed'%hub_name, '%s_demand_highPurity'%hub_name, **(connection_char)) 
-            g.add_edge('%s_dist_truckLiquefied'%hub_name, '%s_demand_highPurity'%hub_name, **(connection_char))
-            #demand_lowPurity can use low or high purity hydrogen
-            g.add_edge('%s_dist_pipelineLowPurity'%hub_name, '%s_demand_lowPurity'%hub_name, **(connection_char)) 
-            g.add_edge('%s_dist_pipelineHighPurity'%hub_name, '%s_demand_lowPurity'%hub_name, **(connection_char)) 
-            g.add_edge('%s_dist_truckCompressed'%hub_name, '%s_demand_lowPurity'%hub_name, **(connection_char)) 
-            g.add_edge('%s_dist_truckLiquefied'%hub_name, '%s_demand_lowPurity'%hub_name, **(connection_char))
-            #2.4) connect the hub_lowPurity to the hub_highPurity. We will add a purifier between the two using the add_converters function
-            connection_char = {'kmLength': 0.0,
-                               'capital_usdPerUnit': 0.0,
-                               'fixed_usdPerUnitPerDay': 0.0,
-                               'variable_usdPerTon': 0.0,
-                               'flowLimit_tonsPerDay': 99999999.9,
-                               'class': 'flow_through_purifier'}
-            #demand_fuelStation requires high purity hydrogen
-            g.add_edge('%s_hub_lowPurity'%hub_name, '%s_hub_highPurity'%hub_name, **(connection_char)) 
-                
-        #3) create the arcs and associated data that connect hub_names to each other (e.g., baytown to montBelvieu): i.e., add pipelines and truck routes between connected hub_names
-        pipeline_df = distributors_df[distributors_df['distributor']=='pipeline']
-        for num,arow in arcs_df.iterrows():
-            arow_dict = dict(arow)
-            
-            pipeline_length = arow['kmLength_road'] #TODO adjust this value, `arow['kmLength_euclid]` is the straight line distance
-            road_length = arow['kmLength_road']
+            else:  # trucks are assumed to be high purity
+                node_char = {
+                    "node": "{}_dist_{}".format(hub_name, d),
+                    "class": "dist_{}".format(d),
+                    "hub": hub_name,
+                }
+                g.add_node(node_char["node"], **(node_char))
 
-            start_node = arow_dict['startNode']
-            end_node = arow_dict['endNode']
+        ## 1.3) add a node for each demand type
+        for demand_type in ["lowPurity", "highPurity", "fuelStation"]:
+            node_char = {
+                "node": "{}_demand_{}".format(hub_name, demand_type),
+                "class": "demand_{}".format(demand_type),
+                "hub": hub_name,
+            }
+            g.add_node(node_char["node"], **(node_char))
 
-            # take the average of the two nodes' capital price multiplier to ge the multiplier of the arc
-            capital_price_multiplier = node_df[(node_df['node']==start_node) | (node_df['node'] == end_node)]['capital_pm'].sum()/2
-            #for each low purity and high purity distribution hub
-            for purity_type in ['LowPurity', 'HighPurity']:
-                #2.1) add a pipeline going in each direction to allow bi-directional flow
-                #if it's an existing pipeline, we assume it's a low purity pipeline
-                if purity_type=='HighPurity':
-                    arow['exist_pipeline'] = 0
-                for arc in [(start_node,end_node), 
-                            (end_node,start_node)]:
-                    pipeline_char = {'startNode': arc[0]+'_dist_pipeline%s'%purity_type,
-                                     'endNode': arc[1]+'_dist_pipeline%s'%purity_type,
-                                     # alternate way of connecting nodes, remove the second half of 2.1 if this is used
-                                     #'endNode': arc[1]+'_hub_%s'%(purity_type[0].lower()+purity_type[1:]), #lowercase for the first letter of purity type
-                                     'kmLength': pipeline_length,
-                                     'capital_usdPerUnit': pipeline_df['capital_usdPerUnit'].iloc[0]*pipeline_length*capital_price_multiplier,
-                                     'fixed_usdPerUnitPerDay': pipeline_df['fixed_usdPerUnitPerDay'].iloc[0]*pipeline_length,
-                                     'variable_usdPerTon': pipeline_df['variable_usdPerKilometer-Ton'].iloc[0]*pipeline_length,
-                                     'flowLimit_tonsPerDay': pipeline_df['flowLimit_tonsPerDay'].iloc[0],
-                                     'class': 'arc_pipeline%s'%purity_type,
-                                     'existing': arow['exist_pipeline']}
-                    #add the edge to the graph
-                    g.add_edge(pipeline_char['startNode'], pipeline_char['endNode'], **(pipeline_char)) 
-        
-                    #2.2) add truck routes and their variable costs, note that that the capital and fixed costs of the trucks are stored on the (hubName_hub_highPurity, hubName_dist_truckType) arcs
-                    if purity_type == 'HighPurity':
-                        for truck_type in list(distributors_df[distributors_df['distributor'].str.contains('truck')]['distributor']):
-                            #information for the trucking routes between hydrogen hubs
-                            truck_route_dict = {'startNode': arc[0]+'_dist_%s'%truck_type,
-                                          'endNode': arc[1]+'_dist_%s'%truck_type,
-                                          'kmLength': road_length,
-                                          'capital_usdPerUnit': 0.0,
-                                          'fixed_usdPerUnitPerDay': 0.0,
-                                          'variable_usdPerTon': distributors_df[distributors_df['distributor']==truck_type]['variable_usdPerKilometer-Ton'].iloc[0]*road_length,
-                                          'class': 'arc_%s'%truck_type}
-                            #add the distribution arc for the truck
-                            g.add_edge(truck_route_dict['startNode'], truck_route_dict['endNode'], **(truck_route_dict)) 
-        
-        #4) clean up and return
-        #add startNode and endNode to any edges that don't have them
-        edges_without_startNode = [s for s in list(g.edges) if 'startNode' not in g.edges[s]]
-        for e in edges_without_startNode:
-            g.edges[e]['startNode'] = e[0]
-            g.edges[e]['endNode'] = e[1]
-        #return
-        return g
-    
-    
-    
-    def add_consumers(self, g, node_df, demand_df):
-        '''
-        add consumers to the graph
-        for each hub, there are arcs from the nodes that represent demand type (e.g., fuelStation, lowPurity, highPurity) to the nodes that represent different demand sectors (e.g., industrialFuel, transportationFuel). In practice, one could create multiple sectors that connect to the same demand type (e.g., long-haul HDV, regional MDV, and LDV all connecting to a fuel station)
-        ---
-        g = a graph object created using networkx and the create_graph function
-        node_df = a pandas dataframe containing data for the nodes
-        demand_df = a pandas dataframe containing data for the demand sectors
-        '''
-        #loop through the hubs, add a node for each demand, and connect it to the appropriate demand hub
-        #loop through the hub names, add a network node for each type of demand, and add a network arc connecting that demand to the appropriate demand hub
-        for num,arow in node_df.iterrows():
-            hub_name = arow['node']
-            for demand_sector in demand_df['sector']:
-                #add the demandSector nodes
-                if arow['%s_tonnesperday'%demand_sector]==0:
-                    pass
-                else:
-                    #1) create a carbon sensitive and a carbon indifferent version of the demandSector based on the 0--1 fraction value of the "carbonSensitiveFraction" in the csv file.
-                    #1.1) create the carbon indifferent version
-                    #1.1.a) build the node dictionary
-                    #initilize with a dictionary object equal to the matching row of the demand_df dataframe (the demand.csv file)
-                    demand_node_char = (demand_df[demand_df['sector']==demand_sector].iloc[0]).to_dict() 
-                    demand_node_char['node'] = '%s_demandSector_%s'%(hub_name, demand_sector)
-                    demand_node_char['class'] = demand_node_char['node'].replace('%s_'%hub_name, '')
-                    demand_node_char['size'] = arow['%s_tonnesperday'%demand_sector] * (1 - demand_node_char['carbonSensitiveFraction'])
-                    demand_node_char['carbonSensitive'] = 0
-                    demand_node_char['hub_name'] = hub_name
-                    #1.1.b) build the arc dictionary
-                    demand_arc_char = {'kmLength': 0.0,
-                                       'capital_usdPerUnit': 0.0,
-                                       'fixed_usdPerUnitPerDay': 0.0,
-                                       'variable_usdPerTon': 0.0,
-                                       'flowLimit_tonsPerDay': 99999999.9,
-                                       'class': 'flow_to_demand_sector'}
-                    #1.2) create the carbon sensitive version
-                    #1.2.a) build the node dictionary
-                    #start with the dictionary from the carbon indifferent version
-                    demand_node_char_carbon = demand_node_char.copy()
-                    #update the characteristics as needed
-                    demand_node_char_carbon['node'] = '%s_demandSector_%s_carbonSensitive'%(hub_name, demand_sector)
-                    demand_node_char_carbon['size'] = arow['%s_tonnesperday'%demand_sector] * (demand_node_char_carbon['carbonSensitiveFraction'])
-                    demand_node_char_carbon['carbonSensitive'] = 1
-                    #1.2.b) build the arc dictionary
-                    #start with the dictionary from the carbon indifferent version
-                    demand_arc_char_carbon = demand_arc_char.copy()
-                    #update the characteristics as needed
-                    #...in this case, the arc dictionaries are the same, but leaving this here for future versions where they might differ
-                    #2) connect the demandSector nodes to the demand nodes
-                    #query the demandType to know which demand node to connect to (lowPurity, highPurity, or fuelStation)
-                    demandType = demand_df[demand_df['sector']==demand_sector]['demandType'].iloc[0]
-                    #add the nodes and arcs to the graph
-                    #carbon indifferent
-                    g.add_node(demand_node_char['node'], **(demand_node_char))
-                    g.add_edge('%s_demand_%s'%(hub_name, demandType), demand_node_char['node'], **(demand_arc_char)) 
-                    #carbon sensitive
-                    g.add_node(demand_node_char_carbon['node'], **(demand_node_char_carbon))
-                    g.add_edge('%s_demand_%s'%(hub_name, demandType), demand_node_char_carbon['node'], **(demand_arc_char_carbon)) 
-        return g
+        ### 2) connect the hub nodes, distribution nodes, and demand nodes
+        ## 2.1) Connect center to pipeline and pipeline to center for each purity
+        for purity in ["lowPurity", "highPurity"]:
+            nodeA = "{}_center_{}".format(hub_name, purity)
+            nodeB = "{}_dist_pipeline{}".format(hub_name, cap_first(purity))
+            for arc, flow_direction in zip(
+                permutations((nodeA, nodeB)),
+                ["flow_within_hub", "reverse_flow_within_hub"],
+            ):
+                # this inner for loop iterates over the following connections, with purity x:
+                # xPurity_center -> xPurityPipeline (class: flow_within_hub)
+                # xPurityPipeline -> xPuirty_center (class: reverse_flow_within_hub)
+                g.add_edge(*arc, **free_flow_dict(flow_direction))
 
-    
-    
-    def add_producers(self, g, node_df, producers_df, existing_producers_df):
-        '''
-        add producers to the graph
-        each producer is a node that send hydrogen to a hub_lowPurity or hub_highPurity node
-        ---
-        g = a graph object created using networkx and the create_graph function
-        node_df = a pandas dataframe containing data for the nodes
-        producers_df = a pandas dataframe containing data for the producers
-        existing_producers_df = comes from production_existing.csv
-        '''
-        #loop through the nodes and producers to add the necessary nodes and arcs
-        for ni,nrow in node_df.iterrows():
-            capital_price_multiplier = nrow['capital_pm']
-            ng_price_multiplier = nrow['ng_pm']
-            e_price_multiplier = nrow['e_pm']
-            for pi,prow in producers_df.iterrows():
-                #if the node is unable to build that producer type, pass
-                if nrow['build_%s'%prow['type']] == 0:
-                    pass
-                else:
-                    #add node
-                    prow['node'] = '%s_production_%s'%(nrow['node'], prow['type'])
-                    prow['class'] = 'producer'
-                    prow['existing'] = 0
-                    prow['hub_name'] = nrow['node']
-                    prow['capital_usd_coefficient']  = prow['capital_usd_coefficient'] * capital_price_multiplier
-                    prow['kWh_coefficient'] = prow['kWh_coefficient'] * e_price_multiplier
-                    prow['ng_coefficient'] = prow['ng_coefficient'] * ng_price_multiplier
-                    g.add_node(prow['node'], **(dict(prow)))
-                    #add edge
-                    production_purity = prow['purity']
-                    edge_dict = {'startNode':prow['node'], 
-                                 'endNode':'%s_hub_%sPurity'%(nrow['node'], production_purity), 
-                                 'kmLength':0.0, 
-                                 'capital_usdPerUnit':0.0, 
-                                 'class':'flow_from_producer',
-                                 'min_h2': prow['min_h2'],
-                                 'max_h2': prow['max_h2']}
-                    g.add_edge(prow['node'], '%s_hub_%sPurity'%(nrow['node'], production_purity), **(edge_dict))
-        #loop through the existing producers and add them       
-        for pi,prow in existing_producers_df.iterrows(): 
-            pass
-            hub_name = prow['hub_name']
-            prow['node'] = '%s_production_%sExisting'%(hub_name, prow['type'])
-            prow['class'] = 'producer'
-            prow['existing'] = 1
-            g.add_node(prow['node'], **(dict(prow)))
-            #add edge
-            production_purity = producers_df[producers_df['type']==prow['type']]['purity'].iloc[0]
-            edge_dict = {'startNode':prow['node'], 
-                         'endNode':'%s_hub_%sPurity'%(hub_name, production_purity), 
-                         'kmLength':0.0, 
-                         'capital_usdPerUnit':0.0, 
-                         'class':'flow_from_producer'}
-            g.add_edge(prow['node'], '%s_hub_%sPurity'%(hub_name, production_purity), **(edge_dict))
-        return g
+        ## 2.2) the connection of hub node to truck distribution hub incorporates the
+        # capital and fixed cost of the trucks--it represents the trucking fleet that
+        # is based out of that hub. The truck fleet size ultimately limits the amount
+        # of hydrogen that can flow from the hub node to the truck distribution hub.
+        truck_distribution = H.distributors[
+            H.distributors["distributor"].str.contains("truck")
+        ].set_index("distributor")
 
-    
-    
-    def add_converters(self, g, node_df, converters_df):
-        '''
-        add converters to the graph
-        each converter is a node and arc that splits an existing arc into two
-        ---
-        g = a graph object created using networkx and the create_graph function
-        node_df = a pandas dataframe containing data for the nodes
-        converters_df = a pandas dataframe containing data for the converters
-        '''
-        #loop through the nodes and converters to add the necessary nodes and arcs   
-        for cvi,cvrow in converters_df.iterrows():  
-            if cvrow['arc_start_class'] == 'pass':
-                    pass
-            else:               
-                for n in list(g.nodes):
-                    nrow = pandas.Series(g.nodes[n])
-                    if g.nodes[nrow['node']]['class'] != cvrow['arc_start_class']:
-                        pass
-                    else:    
-                        #add a new node for the converter at the hub
-                        hub_name = nrow['hub_name'] 
-                        cvrow['hub_name'] = hub_name
-                        cvrow['node'] = hub_name + '_converter_' + str(cvrow['converter'])
-                        cvrow['class'] = cvrow['node'].replace('%s_'%hub_name, '')      
-                        
-                        hub_data = dict(node_df[node_df['node'] == hub_name].iloc[0])
-                        cvrow['capital_usd_coefficient'] = cvrow['capital_usd_coefficient'] * hub_data['capital_pm'] #multiply by regional capital price modifier
-                        cvrow['kWh_coefficient'] = cvrow['kWh_coefficient'] * hub_data['e_pm'] # multiply by electricity regional price modifier
-                        g.add_node(cvrow['node'], **(dict(cvrow)))
-                        #grab the tuples of any edges that have the correct arc_end type--i.e., any edges where the start_node is equal to the node we are working on in our for loop, and where the end_node has a class equal to the "arc_end_class" parameter in converters_df           
-                        change_edges_list = [s for s in list(g.edges) if ((nrow['node']==s[0]) & (cvrow['arc_end_class'] == g.nodes[s[1]]['class']))]
-                        #loop through the tuples and add a new node and arc to each
-                        for ce in change_edges_list:
-                            g.add_edge(g.edges[ce]['startNode'], cvrow['node'], **{'startNode':g.edges[ce]['startNode'],
-                                                                                   'endNode':cvrow['node'],
-                                                                                   'kmLength':0.0,
-                                                                                   'class':cvrow['class']})
-                            #change the original arc's start node to the new conversion node
-                            g.add_edge(cvrow['node'], g.edges[ce]['endNode'], **g.edges[ce])
-                            g.edges[(cvrow['node'], g.edges[ce]['endNode'])]['startNode'] = cvrow['node']
-                            g.remove_edge(*ce)
-        return g
+        for truck_type, truck_info in truck_distribution.iterrows():
+            # costs and flow limits, (note the the unit for trucks is an individual
+            #  truck, as compared to km for pipelines--i.e., when the model builds
+            # 1 truck unit, it is building 1 truck, but when it builds 1 pipeline
+            # unit, it is building 1km of pipeline. However, truck variable costs
+            #  are in terms of km. This is why we separate the truck capital and
+            # fixed costs onto this arc, and the variable costs onto the arcs that
+            #  go from one hub to another.)
+            depot_char = {
+                "startNode": "{}_center_highPurity".format(hub_name),
+                "endNode": "{}_dist_{}".format(hub_name, truck_type),
+                "kmLength": 0.0,
+                "capital_usdPerUnit": truck_info.capital_usdPerUnit
+                * capital_price_multiplier,
+                "fixed_usdPerUnitPerDay": truck_info.fixed_usdPerUnitPerDay
+                * capital_price_multiplier,
+                "variable_usdPerTon": 0.0,
+                "flowLimit_tonsPerDay": truck_info.flowLimit_tonsPerDay,
+                "class": "hub_depot_{}".format(truck_type),
+            }
+            g.add_edge(depot_char["startNode"], depot_char["endNode"], **depot_char)
 
+        ## 2.3) Connect distribution nodes to demand nodes
 
+        # Series where index is flow type and value is flow limit:
+        flow_limit_series = H.distributors.set_index("distributor")[
+            "flowLimit_tonsPerDay"
+        ]
+        # for every distribution node and every demand node,
+        # add an edge:
+        # Flow from truck distribution and flow from highPurity
+        # pipelines can satisfy all types of demand
+        for flow_type, flow_limit in flow_limit_series.iteritems():
 
-    def add_price_nodes(self, g, price_range, price_hubs, total_hub_demand_tons):
-            '''
-            add price nodes to the graph
-            each price is a node that has very little demand and series of breakeven price points to help us estimate the price that customers are paying for hydrogen at that node.
-            ---
-            g = a graph object created using networkx and the create_graph function
-            price_range is a iterable array of prices. The model will use this array of discrete prices as fake consumers. In the solution, the price of hydrogen at that node is between the most expensive "price consumer" who does not use hydrogen and the least expensive "price consumer" who does.
-            price_hubs is a list of the hubs where we want to calculate prices for. if it equals 'all' then all of the hubs will be priced
-            total_hub_demand_tons is the total amount of pricing demand at each hub. this can be set to a higher value if you are trying to just test sensitivity to amount of demand
-            '''                       
-            if not self.find_prices:
-                return g
+            flow_char = free_flow_dict("flow_to_demand_node")
+            flow_char["flowLimit_tonsPerDay"] = flow_limit
+
+            if flow_type == "pipeline":
+                distribution_node = "{}_dist_pipelineHighPurity".format(hub_name)
             else:
-                if price_hubs=='all':
-                    price_hubs = set([s[1] for s in list(g.nodes(data="hub_name"))])
-                for ph in price_hubs:
-                    #add nodes to store pricing information
-                    for p in price_range:
-                        #1) fuelStation prices
-                        for demand_type in ['fuelStation','lowPurity','highPurity']:
-                            price_node_dict = {'node': ph + '_price{}_{}'.format(cap_first(demand_type),p),
-                                            'sector': 'price',
-                                            'hub_name': ph, 
-                                            'breakevenPrice': p*1000,
-                                            'size': total_hub_demand_tons,
-                                            'carbonSensitiveFraction': 0,
-                                            'breakevenCarbon_g_MJ': 0,
-                                            'demandType': demand_type,
-                                            'class': 'price'}
-                            g.add_node(price_node_dict['node'], **price_node_dict)
-                            #add the accompanying edge
-                            price_edge_dict = {'startNode': ph + '_demand_{}'.format(demand_type),
-                                            'endNode': price_node_dict['node'],
-                                            'kmLength': 0.0,
-                                            'capital_usdPerUnit': 0.0}
-                            g.add_edge(price_edge_dict['startNode'], price_edge_dict['endNode'], **price_edge_dict)    
-                return g
-                    
+                distribution_node = "{}_dist_{}".format(hub_name, flow_type)
+
+            # iterate over all demand types;
+            # all can be satisfied by trucks or highPurity pipelines
+            for demand_type in ["fuelStation", "highPurity", "lowPurity"]:
+                demand_node = "{}_demand_{}".format(hub_name, demand_type)
+                g.add_edge(distribution_node, demand_node, **flow_char)
+
+            # Final demand_node will be "{hub}_demand_lowPurity",
+            # which, in addition to the above distribution,
+            # can have demand satisfied by pipelineLowPurity
+            distribution_node = "{}_dist_pipelineLowPurity".format(hub_name)
+            g.add_edge(distribution_node, demand_node, **flow_char)
+
+        ## 2.4) connect the center_lowPurity to the
+        # hub_highPurity. We will add a purifier between
+        # the two using the add_converters function
+        g.add_edge(
+            "{}_center_lowPurity".format(hub_name),
+            "{}_center_highPurity".format(hub_name),
+            **free_flow_dict("flow_through_purifier")
+        )
+
+    ### 3) create the arcs and associated data that connect hub_names to each other
+    #  (e.g., baytown to montBelvieu): i.e., add pipelines and truck routes between connected hub_names
+
+    pipeline_data = H.distributors.set_index("distributor").loc["pipeline"]
+
+    for _, arc_data in H.arcs.iterrows():
+        start_hub = arc_data["startHub"]
+        end_hub = arc_data["endHub"]
+        hubs_df = H.hubs[(H.hubs["hub"] == start_hub) | (H.hubs["hub"] == end_hub)]
+
+        # take the average of the two hubs' capital price multiplier to get the pm of the arc
+        capital_price_multiplier = hubs_df["capital_pm"].sum() / 2
+
+        # TODO adjust this value, `arc_data['kmLength_euclid]` is the straight line distance
+        pipeline_length = arc_data["kmLength_road"]
+        road_length = arc_data["kmLength_road"]
+
+        ## 3.1) add a pipeline going in each direction to allow bi-directional flow
+        for purity_type in ["LowPurity", "HighPurity"]:
+            if purity_type == "HighPurity":
+                # if it's an existing pipeline, we assume it's a low purity pipeline
+                arc_data["exist_pipeline"] = 0
+
+            for arc in permutations([start_hub, end_hub]):
+                # generate node names based on arc and purity
+                # yields ({hubA}_dist_pipeline{purity}, {hubB}_dist_pipeline{purity})
+                node_names = tuple(
+                    map(lambda hub: "{}_dist_pipeline{}".format(hub, purity_type), arc)
+                )
+
+                pipeline_char = {
+                    "startNode": node_names[0],
+                    "endNode": node_names[1],
+                    "kmLength": pipeline_length,
+                    "capital_usdPerUnit": pipeline_data["capital_usdPerUnit"]
+                    * pipeline_length
+                    * capital_price_multiplier,
+                    "fixed_usdPerUnitPerDay": pipeline_data["fixed_usdPerUnitPerDay"]
+                    * pipeline_length,
+                    "variable_usdPerTon": pipeline_data["variable_usdPerKilometer-Ton"]
+                    * pipeline_length,
+                    "flowLimit_tonsPerDay": pipeline_data["flowLimit_tonsPerDay"],
+                    "class": "arc_pipeline{}".format(purity_type),
+                    "existing": arc_data["exist_pipeline"],
+                }
+                # add the edge to the graph
+                g.add_edge(node_names[0], node_names[1], **(pipeline_char))
+
+                # 2.2) add truck routes and their variable costs,
+                # note that that the capital and fixed costs of the trucks
+                # are stored on the (hubName_center_highPurity, hubName_center_truckType) arcs
+                if purity_type == "HighPurity":
+                    for truck_type, truck_info in truck_distribution.iterrows():
+                        # information for the trucking routes between hydrogen hubs
+
+                        # generate node names based on arc and trucktype
+                        # yields ({hubA}_dist_{truck_type}, {hubB}_dist_{truck_type})
+                        node_names = tuple(
+                            map(lambda hub: "{}_dist_{}".format(hub, truck_type), arc)
+                        )
+
+                        truck_char = {
+                            "startNode": node_names[0],
+                            "endNode": node_names[1],
+                            "kmLength": road_length,
+                            "capital_usdPerUnit": 0.0,
+                            "fixed_usdPerUnitPerDay": 0.0,
+                            "flowLimit_tonsPerDay": truck_info["flowLimit_tonsPerDay"],
+                            "variable_usdPerTon": truck_info[
+                                "variable_usdPerKilometer-Ton"
+                            ]
+                            * road_length,
+                            "class": "arc_{}".format(
+                                truck_type,
+                            ),
+                        }
+                        # add the distribution arc for the truck
+                        g.add_edge(node_names[0], node_names[1], **(truck_char))
+
+    # 4) clean up and return
+    # add startNode and endNode to any edges that don't have them
+    edges_without_startNode = [
+        s for s in list(g.edges) if "startNode" not in g.edges[s]
+    ]
+    for e in edges_without_startNode:
+        g.edges[e]["startNode"] = e[0]
+        g.edges[e]["endNode"] = e[1]
+
+    return g
 
 
+def add_consumers(g: DiGraph, H):
+    """Add consumers to the graph
+
+    For each hub, there are arcs from the nodes that represent demand type
+    (e.g., fuelStation, lowPurity, highPurity) to the nodes that represent
+    different demand sectors (e.g., industrialFuel, transportationFuel).
+    In practice, one could create multiple sectors that connect to the same
+    demand type (e.g., long-haul HDV, regional MDV, and LDV all connecting
+    to a fuel station)
+    """
+    # loop through the hubs, add a node for each demand, and connect it to the appropriate demand hub
+    # loop through the hub names, add a network node for each type of demand, and add a network arc
+    # connecting that demand to the appropriate demand hub
+    for _, hub_data in H.hubs.iterrows():
+        hub_name = hub_data["hub"]
+
+        for _, demand_data in H.demand.iterrows():
+            demand_sector = demand_data["sector"]
+            demand_value = hub_data["{}_tonnesperday".format(demand_sector)]
+            demand_type = demand_data["demandType"]
+            demand_node = "{}_demand_{}".format(hub_name, demand_type)
+
+            # add the demandSector nodes
+            if demand_value == 0:
+                # don't add a demandSector node to hubs where that demand is 0
+                pass
+            else:
+                ### 1) create a carbon sensitive and a carbon indifferent version of
+                #  the demandSector based on the 0--1 fraction value of the
+                # "carbonSensitiveFraction" in the csv file.
+
+                ## 1.1) create the carbon indifferent version
+                demand_node_char = demand_data.to_dict()
+                demand_node_char["class"] = "demandSector_{}".format(demand_sector)
+                demand_node_char["node"] = "{}_{}".format(
+                    hub_name,
+                    demand_node_char["class"],
+                )
+                demand_node_char["size"] = demand_value * (
+                    1 - demand_node_char["carbonSensitiveFraction"]
+                )
+                demand_node_char["carbonSensitive"] = 0
+                demand_node_char["hub"] = hub_name
+
+                ## 1.2) create the carbon sensitive version
+                # by copying and editing carbon indifferent version
+                demand_node_char_carbon = demand_node_char.copy()
+                demand_node_char_carbon["node"] = "{}_carbonSensitive".format(
+                    demand_node_char["node"]
+                )
+                demand_node_char_carbon["size"] = (
+                    demand_value * demand_node_char_carbon["carbonSensitiveFraction"]
+                )
+                demand_node_char_carbon["carbonSensitive"] = 1
+
+                ### 2) connect the demandSector nodes to the demand nodes
+                g.add_node(demand_node_char["node"], **(demand_node_char))
+                g.add_node(demand_node_char_carbon["node"], **(demand_node_char_carbon))
+
+                flow_dict = free_flow_dict("flow_to_demand_sector")
+                for demand_sector_node in [
+                    demand_node_char["node"],
+                    demand_node_char_carbon["node"],
+                ]:
+                    g.add_edge(demand_node, demand_sector_node, **flow_dict)
 
 
-#%%
+def add_producers(g: DiGraph, H):
+    """
+    add producers to the graph
+    each producer is a node that send hydrogen to a hub_lowPurity or hub_highPurity node
+    """
+    # loop through the hubs and producers to add the necessary nodes and arcs
+    for _, hub_data in H.hubs.iterrows():
+        hub_name = hub_data["hub"]
+        capital_price_multiplier = hub_data["capital_pm"]
+        ng_price_multiplier = hub_data["ng_pm"]
+        e_price_multiplier = hub_data["e_pm"]
 
-# =============================================================================
-# test = [s for s in list(g.edges) if (('storage_flow' in  g.edges[s].keys()))]
-# test = [s for s in test if ((g.edges[s]['storage_flow']=='gas'))]
-# 
-# test = pandas.DataFrame([s for s in list(g.edges)]).to_clipboard()
-# 
-# test = pandas.DataFrame([g.nodes[s]['class'] for s in list(g.nodes)])
-# test.to_clipboard()
-# 
-# 
-# test = []
-# for s in list(g.nodes):
-#     print (s)
-#     print (g.nodes[s])
-#     print ('***')
-# =============================================================================
+        for _, prod_data_series in H.producers.iterrows():
+            prod_type = prod_data_series["type"]
+
+            if hub_data["build_{}".format(prod_type)] == 0:
+                # if the node is unable to build that producer type, pass
+                pass
+            else:
+                purity = prod_data_series["purity"]
+                prod_node = "{}_production_{}".format(hub_name, prod_type)
+                destination_node = "{}_center_{}Purity".format(hub_name, purity)
+
+                prod_data = prod_data_series.to_dict()
+                prod_data["node"] = prod_node
+                prod_data["class"] = "producer"
+                prod_data["existing"] = 0
+                prod_data["hub"] = hub_name
+                prod_data["capital_usd_coefficient"] = (
+                    prod_data["capital_usd_coefficient"] * capital_price_multiplier
+                )
+                prod_data["kWh_coefficient"] = (
+                    prod_data["kWh_coefficient"] * e_price_multiplier
+                )
+                prod_data["ng_coefficient"] = (
+                    prod_data["ng_coefficient"] * ng_price_multiplier
+                )
+                g.add_node(prod_node, **prod_data)
+
+                # add edge
+                edge_dict = free_flow_dict("flow_from_producer")
+                edge_dict["startNode"] = prod_node
+                edge_dict["endNode"] = destination_node
+
+                g.add_edge(prod_node, destination_node, **(edge_dict))
+
+    # loop through the existing producers and add them
+    for _, prod_existing_series in H.producers_existing.iterrows():
+        hub_name = prod_existing_series["hub"]
+        prod_type = prod_existing_series["type"]
+        prod_node = "{}_production_{}Existing".format(hub_name, prod_type)
+        destination_node = "{}_center_{}Purity".format(hub_name, purity)
+
+        # get corresponding data about that type of production
+        prod_data = H.producers.set_index("type").loc[prod_type]
+        purity = prod_data["purity"]
+
+        prod_exist_data = prod_existing_series.to_dict()
+        prod_exist_data["node"] = prod_node
+        prod_exist_data["class"] = "producer"
+        prod_exist_data["existing"] = 1
+        g.add_node(prod_node, **prod_exist_data)
+        # add edge
+
+        edge_dict = free_flow_dict("flow_from_producer")
+        edge_dict["startNode"] = prod_node
+        edge_dict["endNode"] = destination_node
+
+        g.add_edge(prod_node, destination_node, **(edge_dict))
 
 
-                    
+def add_converters(g: DiGraph, H):
+    """
+    add converters to the graph
+    each converter is a node and arc that splits an existing arc into two
+    """
+    # loop through the nodes and converters to add the necessary nodes and arcs
+    potential_start_nodes = list(g.nodes(data="class"))
+    for _, converter_data_series in H.converters.iterrows():
+        if converter_data_series["arc_start_class"] == "pass":
+            pass
+        else:
+            for node_b4_cv, node_b4_cv_class in potential_start_nodes:
+                if node_b4_cv_class == converter_data_series["arc_start_class"]:
+                    hub_name = g.nodes[node_b4_cv]["hub"]
+                    hub_data = H.hubs.set_index("hub").loc[hub_name]
+
+                    # add a new node for the converter at the hub
+                    cv_data = converter_data_series.to_dict()
+                    cv_data["hub"] = hub_name
+                    cv_class = "converter_{}".format(cv_data["converter"])
+                    cv_data["class"] = cv_class
+                    cv_node = "{}_{}".format(hub_name, cv_class)
+                    cv_data["node"] = cv_node
+                    cv_destination = cv_data["arc_end_class"]
+
+                    # multiply by regional capital price modifier TODO
+                    cv_data["capital_usd_coefficient"] = (
+                        cv_data["capital_usd_coefficient"] * hub_data["capital_pm"]
+                    )
+                    # multiply by electricity regional price modifier TODO
+                    cv_data["kWh_coefficient"] = (
+                        cv_data["kWh_coefficient"] * hub_data["e_pm"]
+                    )
+                    g.add_node(cv_node, **cv_data)
+
+                    # grab the tuples of any edges that have the correct arc_end type--
+                    # i.e., any edges where the start_node is equal to the node we are
+                    #  working on in our for loop, and where the end_node has a class equal
+                    #  to the "arc_end_class" parameter in converters_df
+                    change_edges_list = [
+                        (start_node, end_node)
+                        for start_node, end_node in g.edges()
+                        if (
+                            (node_b4_cv == start_node)
+                            & (cv_destination == g.nodes[end_node]["class"])
+                        )
+                    ]
+                    # insert converter node between "arc_start_class" node
+                    # and "arc_end_class" node
+                    for start_node, end_node in change_edges_list:
+                        arc_data = g.edges[(start_node, end_node)]
+
+                        # add "arc_start_class" node -> cv_node
+                        start2cv_data = free_flow_dict(cv_class)
+                        start2cv_data["startNode"] = start_node
+                        start2cv_data["endNode"] = cv_node
+                        start2cv_data["flowLimit_tonsPerDay"] = arc_data[
+                            "flowLimit_tonsPerDay"
+                        ]
+                        g.add_edge(start_node, cv_node, **start2cv_data)
+
+                        # add cv_node -> "arc_end_class" node
+                        cv2dest_data = arc_data.copy()
+                        cv2dest_data["startNode"] = cv_node
+                        g.add_edge(cv_node, end_node, **cv2dest_data)
+
+                        # remove "arc_start_class" -> "arc_end_class" node
+                        g.remove_edge(start_node, end_node)
+
+
+def add_price_nodes(g: DiGraph, H):
+    """
+    add price nodes to the graph
+    each price is a node that has very little demand and series of breakeven price points to help us estimate the price that customers are paying for hydrogen at that node.
+    ---
+    #TODO maybe the below should be copied somewhere else:
+
+    H.price_range is a iterable array of prices. The model will use this array of discrete prices as fake consumers. In the solution, the price of hydrogen at that node is between the most expensive "price consumer" who does not use hydrogen and the least expensive "price consumer" who does.
+    H.price_hubs is a list of the hubs where we want to calculate prices for. if it equals 'all' then all of the hubs will be priced
+    H.price_demand is the total amount of pricing demand at each hub. this can be set to a higher value if you are trying to just test sensitivity to amount of demand
+    """
+    if not H.find_prices:
+        return
+    else:
+        if H.price_hubs == "all":
+            H.price_hubs = set([s[1] for s in list(g.nodes(data="hub"))])
+        for ph in H.price_hubs:
+            # add nodes to store pricing information
+            for p in H.price_tracking_array:
+                # 1) fuelStation prices
+                for demand_type in ["fuelStation", "lowPurity", "highPurity"]:
+                    ph_node = ph + "_price{}_{}".format(cap_first(demand_type), p)
+                    demand_node = ph + "_demand_{}".format(demand_type)
+
+                    price_node_dict = {
+                        "node": ph_node,
+                        "sector": "price",
+                        "hub": ph,
+                        "breakevenPrice": p * 1000,
+                        "size": H.price_demand,
+                        "carbonSensitiveFraction": 0,
+                        "breakevenCarbon_g_MJ": 0,
+                        "demandType": demand_type,
+                        "class": "price",
+                    }
+                    g.add_node(ph_node, **price_node_dict)
+                    # add the accompanying edge
+                    price_edge_dict = {
+                        "startNode": demand_node,
+                        "endNode": ph_node,
+                        "kmLength": 0.0,
+                        "capital_usdPerUnit": 0.0,
+                    }
+                    g.add_edge(demand_node, ph_node, **price_edge_dict)
+
+
+def build_hydrogen_network(H):
+    """Builds appropriate hydrogen network
+    from H (a HydrogenInputs object)
+
+    returns g: a networkx.DiGraph object
+    """
+    g = initialize_graph(H)
+    add_consumers(g, H)
+    add_producers(g, H)
+    add_converters(g, H)
+    add_price_nodes(g, H)
+
+    return g
