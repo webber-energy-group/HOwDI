@@ -205,7 +205,8 @@ def initialize_graph(H):
                     * pipeline_length
                     * capital_price_multiplier,
                     "fixed_usdPerUnitPerDay": pipeline_data["fixed_usdPerUnitPerDay"]
-                    * pipeline_length,
+                    * pipeline_length
+                    * capital_price_multiplier,
                     "variable_usdPerTon": pipeline_data["variable_usdPerKilometer-Ton"]
                     * pipeline_length,
                     "flowLimit_tonsPerDay": pipeline_data["flowLimit_tonsPerDay"],
@@ -356,6 +357,9 @@ def add_producers(g: DiGraph, H):
                 prod_data["capital_usd_coefficient"] = (
                     prod_data["capital_usd_coefficient"] * capital_price_multiplier
                 )
+                prod_data["fixed_usdPerTon"] = (
+                    prod_data["fixed_usdPerTon"] * capital_price_multiplier
+                )
                 prod_data["e_price"] = prod_data["kWh_coefficient"] * e_price
                 prod_data["ng_price"] = prod_data["ng_coefficient"] * ng_price
                 g.add_node(prod_node, **prod_data)
@@ -422,6 +426,9 @@ def add_converters(g: DiGraph, H):
 
                     cv_data["capital_usd_coefficient"] = (
                         cv_data["capital_usd_coefficient"] * capital_pm
+                    )
+                    cv_data["fixed_usdPerTonPerDay"] = (
+                        cv_data["fixed_usdPerTonPerDay"] * capital_pm
                     )
                     cv_data["e_price"] = cv_data["kWh_coefficient"] * e_price
                     g.add_node(cv_node, **cv_data)
