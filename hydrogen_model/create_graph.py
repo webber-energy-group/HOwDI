@@ -1,14 +1,13 @@
 """
 hydrogen model module
 takes input csvs and creates the networkx graph object
-needed to run the pyomo-based hydrogen model
+needed to run the Pyomo-based hydrogen model
 """
 
 # import
 from itertools import permutations
 
 from networkx import DiGraph
-from pandas import Series
 
 
 def cap_first(s):
@@ -93,7 +92,7 @@ def initialize_graph(H):
             ):
                 # this inner for loop iterates over the following connections, with purity x:
                 # xPurity_center -> xPurityPipeline (class: flow_within_hub)
-                # xPurityPipeline -> xPuirty_center (class: reverse_flow_within_hub)
+                # xPurityPipeline -> xPurity_center (class: reverse_flow_within_hub)
                 g.add_edge(*arc, **free_flow_dict(flow_direction))
 
         ## 2.2) the connection of hub node to truck distribution hub incorporates the
@@ -223,7 +222,7 @@ def initialize_graph(H):
                     for truck_type, truck_info in truck_distribution.iterrows():
                         # information for the trucking routes between hydrogen hubs
 
-                        # generate node names based on arc and trucktype
+                        # generate node names based on arc and truck_type
                         # yields ({hubA}_dist_{truck_type}, {hubB}_dist_{truck_type})
                         node_names = tuple(
                             map(lambda hub: "{}_dist_{}".format(hub, truck_type), arc)
