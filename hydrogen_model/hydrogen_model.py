@@ -38,7 +38,9 @@ class HydrogenInputs:
         carbon_price_dollars_per_ton: dollars per ton penalty on CO2 emissions
         investment_interest: interest rate for financing capital investments
         investment_period: number of years over which capital is financed
-        time_slices: used to get from investment_period units to the simulation timestep units. Default is 365 because the investment period units are in years (20 years default) and the simulation units are in days.
+        time_slices: used to get from investment_period units to the simulation
+            timestep units. Default is 365 because the investment period units are in
+            years (20 years default) and the simulation units are in days.
         """
         # generic data
         self.producers = pandas.DataFrame(inputs["production"])
@@ -87,8 +89,13 @@ class HydrogenInputs:
         self.find_prices = find_prices
 
         # for the scenario where hydrogen infrastructure is subsidized
-        self.subsidy_dollar_billion = subsidy_dollar_billion  # how many billions of dollars are available to subsidize infrastructure
-        self.subsidy_cost_share_fraction = subsidy_cost_share_fraction  # what fraction of dollars must industry spend on new infrastructure--e.g., if = 0.6, then for a $10Billion facility, industry must spend $6Billion (which counts toward the objective function) and the subsidy will cover $4Billion (which is excluded from the objective function).
+        # how many billions of dollars are available to subsidize infrastructure
+        self.subsidy_dollar_billion = subsidy_dollar_billion
+        # what fraction of dollars must industry spend on new infrastructure--
+        #  e.g., if = 0.6, then for a $10Billion facility, industry must spend $6Billion
+        #  (which counts toward the objective function) and the subsidy will cover $4Billion
+        #  (which is excluded from the objective function).
+        self.subsidy_cost_share_fraction = subsidy_cost_share_fraction
 
 
 def create_node_sets(m):
@@ -184,7 +191,8 @@ def create_arc_sets(m):
 
 
 def create_params(m):
-    """Loads parameters from network object (m.g) into pe.Param objects, which are used as coefficients in the model objective"""
+    """Loads parameters from network object (m.g) into pe.Param objects, which are
+    used as coefficients in the model objective"""
     # TODO Add units ?
 
     ## Distribution
@@ -401,8 +409,8 @@ def obj_rule(m):
     P_fixed = sum(m.prod_capacity[p] * m.prod_cost_fixed[p] for p in m.producer_set)
 
     # The daily capital costs of production per ton are
-    # (the production capacity of a node) * (the regional capital cost coefficient of a node) / amortization factor
-    # for each producer
+    # (the production capacity of a node) * (the regional capital cost coefficient of a node)
+    # / amortization factor for each producer
     P_capital = (
         sum(m.prod_capacity[p] * m.prod_cost_capital_coeff[p] for p in m.producer_set)
         / m.H.A
@@ -762,8 +770,9 @@ def apply_constraints(m):
             # if producer is an existing producer, don't constrain by minimum value
             constraint = m.prod_h[node] <= 1e12  # arbitrarily large number
         else:
-            # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
-            # with the prior constraint, forces 0 production if producer DNE
+            # multiply by "prod_exists" (a binary) so that constraint is only enforced
+            # if the producer exists with the prior constraint, forces 0 production
+            # if producer DNE
             constraint = (
                 m.prod_h[node] <= m.g.nodes[node]["max_h2"] * m.prod_exists[node]
             )
@@ -1048,7 +1057,8 @@ def apply_constraints(m):
         constraint = m.fuelStation_cost_capital_subsidy[node] == conversion_cost * (
             1 - m.H.subsidy_cost_share_fraction
         )
-        # note that existing production facilities have a cost_capital_coeff of zero, so they cannot be subsidized
+        # note that existing production facilities have a cost_capital_coeff
+        #  of zero, so they cannot be subsidized
         return constraint
 
     m.constr_subsidyConverter = pe.Constraint(
