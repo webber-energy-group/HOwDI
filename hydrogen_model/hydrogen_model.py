@@ -42,6 +42,8 @@ class HydrogenInputs:
         """
         # generic data
         self.producers = pandas.DataFrame(inputs["production"])
+        self.prod_therm = pandas.DataFrame(inputs["production_thermal"])
+        self.prod_elec = pandas.DataFrame(inputs["production_electric"])
         self.storage = pandas.DataFrame(inputs["storage"])
         self.distributors = pandas.DataFrame(inputs["distribution"])
         self.converters = pandas.DataFrame(inputs["conversion"])

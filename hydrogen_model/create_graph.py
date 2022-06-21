@@ -338,38 +338,59 @@ def add_producers(g: DiGraph, H):
         ng_price = hub_data["ng_usd_per_mmbtu"]
         e_price = hub_data["e_usd_per_kwh"]
 
-        for _, prod_data_series in H.producers.iterrows():
-            prod_type = prod_data_series["type"]
+        for prod_tech_type, prod_df in {
+            "electric": H.prod_elec,
+            "thermal": H.prod_therm,
+        }.items():
+            for _, prod_data_series in prod_df.iterrows():
+                prod_type = prod_data_series["type"]
 
-            if hub_data["build_{}".format(prod_type)] == 0:
-                # if the node is unable to build that producer type, pass
-                pass
-            else:
-                purity = prod_data_series["purity"]
-                prod_node = "{}_production_{}".format(hub_name, prod_type)
-                destination_node = "{}_center_{}Purity".format(hub_name, purity)
+                if hub_data["build_{}".format(prod_type)] == 0:
+                    # if the node is unable to build that producer type, pass
+                    pass
+                else:
+                    purity = prod_data_series["purity"]
+                    prod_node = "{}_production_{}".format(hub_name, prod_type)
+                    destination_node = "{}_center_{}Purity".format(hub_name, purity)
 
-                prod_data = prod_data_series.to_dict()
-                prod_data["node"] = prod_node
-                prod_data["class"] = "producer"
-                prod_data["existing"] = 0
-                prod_data["hub"] = hub_name
-                prod_data["capital_usd_coefficient"] = (
-                    prod_data["capital_usd_coefficient"] * capital_price_multiplier
-                )
-                prod_data["fixed_usdPerTon"] = (
-                    prod_data["fixed_usdPerTon"] * capital_price_multiplier
-                )
-                prod_data["e_price"] = prod_data["kWh_coefficient"] * e_price
-                prod_data["ng_price"] = prod_data["ng_coefficient"] * ng_price
-                g.add_node(prod_node, **prod_data)
+                    prod_data = prod_data_series.to_dict()
+                    prod_data["node"] = prod_node
+                    prod_data["class"] = "producer"
+                    prod_data["existing"] = 0
+                    prod_data["hub"] = hub_name
+                    prod_data["fixed_usdPerTon"] = (
+                        prod_data["fixed_usdPerTon"] * capital_price_multiplier
+                    )
+                    prod_data["e_price"] = prod_data["kWh_coefficient"] * e_price
 
-                # add edge
-                edge_dict = free_flow_dict("flow_from_producer")
-                edge_dict["startNode"] = prod_node
-                edge_dict["endNode"] = destination_node
+                    # data specific to thermal or electric
+                    if prod_tech_type == "thermal":
+                        prod_data["capital_usd_coefficient"] = (
+                            prod_data["capital_usd_coefficient"]
+                            * capital_price_multiplier
+                        )
+                        prod_data["ng_price"] = prod_data["ng_coefficient"] * ng_price
+                    elif prod_tech_type == "electric":
+                        prod_data["capital_usd_coefficient"] = (
+                            prod_data["capEx_$_per_kW"]
+                            * prod_data["kWh_coefficient"]
+                            * H.time_slices
+                            / 8760
+                            / prod_data["utilization"]
+                            * capital_price_multiplier
+                        )
+                    else:
+                        raise Exception(
+                            "Production type that is not thermal or electric"
+                        )
+                    g.add_node(prod_node, **prod_data)
 
-                g.add_edge(prod_node, destination_node, **(edge_dict))
+                    # add edge
+                    edge_dict = free_flow_dict("flow_from_producer")
+                    edge_dict["startNode"] = prod_node
+                    edge_dict["endNode"] = destination_node
+
+                    g.add_edge(prod_node, destination_node, **(edge_dict))
 
     # loop through the existing producers and add them
     for _, prod_existing_series in H.producers_existing.iterrows():
