@@ -120,7 +120,7 @@ def create_hub_distribution_data(df, hub):
     }
 
 
-def main(m, hubs_list, parameters):
+def main(m, hubs_list, price_hub_params):
     outputs = to_json(m, return_dict=True)
     outputs = outputs["unknown"]["data"]["None"]["__pyomo_components__"]
     outputs = recursive_clean(outputs)
@@ -206,13 +206,13 @@ def main(m, hubs_list, parameters):
         dfs[file_name] = dfs[file_name].set_index(new_index)
 
     # find price for price hubs
-    if parameters["find_prices"]:
-        if parameters["price_hubs"] == "all":
+    if price_hub_params["find_prices"]:
+        if price_hub_params["price_hubs"] == "all":
             price_hubs = hubs_list
         else:
-            price_hubs = parameters["price_hubs"]
+            price_hubs = price_hub_params["price_hubs"]
 
-        price_demand = parameters["price_demand"]
+        price_demand = price_hub_params["price_demand"]
 
         price_hub_min = pd.DataFrame(
             columns=dfs["consumption"].columns
@@ -242,7 +242,9 @@ def main(m, hubs_list, parameters):
 
     # find_prices is a binary, price_demand is the demand amount used with price hubs, thus,
     # if price hubs are used (find_prices binary), then data utilizing an amount of hydrogen <= price_demand will be removed
-    price_hub_demand = parameters["find_prices"] * parameters["price_demand"]
+    price_hub_demand = (
+        price_hub_params["find_prices"] * price_hub_params["price_demand"]
+    )
 
     tol = 1e-6
 
@@ -261,7 +263,7 @@ def main(m, hubs_list, parameters):
     ]
 
     # re add price hub data
-    if parameters["find_prices"]:
+    if price_hub_params["find_prices"]:
         dfs["consumption"] = pd.concat([dfs["consumption"], price_hub_min])
 
     # post processing

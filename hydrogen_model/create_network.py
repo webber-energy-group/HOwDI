@@ -4,7 +4,6 @@ takes input csvs and creates the networkx graph object
 needed to run the Pyomo-based hydrogen model
 """
 
-# import
 from itertools import permutations
 
 from networkx import DiGraph
@@ -400,7 +399,7 @@ def add_producers(g: DiGraph, H):
         destination_node = "{}_center_{}Purity".format(hub_name, purity)
 
         # get corresponding data about that type of production
-        prod_data = H.producers.set_index("type").loc[prod_type]
+        prod_data = H.prod_therm.set_index("type").loc[prod_type]
         purity = prod_data["purity"]
 
         prod_exist_data = prod_existing_series.to_dict()
@@ -561,7 +560,7 @@ def add_price_nodes(g: DiGraph, H):
                             g.add_edge(demand_node, ph_node, **price_edge_dict)
 
 
-def build_hydrogen_network(H):
+def build_hydrogen_network(H) -> DiGraph:
     """Builds appropriate hydrogen network
     from H (a HydrogenInputs object)
 

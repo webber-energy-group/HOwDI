@@ -24,6 +24,12 @@ except ModuleNotFoundError:
 
 
 def main(data, data_dir, scenario_dir):
+    """
+    data: outputs of model
+    data_dir: location of data for hubs and shapefile
+    scenario_dir: figure outputted to scenario_dir/outputs/fig.png
+    therm_prod: thermal production dataframe
+    """
 
     hub_data = json.load(open(data_dir / "hubs" / "hubs.geojson"))["features"]
     locations = {d["properties"]["hub"]: d["geometry"]["coordinates"] for d in hub_data}

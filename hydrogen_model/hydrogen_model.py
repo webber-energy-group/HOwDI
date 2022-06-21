@@ -1,109 +1,23 @@
 import time
 
-start = time.time()
-
-import numpy
-import pandas
 import pyomo
 import pyomo.environ as pe
+from networkx import DiGraph
 
-from hydrogen_model.create_graph import build_hydrogen_network
+from hydrogen_model.create_network import build_hydrogen_network
+from hydrogen_model.read_inputs import HydrogenInputs
 
-
-class HydrogenInputs:
-    """
-    stores all of the input files needed to run the hydrogen model
-    stores some hard coded variables used for the hydrogen model
-    """
-
-    def __init__(
-        self,
-        inputs,
-        carbon_price_dollars_per_ton,
-        carbon_capture_credit_dollars_per_ton,
-        price_tracking_array,
-        price_hubs,
-        price_demand,
-        find_prices,
-        investment_interest,
-        investment_period,
-        time_slices,
-        subsidy_dollar_billion,
-        subsidy_cost_share_fraction,
-        **kwargs
-    ):
-        """
-        carbon_price_dollars_per_ton: dollars per ton penalty on CO2 emissions
-        investment_interest: interest rate for financing capital investments
-        investment_period: number of years over which capital is financed
-        time_slices: used to get from investment_period units to the simulation
-            timestep units. Default is 365 because the investment period units are in
-            years (20 years default) and the simulation units are in days.
-        """
-        # generic data
-        self.producers = pandas.DataFrame(inputs["production"])
-        self.prod_therm = pandas.DataFrame(inputs["production_thermal"])
-        self.prod_elec = pandas.DataFrame(inputs["production_electric"])
-        self.storage = pandas.DataFrame(inputs["storage"])
-        self.distributors = pandas.DataFrame(inputs["distribution"])
-        self.converters = pandas.DataFrame(inputs["conversion"])
-        self.demand = pandas.DataFrame(inputs["demand"])
-        self.ccs_data = pandas.DataFrame(inputs["ccs"])
-        self.ccs_data.set_index("type", inplace=True)
-        self.ccs1_percent_co2_captured = self.ccs_data.loc[
-            "ccs1", "percent_CO2_captured"
-        ]
-        self.ccs2_percent_co2_captured = self.ccs_data.loc[
-            "ccs2", "percent_CO2_captured"
-        ]
-        self.ccs1_variable_usdPerTon = self.ccs_data.loc[
-            "ccs1", "variable_usdPerTonCO2"
-        ]
-        self.ccs2_variable_usdPerTon = self.ccs_data.loc[
-            "ccs2", "variable_usdPerTonCO2"
-        ]
-
-        # data specific to the real world network being analyzed
-        self.hubs = pandas.DataFrame(inputs["hubs"])
-        self.arcs = pandas.DataFrame(inputs["arcs"])
-        self.producers_existing = pandas.DataFrame(inputs["production_existing"])
-
-        # Scalars
-        # get rid of:
-        self.time_slices = float(time_slices)
-        self.carbon_price = float(carbon_price_dollars_per_ton)
-        self.carbon_capture_credit = carbon_capture_credit_dollars_per_ton
-        self.A = (
-            # yearly amortized payment = capital cost / A
-            (((1 + investment_interest) ** investment_period) - 1)
-            / (investment_interest * (1 + investment_interest) ** investment_period)
-        )
-        # unit conversion 120,000 MJ/tonH2, 1,000,000 g/tonCO2:
-        self.carbon_g_MJ_to_t_tH2 = 120000.0 / 1000000.0
-
-        self.price_tracking_array = numpy.arange(**price_tracking_array)
-        self.price_hubs = price_hubs
-        self.price_demand = price_demand
-        self.find_prices = find_prices
-
-        # for the scenario where hydrogen infrastructure is subsidized
-        # how many billions of dollars are available to subsidize infrastructure
-        self.subsidy_dollar_billion = subsidy_dollar_billion
-        # what fraction of dollars must industry spend on new infrastructure--
-        #  e.g., if = 0.6, then for a $10Billion facility, industry must spend $6Billion
-        #  (which counts toward the objective function) and the subsidy will cover $4Billion
-        #  (which is excluded from the objective function).
-        self.subsidy_cost_share_fraction = subsidy_cost_share_fraction
+start = time.time()
 
 
-def create_node_sets(m):
+def create_node_sets(m: pe.ConcreteModel, g: DiGraph):
     """Creates all pe.Sets associated with nodes used by the model"""
     # set of all nodes
-    m.node_set = pe.Set(initialize=list(m.g.nodes()))
+    m.node_set = pe.Set(initialize=list(g.nodes()))
 
     # helpful iterable that contains tuples of node and respective class
     # saves memory
-    nodes_with_class = m.g.nodes(data="class")
+    nodes_with_class = g.nodes(data="class")
 
     # set of node names where all nodes are producers
     producer_nodes = [
@@ -114,7 +28,7 @@ def create_node_sets(m):
     # set of node names where all nodes have existing production
     producer_existing_nodes = [
         node
-        for node, producer_already_exists in m.g.nodes(data="existing")
+        for node, producer_already_exists in g.nodes(data="existing")
         if producer_already_exists == 1
     ]
     m.producer_existing_set = pe.Set(initialize=producer_existing_nodes)
@@ -147,13 +61,13 @@ def create_node_sets(m):
     m.truck_set = pe.Set(initialize=truck_nodes)
 
 
-def create_arc_sets(m):
+def create_arc_sets(m: pe.ConcreteModel, g: DiGraph):
     """Creates all pe.Sets associated with arcs used by the model"""
     # set of all arcs
-    m.arc_set = pe.Set(initialize=list(m.g.edges()), dimen=None)
+    m.arc_set = pe.Set(initialize=list(g.edges()), dimen=None)
 
     # helpful iterable that saves memory since it is used a few times
-    edges_with_class = m.g.edges(data="class")
+    edges_with_class = g.edges(data="class")
 
     distribution_arcs = [
         (node1, node2)
@@ -165,7 +79,7 @@ def create_arc_sets(m):
     # set of all existing arcs (i.e., pipelines)
     distribution_arcs_existing = [
         (node1, node2)
-        for node1, node2, already_exists in m.g.edges(data="existing")
+        for node1, node2, already_exists in g.edges(data="existing")
         if already_exists == True
     ]
     m.distribution_arc_existing_set = pe.Set(initialize=distribution_arcs_existing)
@@ -181,107 +95,107 @@ def create_arc_sets(m):
     # set of all arcs where either node is a consumer
     conversion_arcs = [
         (node1, node2)
-        for node1, node2 in m.g.edges()
-        if ("converter" in m.g.nodes[node1]["class"])
-        or ("converter" in m.g.nodes[node2]["class"])
+        for node1, node2 in g.edges()
+        if ("converter" in g.nodes[node1]["class"])
+        or ("converter" in g.nodes[node2]["class"])
     ]
     m.converter_arc_set = pe.Set(initialize=conversion_arcs)
 
 
-def create_params(m):
-    """Loads parameters from network object (m.g) into pe.Param objects, which are
+def create_params(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
+    """Loads parameters from network object (g) into pe.Param objects, which are
     used as coefficients in the model objective"""
     # TODO Add units ?
 
     ## Distribution
     m.dist_cost_capital = pe.Param(
         m.distribution_arcs,
-        initialize=lambda m, i, j: m.g.adj[i][j].get("capital_usdPerUnit", 0),
+        initialize=lambda m, i, j: g.adj[i][j].get("capital_usdPerUnit", 0),
     )
     m.dist_cost_fixed = pe.Param(
         m.distribution_arcs,
-        initialize=lambda m, i, j: m.g.adj[i][j].get("fixed_usdPerUnitPerDay", 0),
+        initialize=lambda m, i, j: g.adj[i][j].get("fixed_usdPerUnitPerDay", 0),
     )
     m.dist_cost_variable = pe.Param(
         m.distribution_arcs,
-        initialize=lambda m, i, j: m.g.adj[i][j].get("variable_usdPerTon", 0),
+        initialize=lambda m, i, j: g.adj[i][j].get("variable_usdPerTon", 0),
     )
     m.dist_flowLimit = pe.Param(
         m.distribution_arcs,
-        initialize=lambda m, i, j: m.g.adj[i][j].get("flowLimit_tonsPerDay", 0),
+        initialize=lambda m, i, j: g.adj[i][j].get("flowLimit_tonsPerDay", 0),
     )
 
     ## Production
     m.prod_cost_capital_coeff = pe.Param(
         m.producer_set,
-        initialize=lambda m, i: m.g.nodes[i].get("capital_usd_coefficient", 0),
+        initialize=lambda m, i: g.nodes[i].get("capital_usd_coefficient", 0),
     )
     m.prod_cost_fixed = pe.Param(
-        m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("fixed_usdPerTon", 0)
+        m.producer_set, initialize=lambda m, i: g.nodes[i].get("fixed_usdPerTon", 0)
     )
     m.prod_e_price = pe.Param(
-        m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("e_price", 0)
+        m.producer_set, initialize=lambda m, i: g.nodes[i].get("e_price", 0)
     )
     m.prod_ng_price = pe.Param(
-        m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("ng_price", 0)
+        m.producer_set, initialize=lambda m, i: g.nodes[i].get("ng_price", 0)
     )
     m.prod_cost_variable = pe.Param(
         m.producer_set,
-        initialize=lambda m, i: m.g.nodes[i].get("variable_usdPerTon", 0),
+        initialize=lambda m, i: g.nodes[i].get("variable_usdPerTon", 0),
     )
     m.prod_carbonRate = pe.Param(
         m.producer_set,
-        initialize=lambda m, i: m.g.nodes[i].get("carbon_g_MJ", 0)
-        * m.H.carbon_g_MJ_to_t_tH2,
+        initialize=lambda m, i: g.nodes[i].get("carbon_g_MJ", 0)
+        * H.carbon_g_MJ_to_t_tH2,
     )
     m.prod_utilization = pe.Param(
-        m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("utilization", 0)
+        m.producer_set, initialize=lambda m, i: g.nodes[i].get("utilization", 0)
     )
 
     ## Conversion
     m.conv_cost_capital_coeff = pe.Param(
         m.converter_set,
-        initialize=lambda m, i: m.g.nodes[i].get("capital_usd_coefficient", 0),
+        initialize=lambda m, i: g.nodes[i].get("capital_usd_coefficient", 0),
     )
     m.conv_cost_fixed = pe.Param(
         m.converter_set,
-        initialize=lambda m, i: m.g.nodes[i].get("fixed_usdPerTonPerDay", 0),
+        initialize=lambda m, i: g.nodes[i].get("fixed_usdPerTonPerDay", 0),
     )
     m.conv_e_price = pe.Param(
-        m.converter_set, initialize=lambda m, i: m.g.nodes[i].get("e_price", 0)
+        m.converter_set, initialize=lambda m, i: g.nodes[i].get("e_price", 0)
     )
     m.conv_cost_variable = pe.Param(
         m.converter_set,
-        initialize=lambda m, i: m.g.nodes[i].get("variable_usdPerTon", 0),
+        initialize=lambda m, i: g.nodes[i].get("variable_usdPerTon", 0),
     )
     m.conv_utilization = pe.Param(
-        m.converter_set, initialize=lambda m, i: m.g.nodes[i].get("utilization", 0)
+        m.converter_set, initialize=lambda m, i: g.nodes[i].get("utilization", 0)
     )
 
     ## Consumption
     m.cons_price = pe.Param(
-        m.consumer_set, initialize=lambda m, i: m.g.nodes[i].get("breakevenPrice", 0)
+        m.consumer_set, initialize=lambda m, i: g.nodes[i].get("breakevenPrice", 0)
     )
     m.cons_size = pe.Param(
-        m.consumer_set, initialize=lambda m, i: m.g.nodes[i].get("size", 0)
+        m.consumer_set, initialize=lambda m, i: g.nodes[i].get("size", 0)
     )
     m.cons_carbonSensitive = pe.Param(
-        m.consumer_set, initialize=lambda m, i: m.g.nodes[i].get("carbonSensitive", 0)
+        m.consumer_set, initialize=lambda m, i: g.nodes[i].get("carbonSensitive", 0)
     )
     m.cons_breakevenCarbon = pe.Param(
         m.consumer_set,
-        initialize=lambda m, i: m.g.nodes[i].get("breakevenCarbon_g_MJ", 0)
-        * m.H.carbon_g_MJ_to_t_tH2,
+        initialize=lambda m, i: g.nodes[i].get("breakevenCarbon_g_MJ", 0)
+        * H.carbon_g_MJ_to_t_tH2,
     )
 
     ## CCS Retrofitting
     # binary, 1: producer can build CCS1, defaults to zero
     m.can_ccs1 = pe.Param(
-        m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("can_ccs1", 0)
+        m.producer_set, initialize=lambda m, i: g.nodes[i].get("can_ccs1", 0)
     )
     # binary, 1: producer can build CCS2, defaults to zero
     m.can_ccs2 = pe.Param(
-        m.producer_set, initialize=lambda m, i: m.g.nodes[i].get("can_ccs2", 0)
+        m.producer_set, initialize=lambda m, i: g.nodes[i].get("can_ccs2", 0)
     )
 
 
@@ -344,7 +258,7 @@ def create_variables(m):
     )
 
 
-def obj_rule(m):
+def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
     """Defines the objective function.
 
     Some values are described as "regional prices", which means that a
@@ -365,19 +279,18 @@ def obj_rule(m):
     # over all consumers
     U_carbon = (
         sum(m.cons_checs[c] * m.cons_breakevenCarbon[c] for c in m.consumer_set)
-        * m.H.carbon_price
+        * H.carbon_price
     )
 
     # TODO describe this equation
     U_carbon_capture_credit = (
         sum(
-            m.ccs1_checs[p]
-            * (m.prod_carbonRate[p] * (1 - m.H.ccs1_percent_co2_captured))
+            m.ccs1_checs[p] * (m.prod_carbonRate[p] * (1 - H.ccs1_percent_co2_captured))
             + m.ccs2_checs[p]
-            * (m.prod_carbonRate[p] * (1 - m.H.ccs2_percent_co2_captured))
+            * (m.prod_carbonRate[p] * (1 - H.ccs2_percent_co2_captured))
             for p in m.producer_set
         )
-        * m.H.carbon_capture_credit
+        * H.carbon_capture_credit
     )
 
     ## Production
@@ -403,8 +316,8 @@ def obj_rule(m):
     # / amortization factor for each producer
     P_capital = (
         sum(m.prod_capacity[p] * m.prod_cost_capital_coeff[p] for p in m.producer_set)
-        / m.H.A
-        / m.H.time_slices
+        / H.A
+        / H.time_slices
     )
 
     # Daily price of producing checs (clean hydrogen energy credits) is the sum of
@@ -413,19 +326,19 @@ def obj_rule(m):
         sum(
             m.prod_checs[p] * m.prod_carbonRate[p]
             + m.ccs1_checs[p]
-            * (m.prod_carbonRate[p] * (1 - m.H.ccs1_percent_co2_captured))
+            * (m.prod_carbonRate[p] * (1 - H.ccs1_percent_co2_captured))
             + m.ccs2_checs[p]
-            * (m.prod_carbonRate[p] * (1 - m.H.ccs2_percent_co2_captured))
+            * (m.prod_carbonRate[p] * (1 - H.ccs2_percent_co2_captured))
             for p in m.producer_set
         )
-        * m.H.carbon_price
+        * H.carbon_price
     )
 
     # ccs variable cost per ton of produced hydrogen
     # TODO
     CCS_variable = sum(
-        (m.ccs1_capacity_co2[p] * m.H.ccs1_variable_usdPerTon)
-        + (m.ccs2_capacity_co2[p] * m.H.ccs2_variable_usdPerTon)
+        (m.ccs1_capacity_co2[p] * H.ccs1_variable_usdPerTon)
+        + (m.ccs2_capacity_co2[p] * H.ccs2_variable_usdPerTon)
         for p in m.producer_set
     )
 
@@ -446,7 +359,7 @@ def obj_rule(m):
     # The daily capital cost of distribution is the sum of
     # (distribution capacity) * (regional capital cost) / amortization factor
     D_capital = sum(
-        (m.dist_capacity[d] * m.dist_cost_capital[d]) / m.H.A / m.H.time_slices
+        (m.dist_capacity[d] * m.dist_cost_capital[d]) / H.A / H.time_slices
         for d in m.distribution_arcs
     )
 
@@ -477,13 +390,13 @@ def obj_rule(m):
     # (convertor capacity) * (regional capital cost) / (amortization factor)
     # for each convertor
     CV_capital = sum(
-        (m.conv_capacity[cv] * m.conv_cost_capital_coeff[cv]) / m.H.A / m.H.time_slices
+        (m.conv_capacity[cv] * m.conv_cost_capital_coeff[cv]) / H.A / H.time_slices
         for cv in m.converter_set
     )
 
     # TODO fuel station subsidy
     CV_fuelStation_subsidy = sum(
-        m.fuelStation_cost_capital_subsidy[fs] / m.H.A / m.H.time_slices
+        m.fuelStation_cost_capital_subsidy[fs] / H.A / H.time_slices
         for fs in m.fuelStation_set
     )
 
@@ -510,7 +423,7 @@ def obj_rule(m):
     return totalSurplus
 
 
-def apply_constraints(m):
+def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
     """Applies constraints to the model"""
 
     ## Distribution
@@ -530,10 +443,10 @@ def apply_constraints(m):
             All nodes
         """
         expr = 0
-        if m.g.in_edges(node):
-            expr += pe.summation(m.dist_h, index=m.g.in_edges(node))
-        if m.g.out_edges(node):
-            expr += -pe.summation(m.dist_h, index=m.g.out_edges(node))
+        if g.in_edges(node):
+            expr += pe.summation(m.dist_h, index=g.in_edges(node))
+        if g.out_edges(node):
+            expr += -pe.summation(m.dist_h, index=g.out_edges(node))
         # the equality depends on whether the node is a producer, consumer, or hub
         if node in m.producer_set:  # if producer:
             constraint = m.prod_h[node] + expr == 0.0
@@ -556,7 +469,7 @@ def apply_constraints(m):
         """
         constraint = (
             m.dist_capacity[startNode, endNode]
-            >= m.g.edges[startNode, endNode]["existing"]
+            >= g.edges[startNode, endNode]["existing"]
         )
         return constraint
 
@@ -596,8 +509,8 @@ def apply_constraints(m):
     #         All nodes relevant to trucks (all distribution
     #         nodes in distribution.csv that include truck)
     #     """
-    #     in_trucks = pe.summation(m.dist_capacity, index=m.g.in_edges(truck_dist_node))
-    #     out_trucks = pe.summation(m.dist_capacity, index=m.g.out_edges(truck_dist_node))
+    #     in_trucks = pe.summation(m.dist_capacity, index=g.in_edges(truck_dist_node))
+    #     out_trucks = pe.summation(m.dist_capacity, index=g.out_edges(truck_dist_node))
 
     #     constraint = in_trucks - out_trucks >= 0
     #     return constraint
@@ -617,7 +530,7 @@ def apply_constraints(m):
         Set:
             All convertor nodes
         """
-        flow_out = pe.summation(m.dist_h, index=m.g.out_edges(converterNode))
+        flow_out = pe.summation(m.dist_h, index=g.out_edges(converterNode))
         constraint = (
             flow_out
             <= m.conv_capacity[converterNode] * m.conv_utilization[converterNode]
@@ -649,8 +562,8 @@ def apply_constraints(m):
     #     Set:
     #         All convertors (?)
     #     """
-    #     in_capacity = pe.summation(m.dist_capacity, index=m.g.in_edges(converterNode))
-    #     out_capacity = pe.summation(m.dist_capacity, index=m.g.out_edges(converterNode))
+    #     in_capacity = pe.summation(m.dist_capacity, index=g.in_edges(converterNode))
+    #     out_capacity = pe.summation(m.dist_capacity, index=g.out_edges(converterNode))
     #     constraint = in_capacity - out_capacity <= 0
     #     return constraint
 
@@ -685,7 +598,7 @@ def apply_constraints(m):
         Set:
             Existing producers
         """
-        constraint = m.prod_capacity[node] == m.g.nodes[node]["capacity_tonPerDay"]
+        constraint = m.prod_capacity[node] == g.nodes[node]["capacity_tonPerDay"]
         return constraint
 
     m.constr_productionCapacityExisting = pe.Constraint(
@@ -731,9 +644,7 @@ def apply_constraints(m):
         else:
             # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
             # this gives the model the option to not build the producer
-            constraint = (
-                m.prod_h[node] >= m.g.nodes[node]["min_h2"] * m.prod_exists[node]
-            )
+            constraint = m.prod_h[node] >= g.nodes[node]["min_h2"] * m.prod_exists[node]
         return constraint
 
     m.constr_minProductionCapacity = pe.Constraint(
@@ -762,9 +673,7 @@ def apply_constraints(m):
             # multiply by "prod_exists" (a binary) so that constraint is only enforced
             # if the producer exists with the prior constraint, forces 0 production
             # if producer DNE
-            constraint = (
-                m.prod_h[node] <= m.g.nodes[node]["max_h2"] * m.prod_exists[node]
-            )
+            constraint = m.prod_h[node] <= g.nodes[node]["max_h2"] * m.prod_exists[node]
         return constraint
 
     m.constr_maxProductionCapacity = pe.Constraint(
@@ -806,7 +715,7 @@ def apply_constraints(m):
             m.ccs1_capacity_co2[node] * m.can_ccs1[node]
             == m.ccs1_capacity_h2[node]
             * m.prod_carbonRate[node]
-            * m.H.ccs1_percent_co2_captured
+            * H.ccs1_percent_co2_captured
         )
         return constraint
 
@@ -830,7 +739,7 @@ def apply_constraints(m):
             m.ccs2_capacity_co2[node] * m.can_ccs2[node]
             == m.ccs2_capacity_h2[node]
             * m.prod_carbonRate[node]
-            * m.H.ccs2_percent_co2_captured
+            * H.ccs2_percent_co2_captured
         )
         return constraint
 
@@ -985,8 +894,8 @@ def apply_constraints(m):
         Set:
             All producers
         """
-        ccs1_clean_hydrogen = m.ccs1_capacity_h2[node] * m.H.ccs1_percent_co2_captured
-        cc2_clean_hydrogen = m.ccs2_capacity_h2[node] * m.H.ccs2_percent_co2_captured
+        ccs1_clean_hydrogen = m.ccs1_capacity_h2[node] * H.ccs1_percent_co2_captured
+        cc2_clean_hydrogen = m.ccs2_capacity_h2[node] * H.ccs2_percent_co2_captured
 
         constraint = m.co2_emitted[node] == m.prod_carbonRate[node] * (
             m.prod_h[node] - (ccs1_clean_hydrogen + cc2_clean_hydrogen)
@@ -1024,7 +933,7 @@ def apply_constraints(m):
     # total subsidy dollars must be less than or equal to the available subsidy funds
     # =============================================================================
     # def rule_subsidyTotal(m, node):
-    #     constraint = sum(m.fuelStation_cost_capital_subsidy[fs] for fs in m.fuelStation_set) <= (m.H.subsidy_dollar_billion * 1E9)
+    #     constraint = sum(m.fuelStation_cost_capital_subsidy[fs] for fs in m.fuelStation_set) <= (H.subsidy_dollar_billion * 1E9)
     #     return constraint
     # m.constr_subsidyTotal = pe.Constraint(rule=rule_subsidyTotal)
     # =============================================================================
@@ -1044,7 +953,7 @@ def apply_constraints(m):
         conversion_cost = m.conv_capacity[node] * m.conv_cost_capital_coeff[node]
 
         constraint = m.fuelStation_cost_capital_subsidy[node] == conversion_cost * (
-            1 - m.H.subsidy_cost_share_fraction
+            1 - H.subsidy_cost_share_fraction
         )
         # note that existing production facilities have a cost_capital_coeff
         #  of zero, so they cannot be subsidized
@@ -1055,39 +964,33 @@ def apply_constraints(m):
     )
 
 
-def build_h2_model(inputs, input_parameters):
+def build_h2_model(H: HydrogenInputs, g: DiGraph):
     print("Building model")
     m = pe.ConcreteModel()
-    ## Load inputs into `hydrogen_inputs` object,
-    ## which contains all input data
-    m.H = HydrogenInputs(inputs=inputs, **input_parameters)
-
-    ## create the network graph object
-    m.g = build_hydrogen_network(m.H)
 
     ## Define sets, which are efficient ways of classifying nodes and arcs
-    create_node_sets(m)
-    create_arc_sets(m)
+    create_node_sets(m, g)
+    create_arc_sets(m, g)
 
     # Create parameters, which are the coefficients in the equation
-    create_params(m)
+    create_params(m, H, g)
 
     # Create variables
     create_variables(m)
 
     # objective function
     # maximize total surplus
-    m.OBJ = pe.Objective(rule=obj_rule, sense=pe.maximize)
+    m.OBJ = pe.Objective(rule=obj_rule(m, H), sense=pe.maximize)
 
     # apply constraints
-    apply_constraints(m)
+    apply_constraints(m, H, g)
 
     # solve model
     print("Time elapsed: %f" % (time.time() - start))
     print("Solving model")
-    solver = pyomo.opt.SolverFactory(input_parameters["solver"])
+    solver = pyomo.opt.SolverFactory(H.solver_settings.get("solver", "glpk"))
     solver.options["mipgap"] = 0.01
-    results = solver.solve(m, tee=input_parameters["solver_debug"])
+    results = solver.solve(m, tee=H.solver_settings.get("debug", 0))
     # m.solutions.store_to(results)
     # results.write(filename='results.json', format='json')
     print("Model Solved with objective value {}".format(m.OBJ()))

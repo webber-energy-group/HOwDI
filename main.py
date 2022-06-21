@@ -1,13 +1,14 @@
-from json import dump, load
+from json import dump
 from pathlib import Path
 
 from data.create_plot import main as create_plot
-from data.generate_inputs_json import main as generate_inputs_json
 from data.generate_outputs import main as generate_outputs
+from hydrogen_model.create_network import build_hydrogen_network
 from hydrogen_model.hydrogen_model import build_h2_model
+from hydrogen_model.read_inputs import HydrogenInputs
 
 
-def main(scenario="base", read_inputs_from_file=False):
+def main():
 
     scenario = "base"
 
@@ -16,30 +17,31 @@ def main(scenario="base", read_inputs_from_file=False):
     inputs_dir = scenario_dir / "inputs"
     outputs_dir = scenario_dir / "outputs"
 
-    if read_inputs_from_file == False:
-        inputs = generate_inputs_json(inputs_path=inputs_dir, filename="inputs.json")
-        # will create file to save inputs
-    else:
-        inputs = load(open(inputs_dir / "inputs.json"))
+    # read inputs
+    H = HydrogenInputs(inputs_dir)
+    # generate network
+    g = build_hydrogen_network(H)
+    # build model
+    m = build_h2_model(H, g)
 
-    input_parameters = load(open(inputs_dir / "parameters.json"))
+    # clean outputs
+    output_dfs, output_json = generate_outputs(
+        m, H.get_hubs_list(), H.get_price_hub_params()
+    )
 
-    hubs_list = [hub_data["hub"] for hub_data in inputs["hubs"]]
-
-    m = build_h2_model(inputs, input_parameters)
-
-    output_dfs, output_json = generate_outputs(m, hubs_list, input_parameters)
+    # write outputs dataframes
     [df.to_csv(outputs_dir / "{}.csv".format(key)) for key, df in output_dfs.items()]
 
-    outputs_json_file = outputs_dir / "outputs.json"
-    with outputs_json_file.open("w", encoding="utf-8") as f:
+    # write outputs to json
+    with (outputs_dir / "outputs.json").open("w", encoding="utf-8") as f:
         dump(output_json, f, ensure_ascii=False, indent=4)
 
-    create_plot(output_json, data_dir, scenario_dir)
-
-    # #debug :
-    # from idaes.core.util import to_json
-    # output_json = to_json(m, return_dict=True)
+    # create figure
+    create_plot(
+        output_json,
+        data_dir,
+        scenario_dir,
+    )
 
 
 if __name__ == "__main__":

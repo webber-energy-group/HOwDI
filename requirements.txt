@@ -6,3 +6,4 @@ numpy
 geopandas
 geopy
 anytree
+pyyaml

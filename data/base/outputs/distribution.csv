@@ -187,7 +187,7 @@ texasCity_center_lowPurity,texasCity_dist_pipelineLowPurity,1.0,0.0,0.0,0.0,9999
 texasCity_demand_lowPurity,texasCity_demandSector_existing,1.0,0.0,0.0,0.0,99999999.9,538.0
 texasCity_dist_pipelineHighPurity,texasCity_demand_lowPurity,1.0,0.0,0.0,0.0,999999.0,538.0
 texasCity_dist_pipelineLowPurity,chocolateBay_dist_pipelineLowPurity,1.0,49414048.2,6769.724603400001,4.13853,999999.0,544.9000000144383
-texasCity_dist_pipelineLowPurity,laPorte_dist_pipelineLowPurity,1.0,44068728.0,6037.415736000001,3.33854,999999.0,1843.8999999854198
+texasCity_dist_pipelineLowPurity,laPorte_dist_pipelineLowPurity,1.0,44068728.000000015,6037.415736000002,3.3385400000000005,999999.0,1843.8999999854198
 texasCity_production_smrExisting,texasCity_center_lowPurity,1.0,0.0,0.0,0.0,99999999.9,2926.8
 vanHorn_converter_fuelDispenserLiquid,vanHorn_demand_fuelStation,63.0,0.0,0.0,0.0,8.0,500.0
 vanHorn_demand_fuelStation,vanHorn_demandSector_transportationFuel,1.0,0.0,0.0,0.0,99999999.9,375.0
