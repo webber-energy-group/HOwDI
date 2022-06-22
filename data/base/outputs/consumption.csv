@@ -47,6 +47,6 @@ vanHorn_demandSector_transportationFuel,0.0,17.4,0,375.0,0.0,10000.0,375.0
 vanHorn_demandSector_transportationFuel_carbonSensitive,0.0,17.4,1,125.0,125.0,10000.0,125.0
 waco_demandSector_transportationFuel,0.0,17.4,0,375.0,0.0,10000.0,375.0
 waco_demandSector_transportationFuel_carbonSensitive,0.0,17.4,1,125.0,125.0,10000.0,125.0
-austin_priceFuelStation_7.599999999999984,0.0,0.0,0,0.01,0.0,7599.999999999984,0.01
-pasadena_priceFuelStation_7.499999999999984,0.0,0.0,0,0.01,0.0,7499.999999999984,0.01
+austin_priceFuelStation_8.14999999999998,0.0,0.0,0,0.01,0.0,8149.999999999981,0.01
+pasadena_priceFuelStation_8.14999999999998,0.0,0.0,0,0.01,0.0,8149.999999999981,0.01
 pasadena_priceLowPurity_3.0,0.0,0.0,0,0.01,0.0,3000.0,0.01

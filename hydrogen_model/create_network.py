@@ -422,11 +422,20 @@ def add_converters(g: DiGraph, H):
     each converter is a node and arc that splits an existing arc into two
     """
     # loop through the nodes and converters to add the necessary nodes and arcs
-    potential_start_nodes = list(g.nodes(data="class"))
     for _, converter_data_series in H.converters.iterrows():
         if converter_data_series["arc_start_class"] == "pass":
             pass
         else:
+            # For computational efficiency, it would make sense to declare
+            # potential_start_nodes outside of the H.converters.iterrows() loop.
+            # However, since a converter may be connected to another converter,
+            # potential_start_nodes changes on every iteration of H.converters.
+            #
+            # Thus, when defining converters, a converter that has a start class
+            # that is another converter must be defined after the "start class"
+            # converter.
+
+            potential_start_nodes = list(g.nodes(data="class"))
             for node_b4_cv, node_b4_cv_class in potential_start_nodes:
                 if node_b4_cv_class == converter_data_series["arc_start_class"]:
                     hub_name = g.nodes[node_b4_cv]["hub"]
