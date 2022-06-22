@@ -37,11 +37,7 @@ def main():
         dump(output_json, f, ensure_ascii=False, indent=4)
 
     # create figure
-    create_plot(
-        output_json,
-        data_dir,
-        scenario_dir,
-    )
+    create_plot(output_json, data_dir, scenario_dir, H.get_prod_types())
 
 
 if __name__ == "__main__":

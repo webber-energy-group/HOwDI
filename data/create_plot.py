@@ -7,6 +7,7 @@ but the metadata should be fairly easy to access and utilize.
 """
 import json
 import warnings
+from itertools import combinations
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -21,12 +22,36 @@ except ModuleNotFoundError:
 warnings.simplefilter(action="ignore", category=UserWarning)
 
 
-def main(data, data_dir, scenario_dir):
+def all_possible_combos(l: list) -> list:
+    """Returns a list of all possible combos as sets
+
+    For example
+
+    all_possible_combos([1,2,3])
+    returns
+    [{1}, {2}, {3}, {1, 2}, {1, 3}, {2, 3}, {1, 2, 3}]
+
+    This function is used for filtering dataframes.
+    The dataframe has a set corresponding to the production
+    types at each hub. For example, a hub could have a corresponding
+    production value of {"smr","smrExisting"} or just {"smr",}, and we
+    want to see if all values of this set are in the list "l" of production
+    types (defined by therm/elec_production.csv "type" column).
+    To do this, we must turn "l" into a list of all possible combinations.
+
+    """
+    out = []
+    for length in range(len(l)):
+        out.extend([set(combo) for combo in combinations(l, length + 1)])
+    return out
+
+
+def main(data, data_dir, scenario_dir, prod_types):
     """
     data: outputs of model
     data_dir: location of data for hubs and shapefile
-    scenario_dir: figure outputted to scenario_dir/outputs/fig.png
-    therm_prod: thermal production dataframe
+    prod_types: dictionary with keys "thermal" and "electric"
+                values are the production technologies (smr, electrolysis)
     """
 
     hub_data = json.load(open(data_dir / "hubs" / "hubs.geojson"))["features"]
@@ -161,7 +186,11 @@ def main(data, data_dir, scenario_dir):
 
     # Plot hubs
     hubs = distribution[distribution.type == "Point"]
-    hub_plot_tech = {  # Options for hub by technology
+
+    thermal_prod_types = all_possible_combos(prod_types["thermal"] + ["smrExisting"])
+    electric_prod_types = all_possible_combos(prod_types["electric"])
+    # Options for hub by technology
+    hub_plot_tech = {
         "default": {
             "name": "No Production (Color)",
             "color": "#219ebc",
@@ -169,47 +198,26 @@ def main(data, data_dir, scenario_dir):
             "set": None,
             "b": lambda df: df["production"].isnull(),
         },
-        "smr": {
-            "name": "New SMR (Color)",
+        "thermal": {
+            "name": "Thermal Production",
             "color": "red",
-            "set": set(("smr",)),
-            "b": lambda df: df["production"] == set(("smr",)),
+            "b": lambda df: df["production"].isin(thermal_prod_types),
         },
-        "smrExisting": {
-            "name": "Existing SMR (Color)",
-            "color": "yellow",
-            "set": set(("smrExisting",)),
-            "b": lambda df: df["production"] == set(("smrExisting",)),
+        "electric": {
+            "name": "Electric Production",
+            "color": "blue",
+            "b": lambda df: df["production"].isin(electric_prod_types),
         },
-        "smr+smrExisting": {
-            "name": "New and Existing SMR (Color)",
-            "color": "orange",
-            "set": set(("smr", "smrExisting")),
-            "b": lambda df: df["production"] == set(("smr", "smrExisting"))
-            # I want a better way to do this, but I could not find one
-            # I tried to find a way to have the color split, but
-            # a) I could not get it to work, and
-            # b) it seems you can only split with two colors in matplotlib
-            # ... seems like all the permutations will get hair fairly fast,
-            # we should probably find a way to do this
+        "both": {
+            "name": "Therm. and Elec. Production",
+            "color": "purple",
+            "b": lambda df: df["production"].isin(thermal_prod_types)
+            & df["production"].isin(electric_prod_types),
         },
-        "electrolyzer": {
-            "name": "Electrolysis (Color)",
-            "color": "green",
-            "set": set(("electrolyzer",)),
-            "b": lambda df: df["production"] == set(("electrolyzer",)),
-        }
-        # and so on... (ccs not implemented -> can't plot ccs, haven't gone through all combinations yet)
-        # TODO maybe have makers colored by percent production:
-        #   https://stackoverflow.com/questions/41167300/multiple-color-fills-in-matplotlib-markers
-        # or maybe only plot "smr","electrolysis","smr+electrolysis" where "smr" includes "smr" and "smrExisting"?
     }
-    hub_plot_type = {  # Options for hub by Production, Consumption, or both
-        # 'none' :
-        #     {
-        #         'b' : lambda df: df['production'].isnull() & df['consumption'].isnull(),
-        #         'marker' : '.',
-        #     },
+
+    # Options for hub by Production, Consumption, or both
+    hub_plot_type = {
         "production": {
             "name": "Production (Shape)",
             "b": lambda df: df["production"].notnull() & df["consumption"].isnull(),
@@ -226,6 +234,7 @@ def main(data, data_dir, scenario_dir):
             "marker": "D",
         },
     }
+
     # Plot hubs based on production/consumption (marker) options and production tech (color) options
     # in short, iterates over both of the above option dictionaries
     # the 'b' (boolean) key is a lambda function that returns the locations of where the hubs dataframe

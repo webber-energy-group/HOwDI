@@ -109,3 +109,9 @@ class HydrogenInputs:
             "price_hubs": self.price_hubs,
             "price_demand": self.price_demand,
         }
+
+    def get_prod_types(self) -> dict:
+        return {
+            "thermal": list(self.prod_therm["type"]),
+            "electric": list(self.prod_elec["type"]),
+        }
