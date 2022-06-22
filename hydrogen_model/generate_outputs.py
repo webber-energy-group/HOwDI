@@ -120,7 +120,7 @@ def create_hub_distribution_data(df, hub):
     }
 
 
-def main(m, hubs_list, price_hub_params):
+def generate_outputs(m, hubs_list, price_hub_params):
     outputs = to_json(m, return_dict=True)
     outputs = outputs["unknown"]["data"]["None"]["__pyomo_components__"]
     outputs = recursive_clean(outputs)
