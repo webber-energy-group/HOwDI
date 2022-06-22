@@ -5,13 +5,8 @@ Author: Braden Pecora
 In the current version, there are next to no features,
 but the metadata should be fairly easy to access and utilize.
 """
-import warnings
-
-warnings.simplefilter(
-    action="ignore", category=UserWarning
-)  # ignore warning about plotting empty frame
-
 import json
+import warnings
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -21,6 +16,9 @@ try:
     from data.hubs.roads_to_gdf import roads_to_gdf
 except ModuleNotFoundError:
     from hubs.roads_to_gdf import roads_to_gdf
+
+# ignore warning about plotting empty frame
+warnings.simplefilter(action="ignore", category=UserWarning)
 
 
 def main(data, data_dir, scenario_dir):
