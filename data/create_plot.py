@@ -42,8 +42,30 @@ def all_possible_combos(l: list) -> list:
     """
     out = []
     for length in range(len(l)):
-        out.extend([set(combo) for combo in combinations(l, length + 1)])
+        out.extend([frozenset(combo) for combo in combinations(l, length + 1)])
     return out
+
+
+def find_max_length_set_from_list(a: list):
+    """From a list of sublists (or similar sub-object),
+    returns the longest sublist (or sub-object as a list)"""
+    return list(max(x) for x in a)
+
+
+def diff_of_list(a: list, b: list) -> list:
+    """From two outputs of 'all_possible_combos',
+    gets all possible difference sets"""
+
+    # get the unique items from a and b,
+    # basically undo all_possible_combos
+    a_unique, b_unique = map(find_max_length_set_from_list, (a, b))
+
+    # get all possible combos between a_unique and b_unique
+    all_possible = all_possible_combos(a_unique + b_unique)
+
+    # find the difference
+    difference = set(all_possible) - set(a) - set(b)
+    return list(difference)
 
 
 def main(data, data_dir, scenario_dir, prod_types):
@@ -79,7 +101,7 @@ def main(data, data_dir, scenario_dir, prod_types):
         # turns keys of hub_data['production'] or hub_data['consumption'] into a set,
         # used in the dictionary comprehensions below
         if hub_data_p_or_c != {}:
-            return set(hub_data_p_or_c.keys())
+            return frozenset(hub_data_p_or_c.keys())
         else:
             return None
 
@@ -187,8 +209,10 @@ def main(data, data_dir, scenario_dir, prod_types):
     # Plot hubs
     hubs = distribution[distribution.type == "Point"]
 
-    thermal_prod_types = all_possible_combos(prod_types["thermal"] + ["smrExisting"])
-    electric_prod_types = all_possible_combos(prod_types["electric"])
+    # TODO refactor for existing
+    thermal_prod_combos = all_possible_combos(prod_types["thermal"] + ["smrExisting"])
+    electric_prod_combos = all_possible_combos(prod_types["electric"])
+    both_prod_combos = diff_of_list(thermal_prod_combos, electric_prod_combos)
     # Options for hub by technology
     hub_plot_tech = {
         "default": {
@@ -201,18 +225,17 @@ def main(data, data_dir, scenario_dir, prod_types):
         "thermal": {
             "name": "Thermal Production",
             "color": "red",
-            "b": lambda df: df["production"].isin(thermal_prod_types),
+            "b": lambda df: df["production"].isin(thermal_prod_combos),
         },
         "electric": {
             "name": "Electric Production",
             "color": "blue",
-            "b": lambda df: df["production"].isin(electric_prod_types),
+            "b": lambda df: df["production"].isin(electric_prod_combos),
         },
         "both": {
             "name": "Therm. and Elec. Production",
             "color": "purple",
-            "b": lambda df: df["production"].isin(thermal_prod_types)
-            & df["production"].isin(electric_prod_types),
+            "b": lambda df: df["production"].isin(both_prod_combos),
         },
     }
 
