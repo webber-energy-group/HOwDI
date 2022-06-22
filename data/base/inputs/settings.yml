@@ -24,5 +24,6 @@ time_slices: 365
 solver_settings:
   solver: "gurobi"
   solver_debug: False
+  mipgap: 0.01
 
   

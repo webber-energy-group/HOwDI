@@ -988,7 +988,7 @@ def build_h2_model(H: HydrogenInputs, g: DiGraph):
     print("Time elapsed: %f" % (time.time() - start))
     print("Solving model")
     solver = pyomo.opt.SolverFactory(H.solver_settings.get("solver", "glpk"))
-    solver.options["mipgap"] = 0.01
+    solver.options["mipgap"] = H.solver_settings.get("mipgap", 0.01)
     results = solver.solve(m, tee=H.solver_settings.get("debug", 0))
     # m.solutions.store_to(results)
     # results.write(filename='results.json', format='json')
