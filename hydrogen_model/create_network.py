@@ -331,18 +331,30 @@ def add_producers(g: DiGraph, H):
     each producer is a node that send hydrogen to a hub_lowPurity or hub_highPurity node
     """
     # loop through the hubs and producers to add the necessary nodes and arcs
-    for _, hub_data in H.hubs.iterrows():
-        hub_name = hub_data["hub"]
-        capital_price_multiplier = hub_data["capital_pm"]
-        ng_price = hub_data["ng_usd_per_mmbtu"]
-        e_price = hub_data["e_usd_per_kwh"]
 
-        for prod_tech_type, prod_df in {
-            "electric": H.prod_elec,
-            "thermal": H.prod_therm,
-        }.items():
-            for _, prod_data_series in prod_df.iterrows():
-                prod_type = prod_data_series["type"]
+    for prod_tech_type, prod_df in {
+        "electric": H.prod_elec,
+        "thermal": H.prod_therm,
+    }.items():
+        for _, prod_data_series in prod_df.iterrows():
+            prod_type = prod_data_series["type"]
+
+            try:
+                H.hubs["build_{}".format(prod_type)]
+            except KeyError:
+                print(
+                    "The ability to build {} at each location was not specified in "
+                    "'hubs.csv'. Assuming {} can be built at all hubs.".format(
+                        prod_type, prod_type
+                    )
+                )
+                H.hubs["build_{}".format(prod_type)] = 1
+
+            for _, hub_data in H.hubs.iterrows():
+                hub_name = hub_data["hub"]
+                capital_price_multiplier = hub_data["capital_pm"]
+                ng_price = hub_data["ng_usd_per_mmbtu"]
+                e_price = hub_data["e_usd_per_kwh"]
 
                 if hub_data["build_{}".format(prod_type)] == 0:
                     # if the node is unable to build that producer type, pass
