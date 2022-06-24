@@ -22,8 +22,11 @@ except ModuleNotFoundError:
 warnings.simplefilter(action="ignore", category=UserWarning)
 
 
-def all_possible_combos(l: list) -> list:
-    """Returns a list of all possible combos as sets
+def _all_possible_combos(items: list, existing=False) -> list:
+    """Returns a list of all possible combos as sets.
+
+    If "existing" is True, extends items with a duplicate of items
+    where each item in items is followed by "Existing"
 
     For example
 
@@ -35,33 +38,44 @@ def all_possible_combos(l: list) -> list:
     The dataframe has a set corresponding to the production
     types at each hub. For example, a hub could have a corresponding
     production value of {"smr","smrExisting"} or just {"smr",}, and we
-    want to see if all values of this set are in the list "l" of production
+    want to see if all values of this set are in the list "items" of production
     types (defined by therm/elec_production.csv "type" column).
-    To do this, we must turn "l" into a list of all possible combinations.
+    To do this, we must turn "items" into a list of all possible combinations.
 
     """
+    if existing == True:
+        # append "Existing" versions
+        items.extend([i + "Existing" for i in items])
     out = []
-    for length in range(len(l)):
-        out.extend([frozenset(combo) for combo in combinations(l, length + 1)])
+    for length in range(len(items)):
+        out.extend([frozenset(combo) for combo in combinations(items, length + 1)])
     return out
 
 
-def find_max_length_set_from_list(a: list):
+def _find_max_length_set_from_list(a: list):
     """From a list of sublists (or similar sub-object),
     returns the longest sublist (or sub-object as a list)"""
     return list(max(x) for x in a)
 
 
-def diff_of_list(a: list, b: list) -> list:
+def _diff_of_list(a: list, b: list) -> list:
     """From two outputs of 'all_possible_combos',
-    gets all possible difference sets"""
+    gets all possible difference sets
+
+    For example, if the items in "a" are {A,B,C} and the
+    items in "b" are {1,2,3}, this would return
+    [{A,1},{A,2},{A,3},{A,1,2},{A,1,3},{A,2,3},{A,B,1},...]
+    but wouldn't include sets where all items are contained by
+    either a or b.
+    """
 
     # get the unique items from a and b,
     # basically undo all_possible_combos
-    a_unique, b_unique = map(find_max_length_set_from_list, (a, b))
+    # just an easy way of not writing the same thing twice
+    a_unique, b_unique = map(_find_max_length_set_from_list, (a, b))
 
     # get all possible combos between a_unique and b_unique
-    all_possible = all_possible_combos(a_unique + b_unique)
+    all_possible = _all_possible_combos(a_unique + b_unique)
 
     # find the difference
     difference = set(all_possible) - set(a) - set(b)
@@ -209,10 +223,9 @@ def main(data, data_dir, scenario_dir, prod_types):
     # Plot hubs
     hubs = distribution[distribution.type == "Point"]
 
-    # TODO refactor for existing
-    thermal_prod_combos = all_possible_combos(prod_types["thermal"] + ["smrExisting"])
-    electric_prod_combos = all_possible_combos(prod_types["electric"])
-    both_prod_combos = diff_of_list(thermal_prod_combos, electric_prod_combos)
+    thermal_prod_combos = _all_possible_combos(prod_types["thermal"], existing=True)
+    electric_prod_combos = _all_possible_combos(prod_types["electric"])
+    both_prod_combos = _diff_of_list(thermal_prod_combos, electric_prod_combos)
     # Options for hub by technology
     hub_plot_tech = {
         "default": {
