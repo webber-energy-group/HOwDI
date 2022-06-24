@@ -63,11 +63,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 538.0
                 },
                 "production_smr_TO_center_lowPurity": {
@@ -163,11 +163,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 538.0
                 },
                 "production_smrExisting_TO_center_lowPurity": {
@@ -242,11 +242,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 538.0
                 }
             },
@@ -346,11 +346,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 538.0
                 },
                 "production_smrExisting_TO_center_lowPurity": {
@@ -460,11 +460,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 538.0
                 },
                 "production_smrExisting_TO_center_lowPurity": {
@@ -539,11 +539,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 538.0
                 }
             },
@@ -621,11 +621,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 538.0
                 }
             },
@@ -814,11 +814,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 539.1999999999992
                 },
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
@@ -937,11 +937,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 538.0
                 },
                 "production_smrExisting_TO_center_lowPurity": {
@@ -1077,11 +1077,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 538.0
                 },
                 "production_smrExisting_TO_center_lowPurity": {
@@ -1217,11 +1217,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 538.0
                 },
                 "production_smrExisting_TO_center_lowPurity": {
@@ -1331,11 +1331,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 538.0
                 },
                 "production_smrExisting_TO_center_lowPurity": {
@@ -1521,11 +1521,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 538.0
                 }
             },
@@ -1674,11 +1674,11 @@
                 "dist_pipelineLowPurity_TO_demand_lowPurity": {
                     "source_class": "dist_pipelineLowPurity",
                     "destination_class": "demand_lowPurity",
-                    "dist_capacity": 68.0,
+                    "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
-                    "dist_flowLimit": 8.0,
+                    "dist_flowLimit": 999999.0,
                     "dist_h": 538.0
                 },
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {

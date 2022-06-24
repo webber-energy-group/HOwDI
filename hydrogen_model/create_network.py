@@ -140,8 +140,15 @@ def initialize_graph(H):
             flow_char["flowLimit_tonsPerDay"] = flow_limit
 
             if flow_type == "pipeline":
+                # connect lowPurity pipeline to lowPurity demand
+                distribution_node = "{}_dist_pipelineLowPurity".format(hub_name)
+                demand_node = "{}_demand_lowPurity".format(hub_name)
+                g.add_edge(distribution_node, demand_node, **flow_char)
+
+                # connect highPurity demand to every demand type
                 distribution_node = "{}_dist_pipelineHighPurity".format(hub_name)
             else:
+                # connect trucks to every demand type
                 distribution_node = "{}_dist_{}".format(hub_name, flow_type)
 
             # iterate over all demand types;
@@ -149,12 +156,6 @@ def initialize_graph(H):
             for demand_type in ["fuelStation", "highPurity", "lowPurity"]:
                 demand_node = "{}_demand_{}".format(hub_name, demand_type)
                 g.add_edge(distribution_node, demand_node, **flow_char)
-
-            # Final demand_node will be "{hub}_demand_lowPurity",
-            # which, in addition to the above distribution,
-            # can have demand satisfied by pipelineLowPurity
-            distribution_node = "{}_dist_pipelineLowPurity".format(hub_name)
-            g.add_edge(distribution_node, demand_node, **flow_char)
 
         ## 2.4) connect the center_lowPurity to the
         # hub_highPurity. We will add a purifier between
