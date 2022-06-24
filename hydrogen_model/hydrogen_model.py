@@ -497,24 +497,37 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
 
     m.constr_flowCapacity = pe.Constraint(m.distribution_arcs, rule=rule_flowCapacity)
 
-    # def rule_truckConsistency(m, truck_dist_node):
-    #     """Truck mass balance
+    def rule_truckCapacityConsistency(m, truck_dist_node):
+        """Truck mass balance
 
-    #     Constraint:
-    #         The number of trucks entering a node must be >=
-    #         the number of trucks leaving a node
+        Constraint:
+            The number of trucks entering a node must be >=
+            the number of trucks leaving a node
 
-    #     Set:
-    #         All nodes relevant to trucks (all distribution
-    #         nodes in distribution.csv that include truck)
-    #     """
-    #     in_trucks = pe.summation(m.dist_capacity, index=g.in_edges(truck_dist_node))
-    #     out_trucks = pe.summation(m.dist_capacity, index=g.out_edges(truck_dist_node))
+        Set:
+            All nodes relevant to trucks (all distribution
+            nodes in distribution.csv that include truck)
+        """
+        # in_trucks = pe.summation(m.dist_capacity, index=g.in_edges(truck_dist_node))
+        # out_trucks = pe.summation(m.dist_capacity, index=g.out_edges(truck_dist_node))
 
-    #     constraint = in_trucks - out_trucks >= 0
-    #     return constraint
+        in_trucks = sum(
+            m.dist_capacity[(in_node, truck_dist_node)]
+            for in_node, _ in g.in_edges(truck_dist_node)
+            if "converter" in in_node
+        )
+        out_trucks = sum(
+            m.dist_capacity[(truck_dist_node, out_node)]
+            for _, out_node in g.out_edges(truck_dist_node)
+            if "converter" in out_node or "dist" in out_node or "demand" in out_node
+        )
 
-    # m.const_truckConsistency = pe.Constraint(m.truck_set, rule=rule_truckConsistency)
+        constraint = in_trucks - out_trucks == 0
+        return constraint
+
+    m.const_truckConsistency = pe.Constraint(
+        m.truck_set, rule=rule_truckCapacityConsistency
+    )
 
     def rule_flowCapacityConverters(m, converterNode):
         """Flow across a convertor is limited
