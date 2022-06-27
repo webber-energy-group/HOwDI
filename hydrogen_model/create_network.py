@@ -556,7 +556,8 @@ def add_price_nodes(g: DiGraph, H):
                         demand_node = ph + "_demand_{}".format(demand_type)
                         for p in H.price_tracking_array:
                             # 1) fuelStation prices
-                            ph_node = ph + "_price{}_{}".format(
+                            p = round(p, 2)
+                            ph_node = ph + "_price{}_{:.2f}".format(
                                 cap_first(demand_type), p
                             )
 
