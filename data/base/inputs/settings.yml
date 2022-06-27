@@ -4,8 +4,8 @@ price_tracking_array:
   start: 3
   stop: 9
   step: 0.05
-price_hubs: ["austin","pasadena"]
-price_demand: 0.01
+price_hubs: ["austin","pasadena"] # "all"
+price_demand: 1.0E-5
 
 # Carbon settings, should maybe be a csv file
 carbon_price_dollars_per_ton: 0
@@ -24,6 +24,6 @@ time_slices: 365
 solver_settings:
   solver: "gurobi"
   solver_debug: False
-  mipgap: 0.01
+  mipgap: 1.0E-7
 
   
