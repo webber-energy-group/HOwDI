@@ -110,18 +110,15 @@ def initialize_graph(H):
             #  are in terms of km. This is why we separate the truck capital and
             # fixed costs onto this arc, and the variable costs onto the arcs that
             #  go from one hub to another.)
-            depot_char = {
-                "startNode": "{}_center_highPurity".format(hub_name),
-                "endNode": "{}_dist_{}".format(hub_name, truck_type),
-                "kmLength": 0.0,
-                "capital_usdPerUnit": truck_info.capital_usdPerUnit
-                * capital_price_multiplier,
-                "fixed_usdPerUnitPerDay": truck_info.fixed_usdPerUnitPerDay
-                * capital_price_multiplier,
-                "variable_usdPerTon": 0.0,
-                "flowLimit_tonsPerDay": truck_info.flowLimit_tonsPerDay,
-                "class": "hub_depot_{}".format(truck_type),
-            }
+            depot_char = free_flow_dict("hub_depot_{}".format(truck_type))
+            depot_char["startNode"] = "{}_center_highPurity".format(hub_name)
+            depot_char["endNode"] = "{}_dist_{}".format(hub_name, truck_type)
+            depot_char["capital_usdPerUnitPerDay"] = (
+                truck_info.capital_usdPerUnit * capital_price_multiplier
+            )
+            depot_char["fixed_usdPerUnitPerDay"] = (
+                truck_info.fixed_usdPerUnitPerDay * capital_price_multiplier
+            )
             g.add_edge(depot_char["startNode"], depot_char["endNode"], **depot_char)
 
         ## 2.3) Connect distribution nodes to demand nodes
@@ -493,7 +490,8 @@ def add_converters(g: DiGraph, H):
                         arc_data = g.edges[(start_node, end_node)]
 
                         # add "arc_start_class" node -> cv_node
-                        start2cv_data = free_flow_dict(cv_class)
+                        start2cv_data = free_flow_dict("flow_to_converter")
+                        free_flow_flowLimit = start2cv_data["flowLimit_tonsPerDay"]
                         start2cv_data["startNode"] = start_node
                         start2cv_data["endNode"] = cv_node
                         start2cv_data["flowLimit_tonsPerDay"] = arc_data[
@@ -504,6 +502,8 @@ def add_converters(g: DiGraph, H):
                         # add cv_node -> "arc_end_class" node
                         cv2dest_data = arc_data.copy()
                         cv2dest_data["startNode"] = cv_node
+                        cv2dest_data["flowLimit_tonsPerDay"] = free_flow_flowLimit
+                        cv2dest_data["class"] = "flow_from_converter"
                         g.add_edge(cv_node, end_node, **cv2dest_data)
 
                         # remove "arc_start_class" -> "arc_end_class" node
