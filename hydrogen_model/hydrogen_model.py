@@ -553,37 +553,7 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         m.converter_set, rule=rule_flowCapacityConverters
     )
 
-    # def rule_flowCapacityBetweenConverters(m, converterNode):
-    #     """Convertor mass balance
-
-    #     TODO Work on this constraint as I don't think it is correct yet.
-    #     If the <= is changed to == or >=, the number of trucks at a distribution
-    #     node is not correct. But with the constraint, the it build too much capacity at
-    #     other convertors.
-
-    #     For convertors, the capacity is the de facto
-    #     distribution capacity at the end of the chain of conversion.
-
-    #     A conversion capacity of x would mean that the convertor is supplying
-    #     x dist_pipeline (always 1 since this is a local node) or
-    #     x dist_trucks (which is the number of trucks)
-
-    #     Constraint:
-    #         Flow capacity in <= flow capacity out (?)
-
-    #     Set:
-    #         All convertors (?)
-    #     """
-    #     in_capacity = pe.summation(m.dist_capacity, index=g.in_edges(converterNode))
-    #     out_capacity = pe.summation(m.dist_capacity, index=g.out_edges(converterNode))
-    #     constraint = in_capacity - out_capacity <= 0
-    #     return constraint
-
-    # m.constr_flowCapacityBetweenConverters = pe.Constraint(
-    #     m.converter_set, rule=rule_flowCapacityBetweenConverters
-    # )
-
-    ## production and ccs
+    ## Production
 
     def rule_forceExistingProduction(m, node):
         """Existing production must be built
@@ -692,6 +662,8 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         m.producer_set, rule=rule_maxProductionCapacity
     )
 
+    ## CCS (Retrofit)
+
     def rule_onlyOneCCS(m, node):
         """Existing producers can only build one of the ccs tech options
 
@@ -793,53 +765,6 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         m.producer_set, rule=rule_mustBuildAllCCS2
     )
 
-    def rule_ccs1Checs(m, node):
-        """CHECs produced from CCS1 cannot exceed the clean hydrogen from CCS1
-
-        Constraint:
-            CHECs from CCS1 <= Clean Hydrogen as a result of CCS1
-
-        Set:
-            All producers, defacto existing producers
-        """
-        constraint = m.ccs1_checs[node] <= m.ccs1_capacity_h2[node]
-        return constraint
-
-    m.constr_ccs1Checs = pe.Constraint(m.producer_set, rule=rule_ccs1Checs)
-
-    def rule_ccs2Checs(m, node):
-        """CHECs produced from CCS2 cannot exceed the clean hydrogen from CCS2
-
-        Constraint:
-            CHECs from CCS2 <= Clean Hydrogen as a result of CCS2
-
-        Set:
-            All producers, defacto existing producers
-        """
-        constraint = m.ccs2_checs[node] <= m.ccs2_capacity_h2[node]
-        return constraint
-
-    m.constr_ccs2Checs = pe.Constraint(m.producer_set, rule=rule_ccs2Checs)
-
-    def rule_productionChec(m, node):
-        """CHEC production cannot exceed hydrogen production
-
-        Constraint:
-            CHECs produced <= hydrogen produced
-
-        Set:
-            All producers
-        """
-
-        total_checs_produced = (
-            m.prod_checs[node] + m.ccs1_checs[node] + m.ccs2_checs[node]
-        )
-
-        constraint = total_checs_produced <= m.prod_h[node]
-        return constraint
-
-    m.constr_productionChecs = pe.Constraint(m.producer_set, rule=rule_productionChec)
-
     ## Consumption
 
     def rule_consumerSize(m, node):
@@ -856,43 +781,7 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
 
     m.constr_consumerSize = pe.Constraint(m.consumer_set, rule=rule_consumerSize)
 
-    def rule_consumerChecs(m, node):
-        """Each carbon-sensitive consumer's consumption of CHECs
-            equals its consumption of hydrogen
-
-        Constraint:
-            consumer CHECs ==
-                consumed hydrogen * binary tracking if consumer is carbon-sensitive
-
-        Set:
-            ALl consumers
-        """
-        constraint = m.cons_checs[node] == m.cons_h[node] * m.cons_carbonSensitive[node]
-        return constraint
-
-    m.constr_consumerChec = pe.Constraint(m.consumer_set, rule=rule_consumerChecs)
-
     ## Carbon Accounting
-
-    def rule_checsBalance(m):
-        """CHECs mass balance
-
-        Constraint:
-            total CHECs consumed <= checs produced
-
-        Set:
-            All producers and consumers
-
-        TODO prod_checs not fully implemented
-        """
-        checs_produced = sum(
-            m.prod_checs[p] + m.ccs1_checs[p] + m.ccs2_checs[p] for p in m.producer_set
-        )
-        checs_consumed = sum(m.cons_checs[c] for c in m.consumer_set)
-        constraint = checs_consumed <= checs_produced
-        return constraint
-
-    m.constr_checsBalance = pe.Constraint(rule=rule_checsBalance)
 
     def rule_co2Producers(m, node):
         """CO2 Production
@@ -940,6 +829,92 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         return constraint
 
     m.constr_co2Consumers = pe.Constraint(m.consumer_set, rule=rule_co2Consumers)
+
+    ## CHECs
+
+    def rule_ccs1Checs(m, node):
+        """CHECs produced from CCS1 cannot exceed the clean hydrogen from CCS1
+
+        Constraint:
+            CHECs from CCS1 <= Clean Hydrogen as a result of CCS1
+
+        Set:
+            All producers, defacto existing producers
+        """
+        constraint = m.ccs1_checs[node] <= m.ccs1_capacity_h2[node]
+        return constraint
+
+    m.constr_ccs1Checs = pe.Constraint(m.producer_set, rule=rule_ccs1Checs)
+
+    def rule_ccs2Checs(m, node):
+        """CHECs produced from CCS2 cannot exceed the clean hydrogen from CCS2
+
+        Constraint:
+            CHECs from CCS2 <= Clean Hydrogen as a result of CCS2
+
+        Set:
+            All producers, defacto existing producers
+        """
+        constraint = m.ccs2_checs[node] <= m.ccs2_capacity_h2[node]
+        return constraint
+
+    m.constr_ccs2Checs = pe.Constraint(m.producer_set, rule=rule_ccs2Checs)
+
+    def rule_productionChec(m, node):
+        """CHEC production cannot exceed hydrogen production
+
+        Constraint:
+            CHECs produced <= hydrogen produced
+
+        Set:
+            All producers
+        """
+
+        total_checs_produced = (
+            m.prod_checs[node] + m.ccs1_checs[node] + m.ccs2_checs[node]
+        )
+
+        constraint = total_checs_produced <= m.prod_h[node]
+        return constraint
+
+    m.constr_productionChecs = pe.Constraint(m.producer_set, rule=rule_productionChec)
+
+    def rule_consumerChecs(m, node):
+        """Each carbon-sensitive consumer's consumption of CHECs
+            equals its consumption of hydrogen
+
+        Constraint:
+            consumer CHECs ==
+                consumed hydrogen * binary tracking if consumer is carbon-sensitive
+
+        Set:
+            ALl consumers
+        """
+        constraint = m.cons_checs[node] == m.cons_h[node] * m.cons_carbonSensitive[node]
+        return constraint
+
+    m.constr_consumerChec = pe.Constraint(m.consumer_set, rule=rule_consumerChecs)
+
+    def rule_checsBalance(m):
+        """CHECs mass balance
+
+        Constraint:
+            total CHECs consumed <= checs produced
+
+        Set:
+            All producers and consumers
+
+        TODO prod_checs not fully implemented
+        """
+        checs_produced = sum(
+            m.prod_checs[p] + m.ccs1_checs[p] + m.ccs2_checs[p] for p in m.producer_set
+        )
+        checs_consumed = sum(m.cons_checs[c] for c in m.consumer_set)
+        constraint = checs_consumed <= checs_produced
+        return constraint
+
+    m.constr_checsBalance = pe.Constraint(rule=rule_checsBalance)
+
 
     ###subsidy for infrastructure
     # total subsidy dollars must be less than or equal to the available subsidy funds
