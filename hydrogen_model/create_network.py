@@ -371,7 +371,9 @@ def add_producers(g: DiGraph, H):
                         prod_data["fixed_usdPerTon"] * capital_price_multiplier
                     )
                     prod_data["e_price"] = prod_data["kWh_coefficient"] * e_price
-
+                    prod_data["chec_per_ton"] = (
+                        1 - prod_data["carbon_g_MJ"] / H.chec_baseline
+                    )
                     # data specific to thermal or electric
                     if prod_tech_type == "thermal":
                         prod_data["capital_usd_coefficient"] = (

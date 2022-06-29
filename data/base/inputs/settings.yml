@@ -10,6 +10,7 @@ price_demand: 1.0E-5
 # Carbon settings, should maybe be a csv file
 carbon_price_dollars_per_ton: 0
 carbon_capture_credit_dollars_per_ton: 50
+unabated_production_carbon_g_per_MJ: 80 # the carbon g/MJ that defines 0 CHECs.
 
 # Subsidy settings, should maybe be a csv file
 subsidy_dollar_billion: 0
