@@ -364,6 +364,7 @@ def add_producers(g: DiGraph, H):
 
                     prod_data = prod_data_series.to_dict()
                     prod_data["node"] = prod_node
+                    prod_data["prod_tech_type"] = prod_tech_type
                     prod_data["class"] = "producer"
                     prod_data["existing"] = 0
                     prod_data["hub"] = hub_name
@@ -371,9 +372,7 @@ def add_producers(g: DiGraph, H):
                         prod_data["fixed_usdPerTon"] * capital_price_multiplier
                     )
                     prod_data["e_price"] = prod_data["kWh_coefficient"] * e_price
-                    prod_data["chec_per_ton"] = (
-                        1 - prod_data["carbon_g_MJ"] / H.chec_baseline
-                    )
+
                     # data specific to thermal or electric
                     if prod_tech_type == "thermal":
                         prod_data["capital_usd_coefficient"] = (
@@ -381,6 +380,13 @@ def add_producers(g: DiGraph, H):
                             * capital_price_multiplier
                         )
                         prod_data["ng_price"] = prod_data["ng_coefficient"] * ng_price
+
+                        prod_data["co2_emissions_per_h2_tons"] = (
+                            1 - prod_data["ccs_capture_rate"]
+                        ) * H.baseSMR_CO2_per_H2_tons
+
+                        prod_data["chec_per_ton"] = prod_data["ccs_capture_rate"]
+
                     elif prod_tech_type == "electric":
                         prod_data["capital_usd_coefficient"] = (
                             prod_data["capEx_$_per_kW"]
@@ -390,6 +396,7 @@ def add_producers(g: DiGraph, H):
                             / prod_data["utilization"]
                             * capital_price_multiplier
                         )
+                        prod_data["chec_per_ton"] = 1
                     else:
                         raise Exception(
                             "Production type that is not thermal or electric"

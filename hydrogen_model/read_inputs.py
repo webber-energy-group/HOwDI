@@ -61,7 +61,7 @@ class HydrogenInputs:
             "carbon_capture_credit_dollars_per_ton"
         )
         # Carbon rate the produces 0 CHECs
-        self.chec_baseline = settings.get("unabated_production_carbon_g_per_MJ")
+        self.baseSMR_CO2_per_H2_tons = settings.get("baseSMR_CO2_per_H2_tons")
         # unit conversion 120,000 MJ/tonH2, 1,000,000 g/tonCO2:
         self.carbon_g_MJ_to_t_tH2 = 120000.0 / 1000000.0
 

@@ -4,32 +4,29 @@
             "smr": {
                 "can_ccs1": 0,
                 "can_ccs2": 0,
-                "ccs1_capacity_co2": 0.0,
-                "ccs1_capacity_h2": 0.0,
-                "ccs1_checs": 0.0,
-                "ccs2_capacity_co2": 0.0,
-                "ccs2_capacity_h2": 0.0,
-                "ccs2_checs": 0.0,
-                "co2_emitted": 10621.800000000001,
+                "ccs1_co2_captured": "n/a",
+                "ccs1_capacity_h2": "n/a",
+                "ccs1_checs": "n/a",
+                "ccs2_co2_captured": "n/a",
+                "ccs2_capacity_h2": "n/a",
+                "ccs2_checs": "n/a",
+                "co2_emitted": "n/a",
                 "prod_capacity": 1311.3333333333335,
-                "prod_carbonRate": 9.0,
+                "co2_emissions_rate": 9,
                 "prod_cost_capital_coeff": 331500.0,
                 "prod_cost_fixed": 54.6,
                 "prod_cost_variable": 90,
                 "prod_h": 1180.2,
-                "prod_checs": 1180.2,
+                "prod_checs": 0.0,
                 "prod_e_price": 51.3,
                 "prod_ng_price": 453.90624999999994,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 10621.800000000001,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
+                "prod_utilization": 0.9
             }
         },
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -104,32 +101,29 @@
             "smrExisting": {
                 "can_ccs1": 1,
                 "can_ccs2": 1,
-                "ccs1_capacity_co2": 0.0,
+                "ccs1_co2_captured": 0.0,
                 "ccs1_capacity_h2": 0.0,
                 "ccs1_checs": 0.0,
-                "ccs2_capacity_co2": 0.0,
+                "ccs2_co2_captured": 0.0,
                 "ccs2_capacity_h2": 0.0,
                 "ccs2_checs": 0.0,
-                "co2_emitted": 4164.48,
+                "co2_emitted": "n/a",
                 "prod_capacity": 482.0,
-                "prod_carbonRate": 9.6,
+                "co2_emissions_rate": 9,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
                 "prod_h": 433.8,
-                "prod_checs": 433.8,
+                "prod_checs": "n/a",
                 "prod_e_price": 0.0,
                 "prod_ng_price": 0.0,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 4164.48,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
+                "prod_utilization": 0.9
             }
         },
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -218,7 +212,7 @@
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -273,32 +267,29 @@
             "smrExisting": {
                 "can_ccs1": 1,
                 "can_ccs2": 1,
-                "ccs1_capacity_co2": 0.0,
-                "ccs1_capacity_h2": 0.0,
-                "ccs1_checs": 0.0,
-                "ccs2_capacity_co2": 0.0,
+                "ccs1_co2_captured": 14487.660000000038,
+                "ccs1_capacity_h2": 2926.8000000000075,
+                "ccs1_checs": 2926.8000000000075,
+                "ccs2_co2_captured": 0.0,
                 "ccs2_capacity_h2": 0.0,
                 "ccs2_checs": 0.0,
-                "co2_emitted": 28097.280000000002,
+                "co2_emitted": "n/a",
                 "prod_capacity": 3252.0,
-                "prod_carbonRate": 9.6,
+                "co2_emissions_rate": 9,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
                 "prod_h": 2926.8,
-                "prod_checs": 2926.8,
+                "prod_checs": "n/a",
                 "prod_e_price": 0.0,
                 "prod_ng_price": 0.0,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 28097.280000000002,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
+                "prod_utilization": 0.9
             }
         },
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -373,56 +364,50 @@
             "smr": {
                 "can_ccs1": 0,
                 "can_ccs2": 0,
-                "ccs1_capacity_co2": 0.0,
-                "ccs1_capacity_h2": 0.0,
-                "ccs1_checs": 0.0,
-                "ccs2_capacity_co2": 0.0,
-                "ccs2_capacity_h2": 0.0,
-                "ccs2_checs": 0.0,
-                "co2_emitted": 3311.112509999996,
-                "prod_capacity": 408.7793222222217,
-                "prod_carbonRate": 9.0,
+                "ccs1_co2_captured": "n/a",
+                "ccs1_capacity_h2": "n/a",
+                "ccs1_checs": "n/a",
+                "ccs2_co2_captured": "n/a",
+                "ccs2_capacity_h2": "n/a",
+                "ccs2_checs": "n/a",
+                "co2_emitted": "n/a",
+                "prod_capacity": 408.7793222222182,
+                "co2_emissions_rate": 9,
                 "prod_cost_capital_coeff": 531250.0,
                 "prod_cost_fixed": 87.5,
                 "prod_cost_variable": 90,
-                "prod_h": 367.90138999999954,
-                "prod_checs": 367.90138999999954,
+                "prod_h": 367.90138999999635,
+                "prod_checs": 0.0,
                 "prod_e_price": 41.894999999999996,
                 "prod_ng_price": 388.28125,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 3311.112509999996,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
+                "prod_utilization": 0.9
             },
             "smrExisting": {
                 "can_ccs1": 1,
                 "can_ccs2": 1,
-                "ccs1_capacity_co2": 0.0,
+                "ccs1_co2_captured": 0.0,
                 "ccs1_capacity_h2": 0.0,
                 "ccs1_checs": 0.0,
-                "ccs2_capacity_co2": 0.0,
+                "ccs2_co2_captured": 0.0,
                 "ccs2_capacity_h2": 0.0,
                 "ccs2_checs": 0.0,
-                "co2_emitted": 10920.960000000001,
+                "co2_emitted": "n/a",
                 "prod_capacity": 1264.0,
-                "prod_carbonRate": 9.6,
+                "co2_emissions_rate": 9,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
                 "prod_h": 1137.6000000000001,
-                "prod_checs": 1137.6000000000001,
+                "prod_checs": "n/a",
                 "prod_e_price": 0.0,
                 "prod_ng_price": 0.0,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 10920.960000000001,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
+                "prod_utilization": 0.9
             }
         },
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -441,7 +426,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 1505.5013899999997
+                    "dist_h": 1505.5013899999965
                 },
                 "demand_lowPurity_TO_demandSector_existing": {
                     "source_class": "demand_lowPurity",
@@ -471,7 +456,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 367.90138999999954
+                    "dist_h": 367.90138999999635
                 },
                 "production_smrExisting_TO_center_lowPurity": {
                     "source_class": "production_smrExisting",
@@ -493,7 +478,7 @@
                     "dist_cost_fixed": 2253.0056615999997,
                     "dist_cost_variable": 1.11418,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 2818.30139,
+                    "dist_h": 2818.301389999997,
                     "source": "laPorte",
                     "destination": "baytown",
                     "destination_class": "dist_pipelineLowPurity"
@@ -534,7 +519,7 @@
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -589,7 +574,7 @@
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -645,7 +630,7 @@
                     "dist_cost_fixed": 3350.5194294000003,
                     "dist_cost_variable": 1.6773900000000002,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 538.0,
+                    "dist_h": 538.0000000000008,
                     "source": "channelview",
                     "destination": "deerPark",
                     "destination_class": "dist_pipelineLowPurity"
@@ -671,42 +656,39 @@
             "smrExisting": {
                 "can_ccs1": 1,
                 "can_ccs2": 1,
-                "ccs1_capacity_co2": 0.0,
+                "ccs1_co2_captured": 0.0,
                 "ccs1_capacity_h2": 0.0,
                 "ccs1_checs": 0.0,
-                "ccs2_capacity_co2": 0.0,
+                "ccs2_co2_captured": 0.0,
                 "ccs2_capacity_h2": 0.0,
                 "ccs2_checs": 0.0,
-                "co2_emitted": 4164.48,
+                "co2_emitted": "n/a",
                 "prod_capacity": 482.0,
-                "prod_carbonRate": 9.6,
+                "co2_emissions_rate": 9,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
                 "prod_h": 433.8,
-                "prod_checs": 433.8,
+                "prod_checs": "n/a",
                 "prod_e_price": 0.0,
                 "prod_ng_price": 0.0,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 4164.48,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
+                "prod_utilization": 0.9
             }
         },
         "conversion": {
             "fuelDispenserLiquid": {
-                "conv_capacity": 83.33365,
+                "conv_capacity": 83.3336500000001,
                 "conv_cost_capital_coeff": 6851000.0,
                 "conv_cost_fixed": 1860.0,
                 "conv_cost_variable": 0,
                 "conv_e_price": 43.26,
                 "conv_utilization": 0.6,
-                "fuelStation_cost_capital_subsidy": 57091883.614999995
+                "fuelStation_cost_capital_subsidy": 57091883.61500006
             }
         },
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -715,7 +697,7 @@
                 "cons_size": 538.0
             },
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 37.5,
@@ -724,7 +706,7 @@
                 "cons_size": 37.5
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 12.5,
@@ -733,7 +715,7 @@
                 "cons_size": 12.5
             },
             "priceFuelStation_8.05": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 0.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 1e-05,
@@ -742,7 +724,7 @@
                 "cons_size": 1e-05
             },
             "priceLowPurity_3.00": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 0.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 1e-05,
@@ -771,7 +753,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 50.00019
+                    "dist_h": 50.00019000000006
                 },
                 "demand_fuelStation_TO_demandSector_transportationFuel": {
                     "source_class": "demand_fuelStation",
@@ -811,7 +793,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 538.0012000000004
+                    "dist_h": 538.001199999997
                 },
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
@@ -821,7 +803,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 8.0,
-                    "dist_h": 50.00019
+                    "dist_h": 50.00019000000006
                 },
                 "production_smrExisting_TO_center_lowPurity": {
                     "source_class": "production_smrExisting",
@@ -844,7 +826,7 @@
                     "dist_cost_fixed": 3582.9672198,
                     "dist_cost_variable": 1.73659,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 104.20120000000034,
+                    "dist_h": 104.20119999999622,
                     "source": "channelview",
                     "destination": "pasadena",
                     "destination_class": "dist_pipelineLowPurity"
@@ -857,7 +839,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 8.856609,
                     "dist_flowLimit": 8.0,
-                    "dist_h": 4.0,
+                    "dist_h": 4.000000000000057,
                     "source": "channelview",
                     "destination": "pasadena",
                     "destination_class": "dist_truckLiquefied"
@@ -883,32 +865,29 @@
             "smrExisting": {
                 "can_ccs1": 1,
                 "can_ccs2": 1,
-                "ccs1_capacity_co2": 0.0,
+                "ccs1_co2_captured": 0.0,
                 "ccs1_capacity_h2": 0.0,
                 "ccs1_checs": 0.0,
-                "ccs2_capacity_co2": 0.0,
+                "ccs2_co2_captured": 0.0,
                 "ccs2_capacity_h2": 0.0,
                 "ccs2_checs": 0.0,
-                "co2_emitted": 2082.24,
+                "co2_emitted": "n/a",
                 "prod_capacity": 241.0,
-                "prod_carbonRate": 9.6,
+                "co2_emissions_rate": 9,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
                 "prod_h": 216.9,
-                "prod_checs": 216.9,
+                "prod_checs": "n/a",
                 "prod_e_price": 0.0,
                 "prod_ng_price": 0.0,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 2082.24,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
+                "prod_utilization": 0.9
             }
         },
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -969,7 +948,7 @@
                     "dist_cost_fixed": 3350.5194294000003,
                     "dist_cost_variable": 1.6773900000000002,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 538.0,
+                    "dist_h": 538.0000000000008,
                     "source": "channelview",
                     "destination": "deerPark",
                     "destination_class": "dist_pipelineLowPurity"
@@ -982,7 +961,7 @@
                     "dist_cost_fixed": 3582.9672198,
                     "dist_cost_variable": 1.73659,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 104.20120000000034,
+                    "dist_h": 104.20119999999622,
                     "source": "channelview",
                     "destination": "pasadena",
                     "destination_class": "dist_pipelineLowPurity"
@@ -995,7 +974,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 13.644132,
                     "dist_flowLimit": 8.0,
-                    "dist_h": 500.0,
+                    "dist_h": 499.9999999999999,
                     "source": "channelview",
                     "destination": "houston",
                     "destination_class": "dist_truckLiquefied"
@@ -1008,7 +987,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 8.856609,
                     "dist_flowLimit": 8.0,
-                    "dist_h": 4.0,
+                    "dist_h": 4.000000000000057,
                     "source": "channelview",
                     "destination": "pasadena",
                     "destination_class": "dist_truckLiquefied"
@@ -1023,7 +1002,7 @@
                     "dist_cost_fixed": 4788.178934400001,
                     "dist_cost_variable": 2.5548400000000004,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 963.3012000000045,
+                    "dist_h": 963.301199999997,
                     "source": "montBelvieu",
                     "destination": "channelview",
                     "destination_class": "dist_pipelineLowPurity"
@@ -1049,32 +1028,29 @@
             "smrExisting": {
                 "can_ccs1": 1,
                 "can_ccs2": 1,
-                "ccs1_capacity_co2": 0.0,
+                "ccs1_co2_captured": 0.0,
                 "ccs1_capacity_h2": 0.0,
                 "ccs1_checs": 0.0,
-                "ccs2_capacity_co2": 0.0,
+                "ccs2_co2_captured": 0.0,
                 "ccs2_capacity_h2": 0.0,
                 "ccs2_checs": 0.0,
-                "co2_emitted": 2082.24,
+                "co2_emitted": "n/a",
                 "prod_capacity": 241.0,
-                "prod_carbonRate": 9.6,
+                "co2_emissions_rate": 9,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
                 "prod_h": 216.9,
-                "prod_checs": 216.9,
+                "prod_checs": "n/a",
                 "prod_e_price": 0.0,
                 "prod_ng_price": 0.0,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 2082.24,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
+                "prod_utilization": 0.9
             }
         },
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -1135,7 +1111,7 @@
                     "dist_cost_fixed": 4788.178934400001,
                     "dist_cost_variable": 2.5548400000000004,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 963.3012000000045,
+                    "dist_h": 963.301199999997,
                     "source": "montBelvieu",
                     "destination": "channelview",
                     "destination_class": "dist_pipelineLowPurity"
@@ -1189,7 +1165,7 @@
                     "dist_cost_fixed": 3658.0377671999995,
                     "dist_cost_variable": 2.0045800000000003,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 2714.1013900000003,
+                    "dist_h": 2714.101389999997,
                     "source": "baytown",
                     "destination": "montBelvieu",
                     "destination_class": "dist_pipelineLowPurity"
@@ -1215,32 +1191,29 @@
             "smrExisting": {
                 "can_ccs1": 1,
                 "can_ccs2": 1,
-                "ccs1_capacity_co2": 0.0,
+                "ccs1_co2_captured": 0.0,
                 "ccs1_capacity_h2": 0.0,
                 "ccs1_checs": 0.0,
-                "ccs2_capacity_co2": 0.0,
+                "ccs2_co2_captured": 0.0,
                 "ccs2_capacity_h2": 0.0,
                 "ccs2_checs": 0.0,
-                "co2_emitted": 4164.48,
+                "co2_emitted": "n/a",
                 "prod_capacity": 482.0,
-                "prod_carbonRate": 9.6,
+                "co2_emissions_rate": 9,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
                 "prod_h": 433.8,
-                "prod_checs": 433.8,
+                "prod_checs": "n/a",
                 "prod_e_price": 0.0,
                 "prod_ng_price": 0.0,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 4164.48,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
+                "prod_utilization": 0.9
             }
         },
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -1301,7 +1274,7 @@
                     "dist_cost_fixed": 3658.0377671999995,
                     "dist_cost_variable": 2.0045800000000003,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 2714.1013900000003,
+                    "dist_h": 2714.101389999997,
                     "source": "baytown",
                     "destination": "montBelvieu",
                     "destination_class": "dist_pipelineLowPurity"
@@ -1316,7 +1289,7 @@
                     "dist_cost_fixed": 2253.0056615999997,
                     "dist_cost_variable": 1.11418,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 2818.30139,
+                    "dist_h": 2818.301389999997,
                     "source": "laPorte",
                     "destination": "baytown",
                     "destination_class": "dist_pipelineLowPurity"
@@ -1329,26 +1302,23 @@
             "smrExisting": {
                 "can_ccs1": 1,
                 "can_ccs2": 1,
-                "ccs1_capacity_co2": 0.0,
-                "ccs1_capacity_h2": 0.0,
-                "ccs1_checs": 0.0,
-                "ccs2_capacity_co2": 0.0,
+                "ccs1_co2_captured": 8584.785,
+                "ccs1_capacity_h2": 1734.3,
+                "ccs1_checs": 1734.3,
+                "ccs2_co2_captured": 0.0,
                 "ccs2_capacity_h2": 0.0,
                 "ccs2_checs": 0.0,
-                "co2_emitted": 16649.28,
+                "co2_emitted": "n/a",
                 "prod_capacity": 1927.0,
-                "prod_carbonRate": 9.6,
+                "co2_emissions_rate": 9,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
                 "prod_h": 1734.3,
-                "prod_checs": 1734.3,
+                "prod_checs": "n/a",
                 "prod_e_price": 0.0,
                 "prod_ng_price": 0.0,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 16649.28,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
+                "prod_utilization": 0.9
             }
         },
         "conversion": {
@@ -1364,7 +1334,7 @@
         },
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -1538,7 +1508,7 @@
         },
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -1572,7 +1542,7 @@
                 "converter_terminalLiquid_TO_dist_truckLiquefied": {
                     "source_class": "converter_terminalLiquid",
                     "destination_class": "dist_truckLiquefied",
-                    "dist_capacity": 195.0,
+                    "dist_capacity": 194.99999999999994,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 97.426,
                     "dist_cost_variable": 0.0,
@@ -1627,7 +1597,7 @@
                 "dist_truckLiquefied_TO_orange_dist_truckLiquefied": {
                     "source_class": "dist_truckLiquefied",
                     "arc_end": "orange_dist_truckLiquefied",
-                    "dist_capacity": 63.00000000000001,
+                    "dist_capacity": 62.99999999999996,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 20.017857000000003,
@@ -1640,7 +1610,7 @@
                 "dist_truckLiquefied_TO_texarkana_dist_truckLiquefied": {
                     "source_class": "dist_truckLiquefied",
                     "arc_end": "texarkana_dist_truckLiquefied",
-                    "dist_capacity": 63.00000000000001,
+                    "dist_capacity": 62.999999999999986,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 214.62279,
@@ -1696,7 +1666,7 @@
         },
         "consumption": {
             "demandSector_existing": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
@@ -1705,7 +1675,7 @@
                 "cons_size": 538.0
             },
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -1714,7 +1684,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -1791,7 +1761,7 @@
                 "beaumont_dist_truckLiquefied_TO_orange_dist_truckLiquefied": {
                     "source_class": "beaumont_dist_truckLiquefied",
                     "arc_end": "orange_dist_truckLiquefied",
-                    "dist_capacity": 63.00000000000001,
+                    "dist_capacity": 62.99999999999996,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 20.017857000000003,
@@ -1822,26 +1792,23 @@
             "smr": {
                 "can_ccs1": 0,
                 "can_ccs2": 0,
-                "ccs1_capacity_co2": 0.0,
-                "ccs1_capacity_h2": 0.0,
-                "ccs1_checs": 0.0,
-                "ccs2_capacity_co2": 0.0,
-                "ccs2_capacity_h2": 0.0,
-                "ccs2_checs": 0.0,
-                "co2_emitted": 8999.999999997905,
+                "ccs1_co2_captured": "n/a",
+                "ccs1_capacity_h2": "n/a",
+                "ccs1_checs": "n/a",
+                "ccs2_co2_captured": "n/a",
+                "ccs2_capacity_h2": "n/a",
+                "ccs2_checs": "n/a",
+                "co2_emitted": "n/a",
                 "prod_capacity": 1111.1111111108526,
-                "prod_carbonRate": 9.0,
+                "co2_emissions_rate": 9,
                 "prod_cost_capital_coeff": 310250.0,
                 "prod_cost_fixed": 51.1,
                 "prod_cost_variable": 90,
                 "prod_h": 999.9999999997672,
-                "prod_checs": 999.9999999997672,
+                "prod_checs": 0.0,
                 "prod_e_price": 30.3525,
                 "prod_ng_price": 525.0,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 8999.999999997905,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
+                "prod_utilization": 0.9
             }
         },
         "conversion": {
@@ -1884,7 +1851,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -1893,7 +1860,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -1987,7 +1954,7 @@
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
-                    "dist_capacity": 63.00000000000001,
+                    "dist_capacity": 62.99999999999999,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
@@ -2009,7 +1976,7 @@
                 "dist_truckLiquefied_TO_vanHorn_dist_truckLiquefied": {
                     "source_class": "dist_truckLiquefied",
                     "arc_end": "vanHorn_dist_truckLiquefied",
-                    "dist_capacity": 63.0,
+                    "dist_capacity": 63.00000000000001,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 99.437658,
@@ -2038,7 +2005,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -2047,7 +2014,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -2104,7 +2071,7 @@
                 "elPaso_dist_truckLiquefied_TO_vanHorn_dist_truckLiquefied": {
                     "source_class": "elPaso_dist_truckLiquefied",
                     "arc_end": "vanHorn_dist_truckLiquefied",
-                    "dist_capacity": 63.0,
+                    "dist_capacity": 63.00000000000001,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 99.437658,
@@ -2132,7 +2099,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -2141,7 +2108,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -2185,7 +2152,7 @@
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
-                    "dist_capacity": 63.00000000000001,
+                    "dist_capacity": 63.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
@@ -2198,7 +2165,7 @@
                 "abilene_dist_truckLiquefied_TO_sonora_dist_truckLiquefied": {
                     "source_class": "abilene_dist_truckLiquefied",
                     "arc_end": "sonora_dist_truckLiquefied",
-                    "dist_capacity": 62.999999999999986,
+                    "dist_capacity": 62.99999999999999,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 127.495563,
@@ -2226,7 +2193,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -2235,7 +2202,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -2310,26 +2277,23 @@
             "smr": {
                 "can_ccs1": 0,
                 "can_ccs2": 0,
-                "ccs1_capacity_co2": 0.0,
-                "ccs1_capacity_h2": 0.0,
-                "ccs1_checs": 0.0,
-                "ccs2_capacity_co2": 0.0,
-                "ccs2_capacity_h2": 0.0,
-                "ccs2_checs": 0.0,
-                "co2_emitted": 27000.00000000004,
-                "prod_capacity": 3333.3333333333385,
-                "prod_carbonRate": 9.0,
+                "ccs1_co2_captured": "n/a",
+                "ccs1_capacity_h2": "n/a",
+                "ccs1_checs": "n/a",
+                "ccs2_co2_captured": "n/a",
+                "ccs2_capacity_h2": "n/a",
+                "ccs2_checs": "n/a",
+                "co2_emitted": "n/a",
+                "prod_capacity": 3333.3333333333335,
+                "co2_emissions_rate": 9,
                 "prod_cost_capital_coeff": 374000.0,
                 "prod_cost_fixed": 61.6,
                 "prod_cost_variable": 90,
-                "prod_h": 3000.0000000000045,
-                "prod_checs": 3000.0000000000045,
+                "prod_h": 3000.0,
+                "prod_checs": 0.0,
                 "prod_e_price": 31.2075,
                 "prod_ng_price": 388.28125,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 27000.00000000004,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
+                "prod_utilization": 0.9
             }
         },
         "conversion": {
@@ -2343,7 +2307,7 @@
                 "fuelStation_cost_capital_subsidy": 405166666.66666657
             },
             "liquefaction": {
-                "conv_capacity": 3157.89473684211,
+                "conv_capacity": 3157.894736842105,
                 "conv_cost_capital_coeff": 1689600.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -2352,7 +2316,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "purification": {
-                "conv_capacity": 3157.89473684211,
+                "conv_capacity": 3157.894736842105,
                 "conv_cost_capital_coeff": 422400.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -2361,7 +2325,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "terminalLiquid": {
-                "conv_capacity": 3529.411764705888,
+                "conv_capacity": 3529.4117647058824,
                 "conv_cost_capital_coeff": 1034000.0,
                 "conv_cost_fixed": 255.2,
                 "conv_cost_variable": 0,
@@ -2372,7 +2336,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -2381,7 +2345,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -2400,7 +2364,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 3000.0000000000045
+                    "dist_h": 3000.0
                 },
                 "center_lowPurity_TO_converter_purification": {
                     "source_class": "center_lowPurity",
@@ -2410,7 +2374,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 3000.0000000000045
+                    "dist_h": 3000.0
                 },
                 "converter_fuelDispenserLiquid_TO_demand_fuelStation": {
                     "source_class": "converter_fuelDispenserLiquid",
@@ -2430,7 +2394,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 3000.0000000000045
+                    "dist_h": 3000.0
                 },
                 "converter_purification_TO_center_highPurity": {
                     "source_class": "converter_purification",
@@ -2440,17 +2404,17 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 3000.0000000000045
+                    "dist_h": 3000.0
                 },
                 "converter_terminalLiquid_TO_dist_truckLiquefied": {
                     "source_class": "converter_terminalLiquid",
                     "destination_class": "dist_truckLiquefied",
-                    "dist_capacity": 377.00000000000057,
+                    "dist_capacity": 377.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 122.47840000000001,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 3000.0000000000045
+                    "dist_h": 3000.0
                 },
                 "demand_fuelStation_TO_demandSector_transportationFuel": {
                     "source_class": "demand_fuelStation",
@@ -2475,7 +2439,7 @@
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
-                    "dist_capacity": 63.00000000000001,
+                    "dist_capacity": 62.99999999999999,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
@@ -2490,7 +2454,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 3000.0000000000045
+                    "dist_h": 3000.0
                 }
             },
             "outgoing": {
@@ -2523,7 +2487,7 @@
                 "dist_truckLiquefied_TO_sonora_dist_truckLiquefied": {
                     "source_class": "dist_truckLiquefied",
                     "arc_end": "sonora_dist_truckLiquefied",
-                    "dist_capacity": 62.999999999999986,
+                    "dist_capacity": 62.99999999999999,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 127.495563,
@@ -2536,7 +2500,7 @@
                 "dist_truckLiquefied_TO_waco_dist_truckLiquefied": {
                     "source_class": "dist_truckLiquefied",
                     "arc_end": "waco_dist_truckLiquefied",
-                    "dist_capacity": 125.0,
+                    "dist_capacity": 124.99999999999999,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 161.133888,
@@ -2565,7 +2529,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -2574,7 +2538,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -2631,7 +2595,7 @@
                 "beaumont_dist_truckLiquefied_TO_texarkana_dist_truckLiquefied": {
                     "source_class": "beaumont_dist_truckLiquefied",
                     "arc_end": "texarkana_dist_truckLiquefied",
-                    "dist_capacity": 63.00000000000001,
+                    "dist_capacity": 62.999999999999986,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 214.62279,
@@ -2659,7 +2623,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -2668,7 +2632,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -2712,7 +2676,7 @@
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
-                    "dist_capacity": 63.0,
+                    "dist_capacity": 63.00000000000001,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
@@ -2724,7 +2688,7 @@
                 "dist_truckLiquefied_TO_centerville_dist_truckLiquefied": {
                     "source_class": "dist_truckLiquefied",
                     "arc_end": "centerville_dist_truckLiquefied",
-                    "dist_capacity": 63.0,
+                    "dist_capacity": 62.999999999999986,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 67.620645,
@@ -2739,7 +2703,7 @@
                 "abilene_dist_truckLiquefied_TO_waco_dist_truckLiquefied": {
                     "source_class": "abilene_dist_truckLiquefied",
                     "arc_end": "waco_dist_truckLiquefied",
-                    "dist_capacity": 125.0,
+                    "dist_capacity": 124.99999999999999,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 161.133888,
@@ -2767,7 +2731,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -2776,7 +2740,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -2820,7 +2784,7 @@
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
-                    "dist_capacity": 63.0,
+                    "dist_capacity": 63.00000000000001,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
@@ -2833,7 +2797,7 @@
                 "waco_dist_truckLiquefied_TO_centerville_dist_truckLiquefied": {
                     "source_class": "waco_dist_truckLiquefied",
                     "arc_end": "centerville_dist_truckLiquefied",
-                    "dist_capacity": 63.0,
+                    "dist_capacity": 62.999999999999986,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 67.620645,
@@ -2861,7 +2825,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -2870,7 +2834,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -2955,7 +2919,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -2964,7 +2928,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -3039,26 +3003,23 @@
             "smr": {
                 "can_ccs1": 0,
                 "can_ccs2": 0,
-                "ccs1_capacity_co2": 0.0,
-                "ccs1_capacity_h2": 0.0,
-                "ccs1_checs": 0.0,
-                "ccs2_capacity_co2": 0.0,
-                "ccs2_capacity_h2": 0.0,
-                "ccs2_checs": 0.0,
-                "co2_emitted": 22500.000000000073,
-                "prod_capacity": 2777.777777777787,
-                "prod_carbonRate": 9.0,
+                "ccs1_co2_captured": "n/a",
+                "ccs1_capacity_h2": "n/a",
+                "ccs1_checs": "n/a",
+                "ccs2_co2_captured": "n/a",
+                "ccs2_capacity_h2": "n/a",
+                "ccs2_checs": "n/a",
+                "co2_emitted": "n/a",
+                "prod_capacity": 2777.7777777777856,
+                "co2_emissions_rate": 9,
                 "prod_cost_capital_coeff": 352750.0,
                 "prod_cost_fixed": 58.099999999999994,
                 "prod_cost_variable": 90,
-                "prod_h": 2500.000000000008,
-                "prod_checs": 2500.000000000008,
+                "prod_h": 2500.000000000007,
+                "prod_checs": 0.0,
                 "prod_e_price": 33.7725,
                 "prod_ng_price": 393.75,
-                "prod_utilization": 0.9,
-                "total_co2_produced": 22500.000000000073,
-                "co2_captured": 0.0,
-                "%co2_captured": 0.0
+                "prod_utilization": 0.9
             }
         },
         "conversion": {
@@ -3072,7 +3033,7 @@
                 "fuelStation_cost_capital_subsidy": 382145833.33333325
             },
             "liquefaction": {
-                "conv_capacity": 2631.5789473684295,
+                "conv_capacity": 2631.578947368428,
                 "conv_cost_capital_coeff": 1593600.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -3081,7 +3042,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "purification": {
-                "conv_capacity": 2631.5789473684295,
+                "conv_capacity": 2631.578947368428,
                 "conv_cost_capital_coeff": 398400.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
@@ -3090,7 +3051,7 @@
                 "fuelStation_cost_capital_subsidy": "n/a"
             },
             "terminalLiquid": {
-                "conv_capacity": 2941.176470588245,
+                "conv_capacity": 2941.1764705882433,
                 "conv_cost_capital_coeff": 975250.0,
                 "conv_cost_fixed": 240.7,
                 "conv_cost_variable": 0,
@@ -3101,7 +3062,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -3110,7 +3071,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -3129,7 +3090,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 2500.000000000008
+                    "dist_h": 2500.000000000007
                 },
                 "center_lowPurity_TO_converter_purification": {
                     "source_class": "center_lowPurity",
@@ -3139,7 +3100,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 2500.000000000008
+                    "dist_h": 2500.000000000007
                 },
                 "converter_fuelDispenserLiquid_TO_demand_fuelStation": {
                     "source_class": "converter_fuelDispenserLiquid",
@@ -3159,7 +3120,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 2500.000000000008
+                    "dist_h": 2500.000000000007
                 },
                 "converter_purification_TO_center_highPurity": {
                     "source_class": "converter_purification",
@@ -3169,17 +3130,17 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 2500.000000000008
+                    "dist_h": 2500.000000000007
                 },
                 "converter_terminalLiquid_TO_dist_truckLiquefied": {
                     "source_class": "converter_terminalLiquid",
                     "destination_class": "dist_truckLiquefied",
-                    "dist_capacity": 314.000000000001,
+                    "dist_capacity": 314.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 115.5194,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 2500.000000000008
+                    "dist_h": 2500.000000000007
                 },
                 "demand_fuelStation_TO_demandSector_transportationFuel": {
                     "source_class": "demand_fuelStation",
@@ -3204,7 +3165,7 @@
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
-                    "dist_capacity": 63.00000000000001,
+                    "dist_capacity": 62.99999999999999,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
@@ -3219,7 +3180,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 2500.000000000008
+                    "dist_h": 2500.000000000007
                 }
             },
             "outgoing": {
@@ -3252,12 +3213,12 @@
                 "dist_truckLiquefied_TO_sanAntonio_dist_truckLiquefied": {
                     "source_class": "dist_truckLiquefied",
                     "arc_end": "sanAntonio_dist_truckLiquefied",
-                    "dist_capacity": 125.00000000000105,
+                    "dist_capacity": 125.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 126.650391,
                     "dist_flowLimit": 8.0,
-                    "dist_h": 1000.0000000000084,
+                    "dist_h": 1000.0000000000069,
                     "source": "laredo",
                     "destination": "sanAntonio",
                     "destination_class": "dist_truckLiquefied"
@@ -3281,7 +3242,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -3290,7 +3251,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -3352,7 +3313,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 13.644132,
                     "dist_flowLimit": 8.0,
-                    "dist_h": 500.0,
+                    "dist_h": 499.9999999999999,
                     "source": "channelview",
                     "destination": "houston",
                     "destination_class": "dist_truckLiquefied"
@@ -3375,7 +3336,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -3384,7 +3345,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -3428,7 +3389,7 @@
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
-                    "dist_capacity": 63.0,
+                    "dist_capacity": 63.00000000000001,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
@@ -3440,12 +3401,12 @@
                 "dist_truckLiquefied_TO_austin_dist_truckLiquefied": {
                     "source_class": "dist_truckLiquefied",
                     "arc_end": "austin_dist_truckLiquefied",
-                    "dist_capacity": 63.00000000000105,
+                    "dist_capacity": 63.00000000000175,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 65.162292,
                     "dist_flowLimit": 8.0,
-                    "dist_h": 500.0000000000084,
+                    "dist_h": 500.00000000000693,
                     "source": "sanAntonio",
                     "destination": "austin",
                     "destination_class": "dist_truckLiquefied"
@@ -3455,12 +3416,12 @@
                 "laredo_dist_truckLiquefied_TO_sanAntonio_dist_truckLiquefied": {
                     "source_class": "laredo_dist_truckLiquefied",
                     "arc_end": "sanAntonio_dist_truckLiquefied",
-                    "dist_capacity": 125.00000000000105,
+                    "dist_capacity": 125.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 126.650391,
                     "dist_flowLimit": 8.0,
-                    "dist_h": 1000.0000000000084,
+                    "dist_h": 1000.0000000000069,
                     "source": "laredo",
                     "destination": "sanAntonio",
                     "destination_class": "dist_truckLiquefied"
@@ -3472,18 +3433,18 @@
         "production": {},
         "conversion": {
             "fuelDispenserLiquid": {
-                "conv_capacity": 833.333333333355,
+                "conv_capacity": 833.333333333345,
                 "conv_cost_capital_coeff": 6851000.0,
                 "conv_cost_fixed": 1860.0,
                 "conv_cost_variable": 0,
                 "conv_e_price": 50.82,
                 "conv_utilization": 0.6,
-                "fuelStation_cost_capital_subsidy": 570916666.6666814
+                "fuelStation_cost_capital_subsidy": 570916666.6666745
             }
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -3492,7 +3453,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -3511,7 +3472,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 500.00000000001296
+                    "dist_h": 500.00000000000693
                 },
                 "demand_fuelStation_TO_demandSector_transportationFuel": {
                     "source_class": "demand_fuelStation",
@@ -3541,7 +3502,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 8.0,
-                    "dist_h": 500.00000000001296
+                    "dist_h": 500.00000000000693
                 }
             },
             "outgoing": {},
@@ -3549,12 +3510,12 @@
                 "sanAntonio_dist_truckLiquefied_TO_austin_dist_truckLiquefied": {
                     "source_class": "sanAntonio_dist_truckLiquefied",
                     "arc_end": "austin_dist_truckLiquefied",
-                    "dist_capacity": 63.00000000000105,
+                    "dist_capacity": 63.00000000000175,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 65.162292,
                     "dist_flowLimit": 8.0,
-                    "dist_h": 500.0000000000084,
+                    "dist_h": 500.00000000000693,
                     "source": "sanAntonio",
                     "destination": "austin",
                     "destination_class": "dist_truckLiquefied"
@@ -3577,7 +3538,7 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
@@ -3586,7 +3547,7 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "co2_nonHydrogenConsumer": 0.0,
+                "co2_nonHydrogenConsumer": "n/a",
                 "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
@@ -3630,7 +3591,7 @@
                 "dist_truckLiquefied_TO_converter_fuelDispenserLiquid": {
                     "source_class": "dist_truckLiquefied",
                     "destination_class": "converter_fuelDispenserLiquid",
-                    "dist_capacity": 63.0,
+                    "dist_capacity": 63.00000000000001,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,

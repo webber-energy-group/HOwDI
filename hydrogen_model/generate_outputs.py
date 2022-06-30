@@ -139,15 +139,15 @@ def generate_outputs(m, hubs_list, price_hub_params):
     merge_lists["production"] = [
         "can_ccs1",
         "can_ccs2",
-        "ccs1_capacity_co2",
+        "ccs1_co2_captured",
         "ccs1_capacity_h2",
         "ccs1_checs",
-        "ccs2_capacity_co2",
+        "ccs2_co2_captured",
         "ccs2_capacity_h2",
         "ccs2_checs",
         "co2_emitted",
         "prod_capacity",
-        "prod_carbonRate",
+        "co2_emissions_rate",
         "prod_cost_capital_coeff",
         "prod_cost_fixed",
         "prod_cost_variable",
@@ -266,16 +266,16 @@ def generate_outputs(m, hubs_list, price_hub_params):
     if price_hub_params["find_prices"]:
         dfs["consumption"] = pd.concat([dfs["consumption"], price_hub_min])
 
-    # post processing
-    dfs["production"]["total_co2_produced"] = (
-        dfs["production"]["prod_h"] * dfs["production"]["prod_carbonRate"]
-    )
-    dfs["production"]["co2_captured"] = (
-        dfs["production"]["total_co2_produced"] - dfs["production"]["co2_emitted"]
-    )
-    dfs["production"][r"%co2_captured"] = (
-        dfs["production"]["co2_captured"] / dfs["production"]["total_co2_produced"]
-    )
+    # # post processing
+    # dfs["production"]["total_co2_produced"] = (
+    #     dfs["production"]["prod_h"] * dfs["production"]["co2_emissions_rate"]
+    # )
+    # dfs["production"]["co2_captured"] = (
+    #     dfs["production"]["total_co2_produced"] - dfs["production"]["co2_emitted"]
+    # )
+    # dfs["production"][r"%co2_captured"] = (
+    #     dfs["production"]["co2_captured"] / dfs["production"]["total_co2_produced"]
+    # )
 
     ## CREATE JSON OUTPUTS FROM DATAFRAMES
     hub_dict = {hub: {} for hub in hubs_list}
