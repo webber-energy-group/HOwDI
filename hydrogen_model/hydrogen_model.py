@@ -279,22 +279,9 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
     # over all consumers
     U_hydrogen = sum(m.cons_h[c] * m.cons_price[c] for c in m.consumer_set)
 
-    # consumer daily utility from buying checs (clean hydrogen energy credits) is the sum of
-    # [(amount of checs consumed at a node * TODO ... at a node * carbon price)]
-    # over all consumers
-    U_carbon = (
-        sum(m.cons_checs[c] * m.cons_breakevenCarbon[c] for c in m.consumer_set)
-        * H.carbon_price
-    )
-
-    # TODO describe this equation
-    U_carbon_capture_credit = (
-        sum(
-            m.ccs1_checs[p] * (m.prod_carbonRate[p] * (1 - H.ccs1_percent_co2_captured))
-            + m.ccs2_checs[p]
-            * (m.prod_carbonRate[p] * (1 - H.ccs2_percent_co2_captured))
-            for p in m.existing_producers
-        )
+    # TODO add ccs w/ new production
+    U_carbon_capture_credit_retrofit = (
+        pe.summation(m.ccs1_capacity_co2 + m.ccs2_capacity_co2)
         * H.carbon_capture_credit
     )
 
@@ -405,8 +392,8 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
 
     totalSurplus = (
         U_hydrogen
-        + U_carbon
-        + U_carbon_capture_credit
+        # + U_carbon
+        + U_carbon_capture_credit_retrofit
         - P_variable
         - P_electricity
         - P_naturalGas
@@ -578,8 +565,8 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
     def rule_productionCapacityExisting(m, node):
         """Capacity of existing producers equals their existing capacity
 
-        Constrains:
-            Model's variable tracking capacity == existing capacity
+        Constraint:
+            Amount of capacity of producer in model == existing capacity
 
         Set:
             Existing producers
@@ -622,23 +609,19 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
             not built to be zero.
 
         Set:
-            All producer nodes, but all potential producer nodes in effect
+            New producers
         """
-        if node in m.existing_producers:
-            # if producer is an existing producer, don't constrain by minimum value
-            constraint = m.prod_h[node] >= 0
-        else:
-            # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
-            # this gives the model the option to not build the producer
-            constraint = m.prod_h[node] >= g.nodes[node]["min_h2"] * m.prod_exists[node]
+        # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
+        # this gives the model the option to not build the producer
+        constraint = m.prod_h[node] >= g.nodes[node]["min_h2"] * m.prod_exists[node]
         return constraint
 
     m.constr_minProductionCapacity = pe.Constraint(
-        m.producer_set, rule=rule_minProductionCapacity
+        m.new_producers, rule=rule_minProductionCapacity
     )
 
     def rule_maxProductionCapacity(m, node):
-        """M bound of production for a producer
+        """Upper bound of production for a producer
         (only on new producers)
 
         Constraint:
@@ -650,20 +633,16 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
             not built to be zero.
 
         Set:
-            All producer nodes, but all potential producer nodes in effect
+            New producers
         """
-        if node in m.existing_producers:
-            # if producer is an existing producer, don't constrain by minimum value
-            constraint = m.prod_h[node] <= 1e12  # arbitrarily large number
-        else:
-            # multiply by "prod_exists" (a binary) so that constraint is only enforced
-            # if the producer exists with the prior constraint, forces 0 production
-            # if producer DNE
-            constraint = m.prod_h[node] <= g.nodes[node]["max_h2"] * m.prod_exists[node]
+        # multiply by "prod_exists" (a binary) so that constraint is only enforced
+        # if the producer exists with the prior constraint, forces 0 production
+        # if producer DNE
+        constraint = m.prod_h[node] <= g.nodes[node]["max_h2"] * m.prod_exists[node]
         return constraint
 
     m.constr_maxProductionCapacity = pe.Constraint(
-        m.producer_set, rule=rule_maxProductionCapacity
+        m.new_producers, rule=rule_maxProductionCapacity
     )
 
     ## CCS (Retrofit)
@@ -813,31 +792,6 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
 
     m.constr_co2Producers = pe.Constraint(m.producer_set, rule=rule_co2Producers)
 
-    # co2 emissions for consumers that are not using hydrogen
-    def rule_co2Consumers(m, node):
-        """CO2 from consumption that was not satisfied with Hydrogen -
-            i.e., CO2 from the existing methods of satisfying demand
-            that were not displaced by hydrogen infrastructure
-
-        Constraint:
-            Amount of CO2 produced by demand not satisfied with H2 ==
-
-        Set:
-            All consumers
-
-        TODO Double check description
-        """
-        consumer_co2_rate = m.cons_breakevenCarbon[node]
-        consumption_not_satisfied_by_h2 = m.cons_size[node] - m.cons_h[node]
-
-        constraint = (
-            m.co2_nonHydrogenConsumer[node]
-            == consumption_not_satisfied_by_h2 * consumer_co2_rate
-        )
-        return constraint
-
-    m.constr_co2Consumers = pe.Constraint(m.consumer_set, rule=rule_co2Consumers)
-
     ## CHECs
 
     def rule_ccs1Checs(m, node):
@@ -872,7 +826,7 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         """The amount of CHECs produced by a producer =
             hydrogen produced * checs / ton
 
-            NOTE I don't think this is necessary
+            NOTE I don't think this is necessary, it is just a definition
 
         Constraint:
             CHECs produced == hydrogen produced * checs/ton
@@ -890,7 +844,7 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         """Each carbon-sensitive consumer's consumption of CHECs
             equals its consumption of hydrogen
 
-            NOTE I don't think this is necessary
+            NOTE I don't think this is necessary, it is just a definition
 
         Constraint:
             consumer CHECs ==
