@@ -170,7 +170,7 @@ def create_params(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         initialize=lambda m, i: g.nodes[i].get("ccs_capture_rate", 0),
     )
     m.h2_tax_credit = pe.Param(
-        m.producer_set, initialize=lambda m, i: g.nodes[i].get("h2_tax_credit", 0)
+        m.new_producers, initialize=lambda m, i: g.nodes[i].get("h2_tax_credit", 0)
     )
 
     ## Conversion
@@ -317,7 +317,13 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
     )
 
     # Utility gained by adding a per-ton-h2 produced tax credit
-    U_h2_tax_credit = sum(m.prod_h[p] * m.h2_tax_credit[p] for p in m.producer_set)
+    U_h2_tax_credit = sum(m.prod_h[p] * m.h2_tax_credit[p] for p in m.new_producers)
+
+    U_h2_tax_credit_retrofit_ccs = sum(
+        m.ccs1_capacity_h2[p] * H.ccs1_h2_tax_credit
+        + m.ccs2_capacity_h2[p] * H.ccs2_h2_tax_credit
+        for p in m.existing_producers
+    )
 
     ## Production
 
@@ -440,6 +446,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
         + U_carbon_capture_credit_new
         + U_carbon_capture_credit_retrofit
         + U_h2_tax_credit
+        + U_h2_tax_credit_retrofit_ccs
         - P_variable
         - P_electricity
         - P_naturalGas

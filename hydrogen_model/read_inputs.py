@@ -42,10 +42,13 @@ class HydrogenInputs:
         self.producers_existing = self.read_file("production_existing")
 
         ## (Retrofitted) CCS data
+        # in the future change to nested dictionaries please!
         ccs_data = self.read_file("ccs")
         ccs_data.set_index("type", inplace=True)
         self.ccs1_percent_co2_captured = ccs_data.loc["ccs1", "percent_CO2_captured"]
         self.ccs2_percent_co2_captured = ccs_data.loc["ccs2", "percent_CO2_captured"]
+        self.ccs1_h2_tax_credit = ccs_data.loc["ccs1", "h2_tax_credit"]
+        self.ccs2_h2_tax_credit = ccs_data.loc["ccs2", "h2_tax_credit"]
         self.ccs1_variable_usdPerTon = ccs_data.loc["ccs1", "variable_usdPerTonCO2"]
         self.ccs2_variable_usdPerTon = ccs_data.loc["ccs2", "variable_usdPerTonCO2"]
 
