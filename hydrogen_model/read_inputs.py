@@ -87,6 +87,9 @@ class HydrogenInputs:
         # solver data
         self.solver_settings = settings.get("solver_settings")
 
+        # other options
+        self.fractional_chec = settings.get("fractional_chec", True)
+
     def read_file(self, fn) -> pd.DataFrame:
         """reads file in input directory,
         fn is filename w/o .csv"""

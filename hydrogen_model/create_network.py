@@ -385,7 +385,13 @@ def add_producers(g: DiGraph, H):
                             1 - prod_data["ccs_capture_rate"]
                         ) * H.baseSMR_CO2_per_H2_tons
 
-                        prod_data["chec_per_ton"] = prod_data["ccs_capture_rate"]
+                        if H.fractional_chec:
+                            prod_data["chec_per_ton"] = prod_data["ccs_capture_rate"]
+                        else:
+                            if prod_data["ccs_capture_rate"] == 0:
+                                prod_data["chec_per_ton"] = 0
+                            else:
+                                prod_data["chec_per_ton"] = 1
 
                     elif prod_tech_type == "electric":
                         prod_data["capital_usd_coefficient"] = (

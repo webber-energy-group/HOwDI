@@ -28,4 +28,6 @@ solver_settings:
   solver_debug: False
   mipgap: 1.0E-7
 
+# other options
+fractional_check: True
   
