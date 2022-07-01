@@ -169,6 +169,9 @@ def create_params(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         m.new_thermal_producers,
         initialize=lambda m, i: g.nodes[i].get("ccs_capture_rate", 0),
     )
+    m.h2_tax_credit = pe.Param(
+        m.producer_set, initialize=lambda m, i: g.nodes[i].get("h2_tax_credit", 0)
+    )
 
     ## Conversion
     m.conv_cost_capital_coeff = pe.Param(
@@ -313,6 +316,9 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
         * H.carbon_capture_credit
     )
 
+    # Utility gained by adding a per-ton-h2 produced tax credit
+    U_h2_tax_credit = sum(m.prod_h[p] * m.h2_tax_credit[p] for p in m.producer_set)
+
     ## Production
 
     # Variable costs of production per ton is the sum of
@@ -433,6 +439,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
         U_hydrogen
         + U_carbon_capture_credit_new
         + U_carbon_capture_credit_retrofit
+        + U_h2_tax_credit
         - P_variable
         - P_electricity
         - P_naturalGas
