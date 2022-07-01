@@ -29,5 +29,5 @@ solver_settings:
   mipgap: 1.0E-7
 
 # other options
-fractional_check: True
+fractional_chec: True # True - CHECs are assigned based on carbon free hydrogen, False - CHECs are given for all production if producer has any form of carbon reduction
   
