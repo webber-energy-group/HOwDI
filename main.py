@@ -25,9 +25,7 @@ def main():
     m = build_h2_model(H, g)
 
     # clean outputs
-    output_dfs, output_json = generate_outputs(
-        m, H.get_hubs_list(), H.get_price_hub_params()
-    )
+    output_dfs, output_json = generate_outputs(m, H)
 
     # write outputs dataframes
     [df.to_csv(outputs_dir / "{}.csv".format(key)) for key, df in output_dfs.items()]

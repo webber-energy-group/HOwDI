@@ -828,7 +828,8 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         """
         if H.fractional_chec:
             constraint = (
-                m.ccs1_checs[node] <= m.ccs1_capacity_h2 * H.ccs1_percent_co2_captured
+                m.ccs1_checs[node]
+                <= m.ccs1_capacity_h2[node] * H.ccs1_percent_co2_captured
             )
         else:
             constraint = m.ccs1_checs[node] <= m.ccs1_capacity_h2[node]

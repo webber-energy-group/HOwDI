@@ -3,7 +3,7 @@ Converts outputs of Hydrogen model into dataframes and a dictionary
 Author: Braden Pecora
 """
 
-from numpy import int64, isclose
+from numpy import int64, isclose, where
 import pandas as pd
 from idaes.core.util import to_json
 from functools import reduce
@@ -120,7 +120,9 @@ def create_hub_distribution_data(df, hub):
     }
 
 
-def generate_outputs(m, hubs_list, price_hub_params):
+def generate_outputs(m, H):
+    hubs_list = H.get_hubs_list()
+
     outputs = to_json(m, return_dict=True)
     outputs = outputs["unknown"]["data"]["None"]["__pyomo_components__"]
     outputs = recursive_clean(outputs)
@@ -139,13 +141,14 @@ def generate_outputs(m, hubs_list, price_hub_params):
     merge_lists["production"] = [
         "can_ccs1",
         "can_ccs2",
+        "ccs1_built",
+        "ccs2_built",
         "ccs1_co2_captured",
         "ccs1_capacity_h2",
         "ccs1_checs",
         "ccs2_co2_captured",
         "ccs2_capacity_h2",
         "ccs2_checs",
-        "co2_emitted",
         "prod_capacity",
         "co2_emissions_rate",
         "prod_cost_capital_coeff",
@@ -156,6 +159,9 @@ def generate_outputs(m, hubs_list, price_hub_params):
         "prod_e_price",
         "prod_ng_price",
         "prod_utilization",
+        "chec_per_ton",
+        "ccs_capture_rate",
+        "h2_tax_credit",
     ]
     merge_lists["conversion"] = [
         "conv_capacity",
@@ -167,7 +173,6 @@ def generate_outputs(m, hubs_list, price_hub_params):
         "fuelStation_cost_capital_subsidy",
     ]
     merge_lists["consumption"] = [
-        "co2_nonHydrogenConsumer",
         "cons_breakevenCarbon",
         "cons_carbonSensitive",
         "cons_h",
@@ -206,13 +211,13 @@ def generate_outputs(m, hubs_list, price_hub_params):
         dfs[file_name] = dfs[file_name].set_index(new_index)
 
     # find price for price hubs
-    if price_hub_params["find_prices"]:
-        if price_hub_params["price_hubs"] == "all":
+    if H.find_prices:
+        if H.price_hubs == "all":
             price_hubs = hubs_list
         else:
-            price_hubs = price_hub_params["price_hubs"]
+            price_hubs = H.price_hubs
 
-        price_demand = price_hub_params["price_demand"]
+        price_demand = H.price_demand
 
         price_hub_min = pd.DataFrame(
             columns=dfs["consumption"].columns
@@ -242,9 +247,7 @@ def generate_outputs(m, hubs_list, price_hub_params):
 
     # find_prices is a binary, price_demand is the demand amount used with price hubs, thus,
     # if price hubs are used (find_prices binary), then data utilizing an amount of hydrogen <= price_demand will be removed
-    price_hub_demand = (
-        price_hub_params["find_prices"] * price_hub_params["price_demand"]
-    )
+    price_hub_demand = H.find_prices * H.price_demand
 
     tol = 1e-6
 
@@ -263,10 +266,58 @@ def generate_outputs(m, hubs_list, price_hub_params):
     ]
 
     # re add price hub data
-    if price_hub_params["find_prices"]:
+    if H.find_prices:
         dfs["consumption"] = pd.concat([dfs["consumption"], price_hub_min])
 
-    # # post processing
+    # post processing
+    # TODO add ccs captured, emitted
+    prod = dfs["production"]  # remember pass by object reference
+
+    # combine existing prod data into relevant new prod data columns
+    for ccs_v, ccs_percent, ccs_tax in [
+        (1, H.ccs1_percent_co2_captured, H.ccs1_h2_tax_credit),
+        (2, H.ccs2_percent_co2_captured, H.ccs2_h2_tax_credit),
+    ]:
+        df_filter = prod["ccs{}_built".format(ccs_v)] == 1
+
+        # if len(prod.loc[df_filter]) == 0:
+        #     continue
+
+        if H.fractional_chec:
+            chec_per_ton = ccs_percent
+        else:
+            chec_per_ton = 1
+
+        # TODO incorporate ccs variable costs
+        # TODO add ccs captured, emitted
+
+        for key, new_data in [
+            ("prod_checs", prod["ccs{}_checs".format(ccs_v)]),
+            ("co2_emissions_rate", prod["co2_emissions_rate"] * ccs_percent),
+            ("chec_per_ton", chec_per_ton),
+            ("ccs_capture_rate", ccs_percent),
+            ("h2_tax_credit", ccs_tax),
+        ]:
+            prod[key] = where(df_filter, new_data, prod[key])
+
+    prod_columns = [
+        x
+        for x in merge_lists["production"]
+        if x
+        not in [
+            "can_ccs1",
+            "can_ccs2",
+            "ccs1_built",
+            "ccs2_built",
+            "ccs1_capacity_h2",
+            "ccs1_checs",
+            "ccs2_capacity_h2",
+            "ccs2_checs",
+        ]
+    ]
+
+    dfs["production"] = dfs["production"][prod_columns].replace("n/a", 0)
+
     # dfs["production"]["total_co2_produced"] = (
     #     dfs["production"]["prod_h"] * dfs["production"]["co2_emissions_rate"]
     # )
