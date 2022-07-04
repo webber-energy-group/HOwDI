@@ -375,6 +375,14 @@ def add_producers(g: DiGraph, H):
 
                     # data specific to thermal or electric
                     if prod_tech_type == "thermal":
+                        ccs_capture_rate = prod_data["ccs_capture_rate"]
+                        if ccs_capture_rate > 1:
+                            raise ValueError(
+                                "CCS Capture rate is {}%!".format(
+                                    ccs_capture_rate * 100
+                                )
+                            )
+
                         prod_data["capital_usd_coefficient"] = (
                             prod_data["capital_usd_coefficient"]
                             * capital_price_multiplier
@@ -382,13 +390,13 @@ def add_producers(g: DiGraph, H):
                         prod_data["ng_price"] = prod_data["ng_coefficient"] * ng_price
 
                         prod_data["co2_emissions_per_h2_tons"] = (
-                            1 - prod_data["ccs_capture_rate"]
+                            1 - ccs_capture_rate
                         ) * H.baseSMR_CO2_per_H2_tons
 
                         if H.fractional_chec:
-                            prod_data["chec_per_ton"] = prod_data["ccs_capture_rate"]
+                            prod_data["chec_per_ton"] = ccs_capture_rate
                         else:
-                            if prod_data["ccs_capture_rate"] == 0:
+                            if ccs_capture_rate == 0:
                                 prod_data["chec_per_ton"] = 0
                             else:
                                 prod_data["chec_per_ton"] = 1
