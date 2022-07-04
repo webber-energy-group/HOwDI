@@ -267,10 +267,6 @@ def create_variables(m):
     m.ccs1_checs = pe.Var(m.existing_producers, domain=pe.NonNegativeReals)
     # daily production of CHECs for CCS2 for each producer
     m.ccs2_checs = pe.Var(m.existing_producers, domain=pe.NonNegativeReals)
-    # carbon emissions for each consumer that is not using hydrogen
-    m.co2_nonHydrogenConsumer = pe.Var(m.consumer_set, domain=pe.Reals)
-    # carbon emissions for each hydrogen producer #NOTE unused
-    m.co2_emitted = pe.Var(m.producer_set, domain=pe.Reals)
 
     ## Infrastructure subsidy
     # subsidy dollars used to reduce the capital cost of converter[cv]
@@ -830,7 +826,12 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         Set:
             All producers, defacto existing producers
         """
-        constraint = m.ccs1_checs[node] <= m.ccs1_capacity_h2[node]
+        if H.fractional_chec:
+            constraint = (
+                m.ccs1_checs[node] <= m.ccs1_capacity_h2 * H.ccs1_percent_co2_captured
+            )
+        else:
+            constraint = m.ccs1_checs[node] <= m.ccs1_capacity_h2[node]
         return constraint
 
     m.constr_ccs1Checs = pe.Constraint(m.existing_producers, rule=rule_ccs1Checs)
@@ -844,7 +845,13 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         Set:
             All producers, defacto existing producers
         """
-        constraint = m.ccs2_checs[node] <= m.ccs2_capacity_h2[node]
+        if H.fractional_chec:
+            constraint = (
+                m.ccs2_checs[node]
+                <= m.ccs2_capacity_h2[node] * H.ccs2_percent_co2_captured
+            )
+        else:
+            constraint = m.ccs2_checs[node] <= m.ccs2_capacity_h2[node]
         return constraint
 
     m.constr_ccs2Checs = pe.Constraint(m.existing_producers, rule=rule_ccs2Checs)
