@@ -416,6 +416,7 @@ def add_producers(g: DiGraph, H):
 
                     g.add_edge(prod_node, destination_node, **(edge_dict))
 
+    ## EXISTING PRODUCTION
     # loop through the existing producers and add them
     for _, prod_existing_series in H.producers_existing.iterrows():
         hub_name = prod_existing_series["hub"]
@@ -423,14 +424,20 @@ def add_producers(g: DiGraph, H):
         prod_node = "{}_production_{}Existing".format(hub_name, prod_type)
         destination_node = "{}_center_{}Purity".format(hub_name, purity)
 
-        # get corresponding data about that type of production
-        prod_data = H.prod_therm.set_index("type").loc[prod_type]
-        purity = prod_data["purity"]
+        # get hub data
+        hub_data = H.hubs.set_index("hub").loc[hub_name]
 
         prod_exist_data = prod_existing_series.to_dict()
         prod_exist_data["node"] = prod_node
         prod_exist_data["class"] = "producer"
         prod_exist_data["existing"] = 1
+        prod_exist_data["purity"] = prod_data["purity"]
+        prod_exist_data["ng_price"] = (
+            hub_data["ng_usd_per_mmbtu"] * prod_exist_data["ng_coefficient"]
+        )
+        prod_exist_data["e_price"] = (
+            hub_data["e_usd_per_kwh"] * prod_exist_data["kWh_coefficient"]
+        )
         g.add_node(prod_node, **prod_exist_data)
         # add edge
 
