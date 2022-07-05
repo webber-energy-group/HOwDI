@@ -143,10 +143,10 @@ def generate_outputs(m, H):
         "can_ccs2",
         "ccs1_built",
         "ccs2_built",
-        "ccs1_co2_captured",
+        # "ccs1_co2_captured",
         "ccs1_capacity_h2",
         "ccs1_checs",
-        "ccs2_co2_captured",
+        # "ccs2_co2_captured",
         "ccs2_capacity_h2",
         "ccs2_checs",
         "prod_capacity",
@@ -292,7 +292,7 @@ def generate_outputs(m, H):
 
         for key, new_data in [
             ("prod_checs", prod["ccs{}_checs".format(ccs_v)]),
-            ("co2_emissions_rate", prod["co2_emissions_rate"] * ccs_percent),
+            ("co2_emissions_rate", prod["co2_emissions_rate"] * (1 - ccs_percent)),
             ("chec_per_ton", chec_per_ton),
             ("ccs_capture_rate", ccs_percent),
             ("h2_tax_credit", ccs_tax),

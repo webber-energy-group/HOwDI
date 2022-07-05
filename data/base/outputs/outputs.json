@@ -2,8 +2,6 @@
     "brazoria": {
         "production": {
             "smr": {
-                "ccs1_co2_captured": 0.0,
-                "ccs2_co2_captured": 0.0,
                 "prod_capacity": 1311.3333333333335,
                 "co2_emissions_rate": 9.0,
                 "prod_cost_capital_coeff": 331500.0,
@@ -93,10 +91,8 @@
     "freeport": {
         "production": {
             "smrExisting": {
-                "ccs1_co2_captured": 2147.31,
-                "ccs2_co2_captured": 0.0,
                 "prod_capacity": 482.0,
-                "co2_emissions_rate": 4.95,
+                "co2_emissions_rate": 4.05,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
@@ -251,8 +247,6 @@
     "texasCity": {
         "production": {
             "smrExisting": {
-                "ccs1_co2_captured": 0.0,
-                "ccs2_co2_captured": 0.0,
                 "prod_capacity": 3252.0,
                 "co2_emissions_rate": 9.0,
                 "prod_cost_capital_coeff": 0.0,
@@ -342,8 +336,6 @@
     "laPorte": {
         "production": {
             "smr": {
-                "ccs1_co2_captured": 0.0,
-                "ccs2_co2_captured": 0.0,
                 "prod_capacity": 649.7793222222188,
                 "co2_emissions_rate": 9.0,
                 "prod_cost_capital_coeff": 531250.0,
@@ -359,10 +351,8 @@
                 "h2_tax_credit": 0.0
             },
             "smrExisting": {
-                "ccs1_co2_captured": 5631.120000000001,
-                "ccs2_co2_captured": 0.0,
                 "prod_capacity": 1264.0,
-                "co2_emissions_rate": 4.95,
+                "co2_emissions_rate": 4.05,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
@@ -620,10 +610,8 @@
     "pasadena": {
         "production": {
             "smrExisting": {
-                "ccs1_co2_captured": 2147.31,
-                "ccs2_co2_captured": 0.0,
                 "prod_capacity": 482.0,
-                "co2_emissions_rate": 4.95,
+                "co2_emissions_rate": 4.05,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
@@ -815,10 +803,8 @@
     "channelview": {
         "production": {
             "smrExisting": {
-                "ccs1_co2_captured": 1073.655,
-                "ccs2_co2_captured": 0.0,
                 "prod_capacity": 241.0,
-                "co2_emissions_rate": 4.95,
+                "co2_emissions_rate": 4.05,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
@@ -972,8 +958,6 @@
     "montBelvieu": {
         "production": {
             "smrExisting": {
-                "ccs1_co2_captured": 0.0,
-                "ccs2_co2_captured": 0.0,
                 "prod_capacity": 241.0,
                 "co2_emissions_rate": 9.0,
                 "prod_cost_capital_coeff": 0.0,
@@ -1109,10 +1093,8 @@
     "baytown": {
         "production": {
             "smrExisting": {
-                "ccs1_co2_captured": 2147.31,
-                "ccs2_co2_captured": 0.0,
                 "prod_capacity": 482.0,
-                "co2_emissions_rate": 4.95,
+                "co2_emissions_rate": 4.05,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
@@ -1214,10 +1196,8 @@
     "portArthur": {
         "production": {
             "smrExisting": {
-                "ccs1_co2_captured": 8584.785,
-                "ccs2_co2_captured": 0.0,
                 "prod_capacity": 1927.0,
-                "co2_emissions_rate": 4.95,
+                "co2_emissions_rate": 4.05,
                 "prod_cost_capital_coeff": 0.0,
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 100,
@@ -1690,8 +1670,6 @@
     "elPaso": {
         "production": {
             "smr": {
-                "ccs1_co2_captured": 0.0,
-                "ccs2_co2_captured": 0.0,
                 "prod_capacity": 1111.1111111108526,
                 "co2_emissions_rate": 9.0,
                 "prod_cost_capital_coeff": 310250.0,
@@ -2155,8 +2133,6 @@
     "abilene": {
         "production": {
             "smr": {
-                "ccs1_co2_captured": 0.0,
-                "ccs2_co2_captured": 0.0,
                 "prod_capacity": 3333.3333333333335,
                 "co2_emissions_rate": 9.0,
                 "prod_cost_capital_coeff": 374000.0,
@@ -2853,8 +2829,6 @@
     "laredo": {
         "production": {
             "smr": {
-                "ccs1_co2_captured": 0.0,
-                "ccs2_co2_captured": 0.0,
                 "prod_capacity": 2777.777777777778,
                 "co2_emissions_rate": 9.0,
                 "prod_cost_capital_coeff": 352750.0,
