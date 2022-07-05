@@ -11,7 +11,7 @@ price_demand: 1.0E-5
 carbon_price_dollars_per_ton: 0
 carbon_capture_credit_dollars_per_ton: 50
 baseSMR_CO2_per_H2_tons: 9 # the co2 mass per h2 mass that defines 0 CHECs.
-carbon_grid_intensity_tonsCO2_per_kWh: ~ # TODO... regional value?
+grid_intensity_tonsCO2_per_kWh: ~ # TODO... regional value?
 
 # Subsidy settings, should maybe be a csv file
 subsidy_dollar_billion: 0
