@@ -185,7 +185,9 @@ def initialize_graph(H):
         for purity_type in ["LowPurity", "HighPurity"]:
             if purity_type == "HighPurity":
                 # if it's an existing pipeline, we assume it's a low purity pipeline
-                arc_data["exist_pipeline"] = 0
+                pipeline_exists = 0
+            else:
+                pipeline_exists = arc_data["exist_pipeline"]
 
             for arc in permutations([start_hub, end_hub]):
                 # generate node names based on arc and purity
@@ -200,7 +202,8 @@ def initialize_graph(H):
                     "kmLength": pipeline_length,
                     "capital_usdPerUnit": pipeline_data["capital_usdPerUnit"]
                     * pipeline_length
-                    * capital_price_multiplier,
+                    * capital_price_multiplier
+                    * (1 - pipeline_exists),  # capital costs only apply if pipeline DNE
                     "fixed_usdPerUnitPerDay": pipeline_data["fixed_usdPerUnitPerDay"]
                     * pipeline_length
                     * capital_price_multiplier,
@@ -208,7 +211,7 @@ def initialize_graph(H):
                     * pipeline_length,
                     "flowLimit_tonsPerDay": pipeline_data["flowLimit_tonsPerDay"],
                     "class": "arc_pipeline{}".format(purity_type),
-                    "existing": arc_data["exist_pipeline"],
+                    "existing": pipeline_exists,
                 }
                 # add the edge to the graph
                 g.add_edge(node_names[0], node_names[1], **(pipeline_char))
@@ -371,7 +374,7 @@ def add_producers(g: DiGraph, H):
                     prod_data["fixed_usdPerTon"] = (
                         prod_data["fixed_usdPerTon"] * capital_price_multiplier
                     )
-                    prod_data["e_price"] = prod_data["kWh_coefficient"] * e_price
+                    prod_data["e_price"] = prod_data["kWh_perTon"] * e_price
 
                     # data specific to thermal or electric
                     if prod_tech_type == "thermal":
@@ -383,11 +386,13 @@ def add_producers(g: DiGraph, H):
                                 )
                             )
 
-                        prod_data["capital_usd_coefficient"] = (
-                            prod_data["capital_usd_coefficient"]
+                        prod_data["capital_usdPerTonPerDay"] = (
+                            prod_data["capital_usdPerTonPerDay"]
                             * capital_price_multiplier
                         )
-                        prod_data["ng_price"] = prod_data["ng_coefficient"] * ng_price
+                        prod_data["ng_price"] = (
+                            prod_data["ng_mmbtu_per_tonH2"] * ng_price
+                        )
 
                         prod_data["co2_emissions_per_h2_tons"] = (
                             1 - ccs_capture_rate
@@ -402,9 +407,9 @@ def add_producers(g: DiGraph, H):
                                 prod_data["chec_per_ton"] = 1
 
                     elif prod_tech_type == "electric":
-                        prod_data["capital_usd_coefficient"] = (
+                        prod_data["capital_usdPerTonPerDay"] = (
                             prod_data["capEx_$_per_kW"]
-                            * prod_data["kWh_coefficient"]
+                            * prod_data["kWh_perTon"]
                             * H.time_slices
                             / 8760
                             / prod_data["utilization"]
@@ -441,10 +446,10 @@ def add_producers(g: DiGraph, H):
         prod_exist_data["existing"] = 1
         prod_exist_data["purity"] = prod_data["purity"]
         prod_exist_data["ng_price"] = (
-            hub_data["ng_usd_per_mmbtu"] * prod_exist_data["ng_coefficient"]
+            hub_data["ng_usd_per_mmbtu"] * prod_exist_data["ng_mmbtu_per_tonH2"]
         )
         prod_exist_data["e_price"] = (
-            hub_data["e_usd_per_kwh"] * prod_exist_data["kWh_coefficient"]
+            hub_data["e_usd_per_kwh"] * prod_exist_data["kWh_perTon"]
         )
         g.add_node(prod_node, **prod_exist_data)
         # add edge
@@ -493,13 +498,13 @@ def add_converters(g: DiGraph, H):
                     cv_data["node"] = cv_node
                     cv_destination = cv_data["arc_end_class"]
 
-                    cv_data["capital_usd_coefficient"] = (
-                        cv_data["capital_usd_coefficient"] * capital_pm
+                    cv_data["capital_usdPerTonPerDay"] = (
+                        cv_data["capital_usdPerTonPerDay"] * capital_pm
                     )
                     cv_data["fixed_usdPerTonPerDay"] = (
                         cv_data["fixed_usdPerTonPerDay"] * capital_pm
                     )
-                    cv_data["e_price"] = cv_data["kWh_coefficient"] * e_price
+                    cv_data["e_price"] = cv_data["kWh_perTon"] * e_price
                     g.add_node(cv_node, **cv_data)
 
                     # grab the tuples of any edges that have the correct arc_end type--

@@ -1,13 +1,13 @@
-producer,prod_capacity,co2_emissions_rate,prod_cost_capital_coeff,prod_cost_fixed,prod_cost_variable,prod_h,prod_checs,prod_e_price,prod_ng_price,prod_utilization,chec_per_ton,ccs_capture_rate,h2_tax_credit
+producer,prod_capacity,co2_emissions_rate,prod_cost_capital,prod_cost_fixed,prod_cost_variable,prod_h,prod_checs,prod_e_price,prod_ng_price,prod_utilization,chec_per_ton,ccs_capture_rate,h2_tax_credit
 abilene_production_smr,3333.3333333333335,9.0,374000.0,61.6,90,3000.0,0.0,31.2075,388.28125,0.9,0.0,0.0,0.0
 baytown_production_smrExisting,482.0,4.05,0.0,0.0,100,433.8,238.59,43.199999999999996,508.2,0.9,0.55,0.55,0.0
 brazoria_production_smr,1311.3333333333335,9.0,331500.0,54.6,90,1180.2,0.0,51.3,453.90624999999994,0.9,0.0,0.0,0.0
 channelview_production_smrExisting,241.0,4.05,0.0,0.0,100,216.9,119.295,37.35,589.05,0.9,0.55,0.55,0.0
 elPaso_production_smr,1111.1111111108526,9.0,310250.0,51.1,90,999.9999999997672,0.0,30.3525,525.0,0.9,0.0,0.0,0.0
 freeport_production_smrExisting,482.0,4.05,0.0,0.0,100,433.8,238.59,34.65,479.325,0.9,0.55,0.55,0.0
-laPorte_production_smr,649.7793222222188,9.0,531250.0,87.5,90,584.8013899999969,0.0,41.894999999999996,388.28125,0.9,0.0,0.0,0.0
+laPorte_production_smr,649.7793222222243,9.0,531250.0,87.5,90,584.8013900000019,0.0,41.894999999999996,388.28125,0.9,0.0,0.0,0.0
 laPorte_production_smrExisting,1264.0,4.05,0.0,0.0,100,1137.6000000000001,625.6800000000002,44.099999999999994,410.025,0.9,0.55,0.55,0.0
-laredo_production_smr,2777.777777777778,9.0,352750.0,58.099999999999994,90,2500.0,0.0,33.7725,393.75,0.9,0.0,0.0,0.0
+laredo_production_smr,2777.777777777781,9.0,352750.0,58.099999999999994,90,2500.0000000000027,0.0,33.7725,393.75,0.9,0.0,0.0,0.0
 montBelvieu_production_smrExisting,241.0,9.0,0.0,0.0,100,0.0,0.0,45.0,733.4250000000001,0.9,0.0,0.0,0.0
 pasadena_production_smrExisting,482.0,4.05,0.0,0.0,100,433.8,238.59,46.35,456.225,0.9,0.55,0.55,0.0
 portArthur_production_smrExisting,1927.0,4.05,0.0,0.0,100,1734.3,953.865,32.4,565.95,0.9,0.55,0.55,0.0

@@ -140,9 +140,9 @@ def create_params(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
     )
 
     ## Production
-    m.prod_cost_capital_coeff = pe.Param(
+    m.prod_cost_capital = pe.Param(
         m.producer_set,
-        initialize=lambda m, i: g.nodes[i].get("capital_usd_coefficient", 0),
+        initialize=lambda m, i: g.nodes[i].get("capital_usdPerTonPerDay", 0),
     )
     m.prod_cost_fixed = pe.Param(
         m.producer_set, initialize=lambda m, i: g.nodes[i].get("fixed_usdPerTon", 0)
@@ -180,9 +180,9 @@ def create_params(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
     )
 
     ## Conversion
-    m.conv_cost_capital_coeff = pe.Param(
+    m.conv_cost_capital = pe.Param(
         m.converter_set,
-        initialize=lambda m, i: g.nodes[i].get("capital_usd_coefficient", 0),
+        initialize=lambda m, i: g.nodes[i].get("capital_usdPerTonPerDay", 0),
     )
     m.conv_cost_fixed = pe.Param(
         m.converter_set,
@@ -344,7 +344,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
     # (the production capacity of a node) * (the regional capital cost coefficient of a node)
     # / amortization factor for each producer
     P_capital = (
-        sum(m.prod_capacity[p] * m.prod_cost_capital_coeff[p] for p in m.producer_set)
+        sum(m.prod_capacity[p] * m.prod_cost_capital[p] for p in m.producer_set)
         / H.A
         / H.time_slices
     )
@@ -428,7 +428,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
     # (convertor capacity) * (regional capital cost) / (amortization factor)
     # for each convertor
     CV_capital = sum(
-        (m.conv_capacity[cv] * m.conv_cost_capital_coeff[cv]) / H.A / H.time_slices
+        (m.conv_capacity[cv] * m.conv_cost_capital[cv]) / H.A / H.time_slices
         for cv in m.converter_set
     )
 
@@ -935,12 +935,12 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
             All fuel stations
         """
 
-        conversion_cost = m.conv_capacity[node] * m.conv_cost_capital_coeff[node]
+        conversion_cost = m.conv_capacity[node] * m.conv_cost_capital[node]
 
         constraint = m.fuelStation_cost_capital_subsidy[node] == conversion_cost * (
             1 - H.subsidy_cost_share_fraction
         )
-        # note that existing production facilities have a cost_capital_coeff
+        # note that existing production facilities have a cost_capital
         #  of zero, so they cannot be subsidized
         return constraint
 

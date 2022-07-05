@@ -151,7 +151,7 @@ def generate_outputs(m, H):
         "ccs2_checs",
         "prod_capacity",
         "co2_emissions_rate",
-        "prod_cost_capital_coeff",
+        "prod_cost_capital",
         "prod_cost_fixed",
         "prod_cost_variable",
         "prod_h",
@@ -165,7 +165,7 @@ def generate_outputs(m, H):
     ]
     merge_lists["conversion"] = [
         "conv_capacity",
-        "conv_cost_capital_coeff",
+        "conv_cost_capital",
         "conv_cost_fixed",
         "conv_cost_variable",
         "conv_e_price",
