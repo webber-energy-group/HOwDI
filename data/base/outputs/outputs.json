@@ -22,7 +22,6 @@
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -114,7 +113,6 @@
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -202,7 +200,6 @@
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -274,7 +271,6 @@
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -383,7 +379,6 @@
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -494,7 +489,6 @@
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -548,7 +542,6 @@
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -657,7 +650,6 @@
         },
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -665,7 +657,6 @@
                 "cons_size": 538.0
             },
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 37.5,
                 "cons_checs": 0.0,
@@ -673,7 +664,6 @@
                 "cons_size": 37.5
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 12.5,
                 "cons_checs": 12.5,
@@ -681,7 +671,6 @@
                 "cons_size": 12.5
             },
             "priceFuelStation_8.05": {
-                "cons_breakevenCarbon": 0.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 1e-05,
                 "cons_checs": 0.0,
@@ -689,7 +678,6 @@
                 "cons_size": 1e-05
             },
             "priceLowPurity_3.00": {
-                "cons_breakevenCarbon": 0.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 1e-05,
                 "cons_checs": 0.0,
@@ -847,7 +835,6 @@
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -1005,7 +992,6 @@
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -1143,7 +1129,6 @@
         "conversion": {},
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -1259,7 +1244,6 @@
         },
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -1432,7 +1416,6 @@
         },
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -1589,7 +1572,6 @@
         },
         "consumption": {
             "demandSector_existing": {
-                "cons_breakevenCarbon": 18.0,
                 "cons_carbonSensitive": 0,
                 "cons_h": 538.0,
                 "cons_checs": 0.0,
@@ -1597,7 +1579,6 @@
                 "cons_size": 538.0
             },
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -1605,7 +1586,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -1767,7 +1747,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -1775,7 +1754,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -1919,7 +1897,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -1927,7 +1904,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -2011,7 +1987,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -2019,7 +1994,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -2103,7 +2077,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -2111,7 +2084,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -2240,7 +2212,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -2248,7 +2219,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -2431,7 +2401,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -2439,7 +2408,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -2523,7 +2491,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -2531,7 +2498,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -2629,7 +2595,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -2637,7 +2602,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -2721,7 +2685,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -2729,7 +2692,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -2813,7 +2775,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -2821,7 +2782,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -2950,7 +2910,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -2958,7 +2917,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -3128,7 +3086,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -3136,7 +3093,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -3220,7 +3176,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -3228,7 +3183,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -3326,7 +3280,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -3334,7 +3287,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,
@@ -3418,7 +3370,6 @@
         },
         "consumption": {
             "demandSector_transportationFuel": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 0,
                 "cons_h": 375.0,
                 "cons_checs": 0.0,
@@ -3426,7 +3377,6 @@
                 "cons_size": 375.0
             },
             "demandSector_transportationFuel_carbonSensitive": {
-                "cons_breakevenCarbon": 17.4,
                 "cons_carbonSensitive": 1,
                 "cons_h": 125.0,
                 "cons_checs": 125.0,

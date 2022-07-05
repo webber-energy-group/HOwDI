@@ -45,6 +45,8 @@ def create_node_sets(m: pe.ConcreteModel, g: DiGraph):
 
     m.new_thermal_producers = m.new_producers & m.thermal_producers
 
+    m.new_electric_producers = m.new_producers - m.new_thermal_producers
+
     # set of node names where all nodes are consumers,
     # which includes demandSectors and price hubs.
     consumer_nodes = [
@@ -158,6 +160,10 @@ def create_params(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
     m.co2_emissions_rate = pe.Param(
         m.producer_set,
         initialize=lambda m, i: g.nodes[i].get("co2_emissions_per_h2_tons", 0),
+    )
+    m.grid_intensity = pe.Param(
+        m.new_electric_producers,
+        initialize=lambda m, i: g.nodes[i].get("grid_intensity_tonsCO2_per_h2"),
     )
     m.prod_utilization = pe.Param(
         m.producer_set, initialize=lambda m, i: g.nodes[i].get("utilization", 0)
@@ -352,9 +358,9 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
     # ] * Price of carbon emissions ($/Ton CO2)
     #
     # CO2 emissions of new builds are (1 - ccs capture %) * H.baseSMr_CO2_per_H2_tons
-    # NOTE does electrolysis come into this equation?
     P_carbon = (
         sum(m.prod_h[p] * m.co2_emissions_rate[p] for p in m.new_thermal_producers)
+        + sum(m.prod_h[p] * m.grid_intensity[p] for p in m.new_electric_producers)
         + sum(
             m.ccs1_capacity_h2[p] * m.co2_emissions_rate[p]
             for p in m.existing_producers
