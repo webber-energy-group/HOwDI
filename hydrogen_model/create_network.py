@@ -415,10 +415,14 @@ def add_producers(g: DiGraph, H):
                             / prod_data["utilization"]
                             * capital_price_multiplier
                         )
-                        prod_data["chec_per_ton"] = 1
-                        prod_data["co2_emissions_per_h2_tons"] = prod_data[
-                            "grid_intensity_tonsCO2_per_h2"
-                        ]
+                        co2_emissions = prod_data["grid_intensity_tonsCO2_per_h2"]
+                        prod_data["co2_emissions_per_h2_tons"] = co2_emissions
+                        if H.fractional_chec:
+                            prod_data["chec_per_ton"] = (
+                                1 - co2_emissions / H.baseSMR_CO2_per_H2_tons
+                            )
+                        else:
+                            prod_data["chec_per_ton"] = 1
                     else:
                         raise Exception(
                             "Production type that is not thermal or electric"
