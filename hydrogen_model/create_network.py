@@ -416,6 +416,9 @@ def add_producers(g: DiGraph, H):
                             * capital_price_multiplier
                         )
                         prod_data["chec_per_ton"] = 1
+                        prod_data["co2_emissions_per_h2_tons"] = prod_data[
+                            "grid_intensity_tonsCO2_per_h2"
+                        ]
                     else:
                         raise Exception(
                             "Production type that is not thermal or electric"

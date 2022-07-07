@@ -359,8 +359,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
     #
     # CO2 emissions of new builds are (1 - ccs capture %) * H.baseSMr_CO2_per_H2_tons
     P_carbon = (
-        sum(m.prod_h[p] * m.co2_emissions_rate[p] for p in m.new_thermal_producers)
-        + sum(m.prod_h[p] * m.grid_intensity[p] for p in m.new_electric_producers)
+        sum(m.prod_h[p] * m.co2_emissions_rate[p] for p in m.new_producers)
         + sum(
             m.ccs1_capacity_h2[p] * m.co2_emissions_rate[p]
             for p in m.existing_producers
