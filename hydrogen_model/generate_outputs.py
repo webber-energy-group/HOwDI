@@ -171,11 +171,11 @@ def generate_outputs(m, H):
         "fuelStation_cost_capital_subsidy",
     ]
     merge_lists["consumption"] = [
-        "cons_carbonSensitive",
+        "cons_size",
         "cons_h",
+        "carbon_sensitive_fraction",
         "cons_checs",
         "cons_price",
-        "cons_size",
     ]
     merge_lists["distribution"] = [
         "dist_capacity",

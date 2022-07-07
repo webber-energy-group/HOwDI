@@ -206,8 +206,9 @@ def create_params(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
     m.cons_size = pe.Param(
         m.consumer_set, initialize=lambda m, i: g.nodes[i].get("size", 0)
     )
-    m.cons_carbonSensitive = pe.Param(
-        m.consumer_set, initialize=lambda m, i: g.nodes[i].get("carbonSensitive", 0)
+    m.carbon_sensitive_fraction = pe.Param(
+        m.consumer_set,
+        initialize=lambda m, i: g.nodes[i].get("carbonSensitiveFraction", 0),
     )
     # consumer's current rate of carbon emissions
     m.avoided_emissions = pe.Param(
@@ -899,7 +900,9 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         Set:
             All consumers
         """
-        constraint = m.cons_checs[node] == m.cons_h[node] * m.cons_carbonSensitive[node]
+        constraint = (
+            m.cons_checs[node] == m.cons_h[node] * m.carbon_sensitive_fraction[node]
+        )
         return constraint
 
     m.constr_consumerChec = pe.Constraint(m.consumer_set, rule=rule_consumerChecs)
