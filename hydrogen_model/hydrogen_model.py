@@ -209,6 +209,11 @@ def create_params(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
     m.cons_carbonSensitive = pe.Param(
         m.consumer_set, initialize=lambda m, i: g.nodes[i].get("carbonSensitive", 0)
     )
+    # consumer's current rate of carbon emissions
+    m.avoided_emissions = pe.Param(
+        m.consumer_set,
+        initialize=lambda m, i: g.nodes[i].get("avoided_emissions_tonsCO2_per_H2", 0),
+    )
 
     ## CCS Retrofitting
     # binary, 1: producer can build CCS1, defaults to zero
@@ -322,6 +327,11 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
         for p in m.existing_producers
     )
 
+    # Utility gained from from avoiding emissions by switching to hydrogen
+    U_carbon = (
+        sum(m.cons_h[c] * m.avoided_emissions[c] for c in m.consumer_set)
+    ) * H.carbon_price
+
     ## Production
 
     # Variable costs of production per ton is the sum of
@@ -332,7 +342,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
     # daily electricity cost (regional value for e_price)
     P_electricity = sum(m.prod_h[p] * m.prod_e_price[p] for p in m.producer_set)
 
-    # daily natural gas cost (regioanl value for ng_price)
+    # daily natural gas cost (regional value for ng_price)
     P_naturalGas = sum(m.prod_h[p] * m.prod_ng_price[p] for p in m.producer_set)
 
     # The fixed cost of production per ton is the sum of
@@ -443,6 +453,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
         + U_carbon_capture_credit_retrofit
         + U_h2_tax_credit
         + U_h2_tax_credit_retrofit_ccs
+        + U_carbon
         - P_variable
         - P_electricity
         - P_naturalGas
