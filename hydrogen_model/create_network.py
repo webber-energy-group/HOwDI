@@ -286,44 +286,25 @@ def add_consumers(g: DiGraph, H):
                 # don't add a demandSector node to hubs where that demand is 0
                 pass
             else:
-                ### 1) create a carbon sensitive and a carbon indifferent version of
-                #  the demandSector based on the 0--1 fraction value of the
-                # "carbonSensitiveFraction" in the csv file.
-
-                ## 1.1) create the carbon indifferent version
-                demand_node_char = demand_data.to_dict()
-                demand_node_char["class"] = "demandSector_{}".format(demand_sector)
-                demand_node_char["node"] = "{}_{}".format(
+                ### 1) Create demand sector nodes
+                demand_sector_char = demand_data.to_dict()
+                demand_sector_class = "demandSector_{}".format(demand_sector)
+                demand_sector_node = "{}_{}".format(
                     hub_name,
-                    demand_node_char["class"],
+                    demand_sector_class,
                 )
-                demand_node_char["size"] = demand_value * (
-                    1 - demand_node_char["carbonSensitiveFraction"]
-                )
-                demand_node_char["carbonSensitive"] = 0
-                demand_node_char["hub"] = hub_name
 
-                ## 1.2) create the carbon sensitive version
-                # by copying and editing carbon indifferent version
-                demand_node_char_carbon = demand_node_char.copy()
-                demand_node_char_carbon["node"] = "{}_carbonSensitive".format(
-                    demand_node_char["node"]
-                )
-                demand_node_char_carbon["size"] = (
-                    demand_value * demand_node_char_carbon["carbonSensitiveFraction"]
-                )
-                demand_node_char_carbon["carbonSensitive"] = 1
+                demand_sector_char["class"] = demand_sector_class
+                demand_sector_char["node"] = demand_sector_node
+                demand_sector_char["size"] = demand_value
+                demand_sector_char["hub"] = hub_name
+                # The binary "carbonSensitive" is already a key in demand_sector_char
 
                 ### 2) connect the demandSector nodes to the demand nodes
-                g.add_node(demand_node_char["node"], **(demand_node_char))
-                g.add_node(demand_node_char_carbon["node"], **(demand_node_char_carbon))
+                g.add_node(demand_sector_node, **(demand_sector_char))
 
                 flow_dict = free_flow_dict("flow_to_demand_sector")
-                for demand_sector_node in [
-                    demand_node_char["node"],
-                    demand_node_char_carbon["node"],
-                ]:
-                    g.add_edge(demand_node, demand_sector_node, **flow_dict)
+                g.add_edge(demand_node, demand_sector_node, **flow_dict)
 
 
 def add_producers(g: DiGraph, H):
