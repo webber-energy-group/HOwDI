@@ -286,19 +286,22 @@ def add_consumers(g: DiGraph, H):
                 # don't add a demandSector node to hubs where that demand is 0
                 pass
             else:
-                demand_node_char = demand_data.to_dict()
+                ### 1) Create demand sector nodes
+                demand_sector_char = demand_data.to_dict()
                 demand_sector_class = "demandSector_{}".format(demand_sector)
-                demand_node_char["class"] = demand_sector_class
                 demand_sector_node = "{}_{}".format(
                     hub_name,
                     demand_sector_class,
                 )
-                demand_node_char["node"] = demand_sector_node
-                demand_node_char["size"] = demand_value
-                demand_node_char["hub"] = hub_name
+
+                demand_sector_char["class"] = demand_sector_class
+                demand_sector_char["node"] = demand_sector_node
+                demand_sector_char["size"] = demand_value
+                demand_sector_char["hub"] = hub_name
+                # The binary "carbonSensitive" is already a key in demand_sector_char
 
                 ### 2) connect the demandSector nodes to the demand nodes
-                g.add_node(demand_sector_node, **(demand_node_char))
+                g.add_node(demand_sector_node, **(demand_sector_char))
 
                 flow_dict = free_flow_dict("flow_to_demand_sector")
                 g.add_edge(demand_node, demand_sector_node, **flow_dict)
