@@ -1,10 +1,10 @@
 from json import dump
 from pathlib import Path
 
-from data.create_plot import main as create_plot
-from HOwDI.generate_outputs import generate_outputs
-from HOwDI.create_network import build_hydrogen_network
 from HOwDI.create_model import build_h2_model
+from HOwDI.create_network import build_hydrogen_network
+from HOwDI.create_plot import main as create_plot
+from HOwDI.generate_outputs import generate_outputs
 from HOwDI.read_inputs import HydrogenInputs
 
 
@@ -13,7 +13,7 @@ def main():
     scenario = "base"
 
     data_dir = Path("data")
-    scenario_dir = data_dir / scenario
+    scenario_dir = Path("scenarios") / scenario
     inputs_dir = scenario_dir / "inputs"
     outputs_dir = scenario_dir / "outputs"
 

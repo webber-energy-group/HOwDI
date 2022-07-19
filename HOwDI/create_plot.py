@@ -12,14 +12,27 @@ from itertools import combinations
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-
-try:
-    from data.hubs.roads_to_gdf import roads_to_gdf
-except ModuleNotFoundError:
-    from hubs.roads_to_gdf import roads_to_gdf
+from shapely.wkt import loads
 
 # ignore warning about plotting empty frame
 warnings.simplefilter(action="ignore", category=UserWarning)
+
+
+def _roads_to_gdf(wd):
+    # wd is path where 'hubs.geojson' and 'roads.csv' are located
+
+    # get hubs for crs
+    hubs = gpd.read_file(wd / "hubs.geojson")
+
+    # read csv and convert geometry column
+    roads = gpd.read_file(wd / "roads.csv")
+    roads["geometry"] = roads["road_geometry"].apply(
+        loads
+    )  # convert string into Linestring
+    roads = roads.set_crs(hubs.crs)
+    del roads["road_geometry"]
+
+    return roads
 
 
 def _all_possible_combos(items: list, existing=False) -> list:
@@ -301,7 +314,7 @@ def main(data, data_dir, scenario_dir, prod_types):
     if not roads_connections.empty:
 
         # get data from roads csv, which draws out the road path along a connection
-        roads = roads_to_gdf(data_dir / "hubs")
+        roads = _roads_to_gdf(data_dir / "hubs")
 
         for row in roads.itertuples():
             # get road geodata for each connection in connections df

@@ -3,10 +3,11 @@ Converts outputs of Hydrogen model into dataframes and a dictionary
 Author: Braden Pecora
 """
 
-from numpy import int64, isclose, where
+from functools import reduce
+
 import pandas as pd
 from idaes.core.util import to_json
-from functools import reduce
+from numpy import int64, isclose, where
 
 pd.options.mode.chained_assignment = None
 
