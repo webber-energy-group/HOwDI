@@ -18,7 +18,13 @@ from shapely.wkt import loads
 warnings.simplefilter(action="ignore", category=UserWarning)
 
 
-def _roads_to_gdf(wd):
+def roads_to_gdf(wd):
+    """Converts roads.csv into a GeoDataFrame object
+
+    This is necessary since .geojson files can not handle LineStrings with multiple points.
+    Road geodata are stored as csv, where the geodata are stored as literal strings.
+    The shapely.wkt function "loads" can interpret this literal string and convert into a LineString object
+    """
     # wd is path where 'hubs.geojson' and 'roads.csv' are located
 
     # get hubs for crs
@@ -95,7 +101,7 @@ def _diff_of_list(a: list, b: list) -> list:
     return list(difference)
 
 
-def main(data, data_dir, scenario_dir, prod_types):
+def main(data, H):
     """
     data: outputs of model
     data_dir: location of data for hubs and shapefile
@@ -103,7 +109,7 @@ def main(data, data_dir, scenario_dir, prod_types):
                 values are the production technologies (smr, electrolysis)
     """
 
-    hub_data = json.load(open(data_dir / "hubs" / "hubs.geojson"))["features"]
+    hub_data = json.load(open(H.hubs_dir / "hubs.geojson"))["features"]
     locations = {d["properties"]["hub"]: d["geometry"]["coordinates"] for d in hub_data}
 
     # clean data
@@ -227,7 +233,7 @@ def main(data, data_dir, scenario_dir, prod_types):
     # initialize figure
     fig, ax = plt.subplots(figsize=(10, 10), dpi=300)
     # get Texas plot
-    us_county = gpd.read_file(data_dir / "US_COUNTY_SHPFILE" / "US_county_cont.shp")
+    us_county = gpd.read_file(H.shpfile)
     # us_county = gpd.read_file('US_COUNTY_SHPFILE/US_county_cont.shp')
     tx_county = us_county[us_county["STATE_NAME"] == "Texas"]
     tx = tx_county.dissolve()
@@ -236,6 +242,7 @@ def main(data, data_dir, scenario_dir, prod_types):
     # Plot hubs
     hubs = distribution[distribution.type == "Point"]
 
+    prod_types = H.get_prod_types()
     thermal_prod_combos = _all_possible_combos(prod_types["thermal"], existing=True)
     electric_prod_combos = _all_possible_combos(prod_types["electric"])
     both_prod_combos = _diff_of_list(thermal_prod_combos, electric_prod_combos)
@@ -314,7 +321,7 @@ def main(data, data_dir, scenario_dir, prod_types):
     if not roads_connections.empty:
 
         # get data from roads csv, which draws out the road path along a connection
-        roads = _roads_to_gdf(data_dir / "hubs")
+        roads = roads_to_gdf(H.hubs_dir)
 
         for row in roads.itertuples():
             # get road geodata for each connection in connections df
@@ -409,7 +416,7 @@ def main(data, data_dir, scenario_dir, prod_types):
 
     ax.legend(handles=legend_elements, loc="upper left")
 
-    fig.savefig(scenario_dir / "outputs" / "fig.png")
+    fig.savefig(H.outputs_dir / "fig.png")
 
 
 if __name__ == "__main__":

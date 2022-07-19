@@ -1,3 +1,4 @@
+from inspect import getsourcefile
 from pathlib import Path
 
 import numpy as np
@@ -11,7 +12,7 @@ class HydrogenInputs:
     stores some hard coded variables used for the hydrogen model
     """
 
-    def __init__(self, inputs_dir: Path):
+    def __init__(self, scenario_dir: Path):
         """
         carbon_price_dollars_per_ton: dollars per ton penalty on CO2 emissions
         investment_interest: interest rate for financing capital investments
@@ -20,15 +21,50 @@ class HydrogenInputs:
             timestep units. Default is 365 because the investment period units are in
             years (20 years default) and the simulation units are in days.
         """
-        self.inputs_dir = inputs_dir
-        # read yaml file
+        self.scenario_dir = scenario_dir
+        self.inputs_dir = scenario_dir / "inputs"
+        self.outputs_dir = scenario_dir / "outputs"
+
+        # read yaml settings file
         try:
-            with open(inputs_dir / "settings.yml") as file:
+            with open(self.inputs_dir / "settings.yml") as file:
                 settings = yaml.load(file, Loader=yaml.FullLoader)
         except FileNotFoundError:
             raise FileNotFoundError(
                 "The file 'settings.yml' was not found in the inputs directory"
             )
+
+        self.data_dir = (
+            Path(getsourcefile(lambda: 0)).absolute().parent.parent.parent / "data"
+        )
+
+        try:
+            with open(self.data_dir / "data_mapping.yml") as file:
+                data_mapping = yaml.load(file, Loader=yaml.FullLoader)
+        except KeyError:
+            data_mapping = None
+            # TODO logger.warning("Data mapping not found")
+
+        def find_data_mapping_setting(setting_name):
+            # see if setting_name is in settings
+            setting_name_value = settings.get(setting_name)
+
+            if setting_name_value is None:
+                # otherwise, get from "data" dir.
+                if data_mapping is None:
+                    raise  # TODO
+                setting_name_value = data_mapping.get(setting_name)
+
+                data_mapping_path = self.data_dir / setting_name_value
+            else:
+                data_mapping_path = Path(setting_name_value)
+
+            return data_mapping_path
+
+        self.hubs_dir = find_data_mapping_setting("hubs_dir")
+        self.shpfile = (
+            self.data_dir / "US_COUNTY_SHPFILE" / "US_county_cont.shp"
+        )  # TODO make generic
 
         ## File
         self.prod_therm = self.read_file("production_thermal")
