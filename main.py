@@ -2,10 +2,10 @@ from json import dump
 from pathlib import Path
 
 from data.create_plot import main as create_plot
-from hydrogen_model.generate_outputs import generate_outputs
-from hydrogen_model.create_network import build_hydrogen_network
-from hydrogen_model.hydrogen_model import build_h2_model
-from hydrogen_model.read_inputs import HydrogenInputs
+from HOwDI.generate_outputs import generate_outputs
+from HOwDI.create_network import build_hydrogen_network
+from HOwDI.create_model import build_h2_model
+from HOwDI.read_inputs import HydrogenInputs
 
 
 def main():

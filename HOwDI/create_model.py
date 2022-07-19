@@ -4,7 +4,7 @@ import pyomo
 import pyomo.environ as pe
 from networkx import DiGraph
 
-from hydrogen_model.read_inputs import HydrogenInputs
+from HOwDI.read_inputs import HydrogenInputs
 
 start = time.time()
 
