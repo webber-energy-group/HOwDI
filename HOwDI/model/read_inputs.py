@@ -1,4 +1,4 @@
-# TODO Add outputs storage (?), add upload_to_sql method.
+# TODO add upload_to_sql method.
 
 from inspect import getsourcefile
 from pathlib import Path
@@ -14,7 +14,9 @@ class HydrogenInputs:
     stores some hard coded variables used for the hydrogen model
     """
 
-    def __init__(self, scenario_dir: Path, raiseFileNotFoundError=True):
+    def __init__(
+        self, scenario_dir: Path, store_outputs=True, raiseFileNotFoundError=True
+    ):
         """
         carbon_price_dollars_per_ton: dollars per ton penalty on CO2 emissions
         investment_interest: interest rate for financing capital investments
@@ -28,6 +30,10 @@ class HydrogenInputs:
         self.scenario_dir = scenario_dir
         self.inputs_dir = scenario_dir / "inputs"
         self.outputs_dir = scenario_dir / "outputs"
+
+        if store_outputs:
+            # if being used in a model run, make outputs dir if DNE
+            self.outputs_dir.mkdir(exist_ok=True)
 
         # read yaml settings file
         try:
