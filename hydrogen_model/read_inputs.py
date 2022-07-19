@@ -30,39 +30,46 @@ class HydrogenInputs:
                 "The file 'settings.yml' was not found in the inputs directory"
             )
 
-        # generic data
+        ## File
         self.prod_therm = self.read_file("production_thermal")
         self.prod_elec = self.read_file("production_electric")
         self.storage = self.read_file("storage")
         self.distributors = self.read_file("distribution")
         self.converters = self.read_file("conversion")
         self.demand = self.read_file("demand")
-        self.ccs_data = self.read_file("ccs")
         self.hubs = self.read_file("hubs")
         self.arcs = self.read_file("arcs")
         self.producers_existing = self.read_file("production_existing")
 
-        # get ccs data
-        self.ccs_data.set_index("type", inplace=True)
-        self.ccs1_percent_co2_captured = self.ccs_data.loc[
-            "ccs1", "percent_CO2_captured"
-        ]
-        self.ccs2_percent_co2_captured = self.ccs_data.loc[
-            "ccs2", "percent_CO2_captured"
-        ]
-        self.ccs1_variable_usdPerTon = self.ccs_data.loc[
-            "ccs1", "variable_usdPerTonCO2"
-        ]
-        self.ccs2_variable_usdPerTon = self.ccs_data.loc[
-            "ccs2", "variable_usdPerTonCO2"
-        ]
-        # Scalars
-        # TODO maybe clean this up a little bit
-        self.time_slices = settings.get("time_slices")
+        ## (Retrofitted) CCS data
+        # in the future change to nested dictionaries please!
+        ccs_data = self.read_file("ccs")
+        ccs_data.set_index("type", inplace=True)
+        self.ccs1_percent_co2_captured = ccs_data.loc["ccs1", "percent_CO2_captured"]
+        self.ccs2_percent_co2_captured = ccs_data.loc["ccs2", "percent_CO2_captured"]
+        self.ccs1_h2_tax_credit = ccs_data.loc["ccs1", "h2_tax_credit"]
+        self.ccs2_h2_tax_credit = ccs_data.loc["ccs2", "h2_tax_credit"]
+        self.ccs1_variable_usdPerTon = ccs_data.loc["ccs1", "variable_usdPerTonCO2"]
+        self.ccs2_variable_usdPerTon = ccs_data.loc["ccs2", "variable_usdPerTonCO2"]
+
+        ## Price tracking settings
+        self.price_tracking_array = np.arange(**settings.get("price_tracking_array"))
+        self.price_hubs = settings.get("price_hubs")
+        self.price_demand = settings.get("price_demand")
+        self.find_prices = settings.get("find_prices")
+
+        ## Carbon settings
         self.carbon_price = settings.get("carbon_price_dollars_per_ton")
         self.carbon_capture_credit = settings.get(
             "carbon_capture_credit_dollars_per_ton"
         )
+        # Carbon rate the produces 0 CHECs
+        self.baseSMR_CO2_per_H2_tons = settings.get("baseSMR_CO2_per_H2_tons")
+        # unit conversion 120,000 MJ/tonH2, 1,000,000 g/tonCO2:
+        self.carbon_g_MJ_to_t_tH2 = 120000.0 / 1000000.0
+
+        # Investment Settings
+        self.time_slices = settings.get("time_slices")
         investment_interest = settings.get("investment_interest")
         investment_period = settings.get("investment_period")
         self.A = (
@@ -70,13 +77,6 @@ class HydrogenInputs:
             (((1 + investment_interest) ** investment_period) - 1)
             / (investment_interest * (1 + investment_interest) ** investment_period)
         )
-        # unit conversion 120,000 MJ/tonH2, 1,000,000 g/tonCO2:
-        self.carbon_g_MJ_to_t_tH2 = 120000.0 / 1000000.0
-
-        self.price_tracking_array = np.arange(**settings.get("price_tracking_array"))
-        self.price_hubs = settings.get("price_hubs")
-        self.price_demand = settings.get("price_demand")
-        self.find_prices = settings.get("find_prices")
 
         # for the scenario where hydrogen infrastructure is subsidized
         # how many billions of dollars are available to subsidize infrastructure
@@ -89,6 +89,9 @@ class HydrogenInputs:
 
         # solver data
         self.solver_settings = settings.get("solver_settings")
+
+        # other options
+        self.fractional_chec = settings.get("fractional_chec", True)
 
     def read_file(self, fn) -> pd.DataFrame:
         """reads file in input directory,

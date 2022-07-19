@@ -10,6 +10,7 @@ price_demand: 1.0E-5
 # Carbon settings, should maybe be a csv file
 carbon_price_dollars_per_ton: 0
 carbon_capture_credit_dollars_per_ton: 50
+baseSMR_CO2_per_H2_tons: 9 # the co2 mass per h2 mass that defines 0 CHECs.
 
 # Subsidy settings, should maybe be a csv file
 subsidy_dollar_billion: 0
@@ -26,4 +27,6 @@ solver_settings:
   solver_debug: False
   mipgap: 1.0E-7
 
+# other options
+fractional_chec: True # True - CHECs are assigned based on carbon free hydrogen, False - CHECs are given for all production if producer has any form of carbon reduction
   

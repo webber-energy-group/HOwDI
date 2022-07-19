@@ -185,7 +185,9 @@ def initialize_graph(H):
         for purity_type in ["LowPurity", "HighPurity"]:
             if purity_type == "HighPurity":
                 # if it's an existing pipeline, we assume it's a low purity pipeline
-                arc_data["exist_pipeline"] = 0
+                pipeline_exists = 0
+            else:
+                pipeline_exists = arc_data["exist_pipeline"]
 
             for arc in permutations([start_hub, end_hub]):
                 # generate node names based on arc and purity
@@ -200,7 +202,8 @@ def initialize_graph(H):
                     "kmLength": pipeline_length,
                     "capital_usdPerUnit": pipeline_data["capital_usdPerUnit"]
                     * pipeline_length
-                    * capital_price_multiplier,
+                    * capital_price_multiplier
+                    * (1 - pipeline_exists),  # capital costs only apply if pipeline DNE
                     "fixed_usdPerUnitPerDay": pipeline_data["fixed_usdPerUnitPerDay"]
                     * pipeline_length
                     * capital_price_multiplier,
@@ -208,7 +211,7 @@ def initialize_graph(H):
                     * pipeline_length,
                     "flowLimit_tonsPerDay": pipeline_data["flowLimit_tonsPerDay"],
                     "class": "arc_pipeline{}".format(purity_type),
-                    "existing": arc_data["exist_pipeline"],
+                    "existing": pipeline_exists,
                 }
                 # add the edge to the graph
                 g.add_edge(node_names[0], node_names[1], **(pipeline_char))
@@ -283,44 +286,25 @@ def add_consumers(g: DiGraph, H):
                 # don't add a demandSector node to hubs where that demand is 0
                 pass
             else:
-                ### 1) create a carbon sensitive and a carbon indifferent version of
-                #  the demandSector based on the 0--1 fraction value of the
-                # "carbonSensitiveFraction" in the csv file.
-
-                ## 1.1) create the carbon indifferent version
-                demand_node_char = demand_data.to_dict()
-                demand_node_char["class"] = "demandSector_{}".format(demand_sector)
-                demand_node_char["node"] = "{}_{}".format(
+                ### 1) Create demand sector nodes
+                demand_sector_char = demand_data.to_dict()
+                demand_sector_class = "demandSector_{}".format(demand_sector)
+                demand_sector_node = "{}_{}".format(
                     hub_name,
-                    demand_node_char["class"],
+                    demand_sector_class,
                 )
-                demand_node_char["size"] = demand_value * (
-                    1 - demand_node_char["carbonSensitiveFraction"]
-                )
-                demand_node_char["carbonSensitive"] = 0
-                demand_node_char["hub"] = hub_name
 
-                ## 1.2) create the carbon sensitive version
-                # by copying and editing carbon indifferent version
-                demand_node_char_carbon = demand_node_char.copy()
-                demand_node_char_carbon["node"] = "{}_carbonSensitive".format(
-                    demand_node_char["node"]
-                )
-                demand_node_char_carbon["size"] = (
-                    demand_value * demand_node_char_carbon["carbonSensitiveFraction"]
-                )
-                demand_node_char_carbon["carbonSensitive"] = 1
+                demand_sector_char["class"] = demand_sector_class
+                demand_sector_char["node"] = demand_sector_node
+                demand_sector_char["size"] = demand_value
+                demand_sector_char["hub"] = hub_name
+                # The binary "carbonSensitive" is already a key in demand_sector_char
 
                 ### 2) connect the demandSector nodes to the demand nodes
-                g.add_node(demand_node_char["node"], **(demand_node_char))
-                g.add_node(demand_node_char_carbon["node"], **(demand_node_char_carbon))
+                g.add_node(demand_sector_node, **(demand_sector_char))
 
                 flow_dict = free_flow_dict("flow_to_demand_sector")
-                for demand_sector_node in [
-                    demand_node_char["node"],
-                    demand_node_char_carbon["node"],
-                ]:
-                    g.add_edge(demand_node, demand_sector_node, **flow_dict)
+                g.add_edge(demand_node, demand_sector_node, **flow_dict)
 
 
 def add_producers(g: DiGraph, H):
@@ -364,30 +348,62 @@ def add_producers(g: DiGraph, H):
 
                     prod_data = prod_data_series.to_dict()
                     prod_data["node"] = prod_node
+                    prod_data["prod_tech_type"] = prod_tech_type
                     prod_data["class"] = "producer"
                     prod_data["existing"] = 0
                     prod_data["hub"] = hub_name
                     prod_data["fixed_usdPerTon"] = (
                         prod_data["fixed_usdPerTon"] * capital_price_multiplier
                     )
-                    prod_data["e_price"] = prod_data["kWh_coefficient"] * e_price
+                    prod_data["e_price"] = prod_data["kWh_perTon"] * e_price
 
                     # data specific to thermal or electric
                     if prod_tech_type == "thermal":
-                        prod_data["capital_usd_coefficient"] = (
-                            prod_data["capital_usd_coefficient"]
+                        ccs_capture_rate = prod_data["ccs_capture_rate"]
+                        if ccs_capture_rate > 1:
+                            raise ValueError(
+                                "CCS Capture rate is {}%!".format(
+                                    ccs_capture_rate * 100
+                                )
+                            )
+
+                        prod_data["capital_usdPerTonPerDay"] = (
+                            prod_data["capital_usdPerTonPerDay"]
                             * capital_price_multiplier
                         )
-                        prod_data["ng_price"] = prod_data["ng_coefficient"] * ng_price
+                        prod_data["ng_price"] = (
+                            prod_data["ng_mmbtu_per_tonH2"] * ng_price
+                        )
+
+                        prod_data["co2_emissions_per_h2_tons"] = (
+                            1 - ccs_capture_rate
+                        ) * H.baseSMR_CO2_per_H2_tons
+
+                        if H.fractional_chec:
+                            prod_data["chec_per_ton"] = ccs_capture_rate
+                        else:
+                            if ccs_capture_rate == 0:
+                                prod_data["chec_per_ton"] = 0
+                            else:
+                                prod_data["chec_per_ton"] = 1
+
                     elif prod_tech_type == "electric":
-                        prod_data["capital_usd_coefficient"] = (
+                        prod_data["capital_usdPerTonPerDay"] = (
                             prod_data["capEx_$_per_kW"]
-                            * prod_data["kWh_coefficient"]
+                            * prod_data["kWh_perTon"]
                             * H.time_slices
                             / 8760
                             / prod_data["utilization"]
                             * capital_price_multiplier
                         )
+                        co2_emissions = prod_data["grid_intensity_tonsCO2_per_h2"]
+                        prod_data["co2_emissions_per_h2_tons"] = co2_emissions
+                        if H.fractional_chec:
+                            prod_data["chec_per_ton"] = (
+                                1 - co2_emissions / H.baseSMR_CO2_per_H2_tons
+                            )
+                        else:
+                            prod_data["chec_per_ton"] = 1
                     else:
                         raise Exception(
                             "Production type that is not thermal or electric"
@@ -401,6 +417,7 @@ def add_producers(g: DiGraph, H):
 
                     g.add_edge(prod_node, destination_node, **(edge_dict))
 
+    ## EXISTING PRODUCTION
     # loop through the existing producers and add them
     for _, prod_existing_series in H.producers_existing.iterrows():
         hub_name = prod_existing_series["hub"]
@@ -408,14 +425,20 @@ def add_producers(g: DiGraph, H):
         prod_node = "{}_production_{}Existing".format(hub_name, prod_type)
         destination_node = "{}_center_{}Purity".format(hub_name, purity)
 
-        # get corresponding data about that type of production
-        prod_data = H.prod_therm.set_index("type").loc[prod_type]
-        purity = prod_data["purity"]
+        # get hub data
+        hub_data = H.hubs.set_index("hub").loc[hub_name]
 
         prod_exist_data = prod_existing_series.to_dict()
         prod_exist_data["node"] = prod_node
         prod_exist_data["class"] = "producer"
         prod_exist_data["existing"] = 1
+        prod_exist_data["purity"] = prod_data["purity"]
+        prod_exist_data["ng_price"] = (
+            hub_data["ng_usd_per_mmbtu"] * prod_exist_data["ng_mmbtu_per_tonH2"]
+        )
+        prod_exist_data["e_price"] = (
+            hub_data["e_usd_per_kwh"] * prod_exist_data["kWh_perTon"]
+        )
         g.add_node(prod_node, **prod_exist_data)
         # add edge
 
@@ -463,13 +486,13 @@ def add_converters(g: DiGraph, H):
                     cv_data["node"] = cv_node
                     cv_destination = cv_data["arc_end_class"]
 
-                    cv_data["capital_usd_coefficient"] = (
-                        cv_data["capital_usd_coefficient"] * capital_pm
+                    cv_data["capital_usdPerTonPerDay"] = (
+                        cv_data["capital_usdPerTonPerDay"] * capital_pm
                     )
                     cv_data["fixed_usdPerTonPerDay"] = (
                         cv_data["fixed_usdPerTonPerDay"] * capital_pm
                     )
-                    cv_data["e_price"] = cv_data["kWh_coefficient"] * e_price
+                    cv_data["e_price"] = cv_data["kWh_perTon"] * e_price
                     g.add_node(cv_node, **cv_data)
 
                     # grab the tuples of any edges that have the correct arc_end type--

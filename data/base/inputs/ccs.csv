@@ -1,3 +1,3 @@
-type,variable_usdPerTonCO2,percent_CO2_captured
-ccs1,50,0.55
-ccs2,70,0.9
+type,variable_usdPerTonCO2,percent_CO2_captured,h2_tax_credit
+ccs1,50,0.55,0
+ccs2,70,0.9,0
