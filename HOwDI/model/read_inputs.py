@@ -131,6 +131,10 @@ class HydrogenInputs:
         # other options
         self.fractional_chec = settings.get("fractional_chec", True)
 
+        # initialize
+        self.output_dfs = None
+        self.output_json = None
+
     def raiseFileNotFoundError(self, fn):
         if self.raiseFileNotFoundError_bool:
             raise FileNotFoundError("The file {} was not found.".format(fn))
@@ -162,3 +166,15 @@ class HydrogenInputs:
             "thermal": list(self.prod_therm["type"]),
             "electric": list(self.prod_elec["type"]),
         }
+
+    def write_output_dataframes(self):
+        [
+            df.to_csv(self.outputs_dir / "{}.csv".format(key))
+            for key, df in self.output_dfs.items()
+        ]
+
+    def write_output_json(self):
+        from json import dump
+
+        with (self.outputs_dir / "outputs.json").open("w", encoding="utf-8") as f:
+            dump(self.output_json, f, ensure_ascii=False, indent=4)

@@ -20,17 +20,16 @@ def main():
     m = build_h2_model(H, g)
 
     # clean outputs
-    output_dfs, output_json = generate_outputs(m, H)
+    H.output_dfs, H.output_json = generate_outputs(m, H)
 
     # write outputs dataframes
-    [df.to_csv(H.outputs_dir / "{}.csv".format(key)) for key, df in output_dfs.items()]
+    H.write_output_dataframes()
 
     # write outputs to json
-    with (H.outputs_dir / "outputs.json").open("w", encoding="utf-8") as f:
-        dump(output_json, f, ensure_ascii=False, indent=4)
+    H.write_output_json()
 
     # create figure
-    create_plot(output_json, H)
+    create_plot(H.output_json, H)
 
 
 if __name__ == "__main__":
