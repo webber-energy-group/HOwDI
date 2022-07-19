@@ -1,3 +1,5 @@
+# TODO Add outputs storage (?), add upload_to_sql method.
+
 from inspect import getsourcefile
 from pathlib import Path
 
@@ -12,7 +14,7 @@ class HydrogenInputs:
     stores some hard coded variables used for the hydrogen model
     """
 
-    def __init__(self, scenario_dir: Path):
+    def __init__(self, scenario_dir: Path, raiseFileNotFoundError=True):
         """
         carbon_price_dollars_per_ton: dollars per ton penalty on CO2 emissions
         investment_interest: interest rate for financing capital investments
@@ -21,6 +23,8 @@ class HydrogenInputs:
             timestep units. Default is 365 because the investment period units are in
             years (20 years default) and the simulation units are in days.
         """
+        self.raiseFileNotFoundError_bool = raiseFileNotFoundError
+
         self.scenario_dir = scenario_dir
         self.inputs_dir = scenario_dir / "inputs"
         self.outputs_dir = scenario_dir / "outputs"
@@ -30,9 +34,7 @@ class HydrogenInputs:
             with open(self.inputs_dir / "settings.yml") as file:
                 settings = yaml.load(file, Loader=yaml.FullLoader)
         except FileNotFoundError:
-            raise FileNotFoundError(
-                "The file 'settings.yml' was not found in the inputs directory"
-            )
+            self.raiseFileNotFoundError(self.inputs_dir / "settings.yml")
 
         self.data_dir = (
             Path(getsourcefile(lambda: 0)).absolute().parent.parent.parent / "data"
@@ -129,15 +131,21 @@ class HydrogenInputs:
         # other options
         self.fractional_chec = settings.get("fractional_chec", True)
 
+    def raiseFileNotFoundError(self, fn):
+        if self.raiseFileNotFoundError_bool:
+            raise FileNotFoundError("The file {} was not found.".format(fn))
+        # TODO
+        # else:
+        #   logger.warning("The file {} was not found.".format(fn))
+
     def read_file(self, fn) -> pd.DataFrame:
         """reads file in input directory,
         fn is filename w/o .csv"""
+        file_name = self.inputs_dir / "{}.csv".format(fn)
         try:
-            return pd.read_csv(self.inputs_dir / "{}.csv".format(fn))
+            return pd.read_csv(file_name)
         except FileNotFoundError:
-            raise FileNotFoundError(
-                "The file '{}.csv' was not found in the inputs directory".format(fn)
-            )
+            self.raiseFileNotFoundError(file_name)
 
     def get_hubs_list(self) -> list:
         return list(self.hubs["hub"])

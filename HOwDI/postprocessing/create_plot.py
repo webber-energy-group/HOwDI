@@ -422,8 +422,12 @@ def main(data, H):
 if __name__ == "__main__":
     from json import load
     from pathlib import Path
+    from HOwDI.model.read_inputs import HydrogenInputs
 
-    scenario_path = Path("base")
+    scenario_path = Path("scenarios/base")
     data_path = scenario_path / "outputs" / "outputs.json"
     data = load(open(data_path))
-    main(data, Path("."), scenario_path)
+
+    H = HydrogenInputs(scenario_path, raiseFileNotFoundError=False)
+
+    main(data, H)
