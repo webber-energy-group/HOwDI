@@ -10,6 +10,11 @@ Install:
 conda env create -f env.yml
 ```
 
+Set up package (optional):
+```bash
+pip install -e .
+```
+
 Run the model with `python main.py`.
 `trackeback_path.py` and `traceforward_path.py` can be sued for post processing.
 
