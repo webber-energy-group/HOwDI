@@ -1,11 +1,11 @@
 from json import dump
 from pathlib import Path
 
-from data.create_plot import main as create_plot
-from hydrogen_model.generate_outputs import generate_outputs
-from hydrogen_model.create_network import build_hydrogen_network
-from hydrogen_model.hydrogen_model import build_h2_model
-from hydrogen_model.read_inputs import HydrogenInputs
+from HOwDI.create_model import build_h2_model
+from HOwDI.create_network import build_hydrogen_network
+from HOwDI.create_plot import main as create_plot
+from HOwDI.generate_outputs import generate_outputs
+from HOwDI.read_inputs import HydrogenInputs
 
 
 def main():
@@ -13,7 +13,7 @@ def main():
     scenario = "base"
 
     data_dir = Path("data")
-    scenario_dir = data_dir / scenario
+    scenario_dir = Path("scenarios") / scenario
     inputs_dir = scenario_dir / "inputs"
     outputs_dir = scenario_dir / "outputs"
 
@@ -25,9 +25,7 @@ def main():
     m = build_h2_model(H, g)
 
     # clean outputs
-    output_dfs, output_json = generate_outputs(
-        m, H.get_hubs_list(), H.get_price_hub_params()
-    )
+    output_dfs, output_json = generate_outputs(m, H)
 
     # write outputs dataframes
     [df.to_csv(outputs_dir / "{}.csv".format(key)) for key, df in output_dfs.items()]

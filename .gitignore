@@ -3,3 +3,7 @@
 **Icon?
 .DS_Store/**
 notes/~$**
+.vscode/**
+**.log
+**prof
+HowDI.egg-info/**

@@ -13,7 +13,9 @@ TODO
 Get prices associated with each step
 Generate graphic to show cost breakdown
 """
-import json, sys
+import json
+import sys
+
 from anytree import Node, RenderTree, Resolver
 
 
@@ -146,6 +148,7 @@ def main(hub, full_data):
 
 
 if __name__ == "__main__":
+    # WIP
     hub = sys.argv[1]
     data = json.load(open("base/outputs/outputs.json"))
     main(hub, data)

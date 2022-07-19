@@ -3,10 +3,11 @@ Converts outputs of Hydrogen model into dataframes and a dictionary
 Author: Braden Pecora
 """
 
-from numpy import int64, isclose
+from functools import reduce
+
 import pandas as pd
 from idaes.core.util import to_json
-from functools import reduce
+from numpy import int64, isclose, where
 
 pd.options.mode.chained_assignment = None
 
@@ -120,7 +121,9 @@ def create_hub_distribution_data(df, hub):
     }
 
 
-def generate_outputs(m, hubs_list, price_hub_params):
+def generate_outputs(m, H):
+    hubs_list = H.get_hubs_list()
+
     outputs = to_json(m, return_dict=True)
     outputs = outputs["unknown"]["data"]["None"]["__pyomo_components__"]
     outputs = recursive_clean(outputs)
@@ -139,27 +142,29 @@ def generate_outputs(m, hubs_list, price_hub_params):
     merge_lists["production"] = [
         "can_ccs1",
         "can_ccs2",
-        "ccs1_capacity_co2",
+        "ccs1_built",
+        "ccs2_built",
         "ccs1_capacity_h2",
         "ccs1_checs",
-        "ccs2_capacity_co2",
         "ccs2_capacity_h2",
         "ccs2_checs",
-        "co2_emitted",
         "prod_capacity",
-        "prod_carbonRate",
-        "prod_cost_capital_coeff",
+        "prod_utilization",
+        "prod_h",
+        "prod_cost_capital",
         "prod_cost_fixed",
         "prod_cost_variable",
-        "prod_h",
-        "prod_checs",
         "prod_e_price",
         "prod_ng_price",
-        "prod_utilization",
+        "h2_tax_credit",
+        "co2_emissions_rate",
+        "ccs_capture_rate",
+        "chec_per_ton",
+        "prod_checs",
     ]
     merge_lists["conversion"] = [
         "conv_capacity",
-        "conv_cost_capital_coeff",
+        "conv_cost_capital",
         "conv_cost_fixed",
         "conv_cost_variable",
         "conv_e_price",
@@ -167,8 +172,6 @@ def generate_outputs(m, hubs_list, price_hub_params):
         "fuelStation_cost_capital_subsidy",
     ]
     merge_lists["consumption"] = [
-        "co2_nonHydrogenConsumer",
-        "cons_breakevenCarbon",
         "cons_carbonSensitive",
         "cons_h",
         "cons_checs",
@@ -206,13 +209,13 @@ def generate_outputs(m, hubs_list, price_hub_params):
         dfs[file_name] = dfs[file_name].set_index(new_index)
 
     # find price for price hubs
-    if price_hub_params["find_prices"]:
-        if price_hub_params["price_hubs"] == "all":
+    if H.find_prices:
+        if H.price_hubs == "all":
             price_hubs = hubs_list
         else:
-            price_hubs = price_hub_params["price_hubs"]
+            price_hubs = H.price_hubs
 
-        price_demand = price_hub_params["price_demand"]
+        price_demand = H.price_demand
 
         price_hub_min = pd.DataFrame(
             columns=dfs["consumption"].columns
@@ -242,9 +245,7 @@ def generate_outputs(m, hubs_list, price_hub_params):
 
     # find_prices is a binary, price_demand is the demand amount used with price hubs, thus,
     # if price hubs are used (find_prices binary), then data utilizing an amount of hydrogen <= price_demand will be removed
-    price_hub_demand = (
-        price_hub_params["find_prices"] * price_hub_params["price_demand"]
-    )
+    price_hub_demand = H.find_prices * H.price_demand
 
     tol = 1e-6
 
@@ -263,19 +264,119 @@ def generate_outputs(m, hubs_list, price_hub_params):
     ]
 
     # re add price hub data
-    if price_hub_params["find_prices"]:
+    if H.find_prices:
         dfs["consumption"] = pd.concat([dfs["consumption"], price_hub_min])
 
-    # post processing
-    dfs["production"]["total_co2_produced"] = (
-        dfs["production"]["prod_h"] * dfs["production"]["prod_carbonRate"]
+    ## POST PROCESSING:
+    # Production
+    prod = dfs["production"]
+    prod["ccs_retrofit_variable_costs"] = 0
+
+    # combine existing prod data into relevant new prod data columns
+    for ccs_v, ccs_percent, ccs_tax, ccs_variable in [
+        (
+            1,
+            H.ccs1_percent_co2_captured,
+            H.ccs1_h2_tax_credit,
+            H.ccs1_variable_usdPerTon,
+        ),
+        (
+            2,
+            H.ccs2_percent_co2_captured,
+            H.ccs2_h2_tax_credit,
+            H.ccs2_variable_usdPerTon,
+        ),
+    ]:
+        df_filter = prod["ccs{}_built".format(ccs_v)] == 1
+
+        if H.fractional_chec:
+            chec_per_ton = ccs_percent
+        else:
+            chec_per_ton = 1
+
+        for key, new_data in [
+            ("prod_checs", prod["ccs{}_checs".format(ccs_v)]),
+            (
+                "ccs_retrofit_variable_costs",
+                # co2 captured * variable costs per ton co2
+                prod["prod_h"].multiply(prod["co2_emissions_rate"], axis="index")
+                * ccs_percent
+                * ccs_variable,
+            ),
+            ("co2_emissions_rate", prod["co2_emissions_rate"] * (1 - ccs_percent)),
+            ("chec_per_ton", chec_per_ton),
+            ("ccs_capture_rate", ccs_percent),
+            ("h2_tax_credit", ccs_tax),
+        ]:
+            prod[key] = where(df_filter, new_data, prod[key])
+
+    # remove some unnecessary columns
+    # TODO can rewrite better and maybe move?
+    # I'd also like to eventually rename some of these columns
+    prod_columns = [
+        x
+        for x in merge_lists["production"] + ["ccs_retrofit_variable_costs"]
+        if x
+        not in [
+            "can_ccs1",
+            "can_ccs2",
+            "ccs1_built",
+            "ccs2_built",
+            "ccs1_capacity_h2",
+            "ccs1_checs",
+            "ccs2_capacity_h2",
+            "ccs2_checs",
+        ]
+    ]
+
+    prod = prod[prod_columns].replace("n/a", 0)
+
+    # multiply cost coefficients by prod_h to get total cost
+    cols = [
+        "prod_cost_capital",
+        "prod_cost_fixed",
+        "prod_cost_variable",
+        "prod_e_price",
+        "prod_ng_price",
+        "h2_tax_credit",
+    ]
+
+    prod[cols] = prod[cols].multiply(prod["prod_h"], axis="index")
+    prod["prod_cost_capital"] = prod["prod_cost_capital"] / H.A / H.time_slices
+    # NOTE maybe:
+    # prod["prod_cost_variable"] = prod["prod_cost_variable"+ prod["ccs_retrofit_variable_costs"]
+    # prod_cost_variable is based on per ton h2, while ccs_retrofit_variable is on per ton co2,
+    # which are related in this context. So I think it could be fine to remove the
+    # ccs_retrofit_variable column and jut add it to the prod_cost_variable_column
+
+    prod["co2_emitted"] = prod["co2_emissions_rate"] * prod["prod_h"]
+    prod["carbon_tax"] = prod["co2_emitted"] * H.carbon_price
+
+    # co2 captured = co2 rate * prod h * capture rate / (1 - capture rate)
+    # only if 0 < capture rate < 1; else, co2 captured is capture rate * prod_h
+    prod["co2_captured"] = where(
+        prod["ccs_capture_rate"].between(0, 1, inclusive="neither"),
+        prod["co2_emissions_rate"]
+        .multiply(prod["prod_h"], axis="index")
+        .multiply(prod["ccs_capture_rate"], axis="index")
+        .divide(1 - prod["ccs_capture_rate"], axis="index"),
+        prod["ccs_capture_rate"] * prod["prod_h"],
     )
-    dfs["production"]["co2_captured"] = (
-        dfs["production"]["total_co2_produced"] - dfs["production"]["co2_emitted"]
-    )
-    dfs["production"][r"%co2_captured"] = (
-        dfs["production"]["co2_captured"] / dfs["production"]["total_co2_produced"]
-    )
+    prod["carbon_capture_tax_credit"] = prod["co2_captured"] * H.carbon_capture_credit
+
+    prod["total_cost"] = prod[
+        [
+            "prod_cost_capital",
+            "prod_cost_fixed",
+            "prod_cost_variable",
+            "ccs_retrofit_variable_costs",
+            "prod_e_price",
+            "prod_ng_price",
+            "carbon_tax",
+        ]
+    ].sum(axis=1) - prod[["carbon_capture_tax_credit", "h2_tax_credit"]].sum(axis=1)
+
+    dfs["production"] = prod
 
     ## CREATE JSON OUTPUTS FROM DATAFRAMES
     hub_dict = {hub: {} for hub in hubs_list}

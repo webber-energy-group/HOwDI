@@ -1,2 +1,0 @@
-type,fixed_usdPerTon,capEx_$_per_kW,kWh_coefficient,variable_usdPerTon,carbon_g_MJ,utilization,purity,min_h2,max_h2
-electrolyzer,230,850,56300,0,25,0.975,high,100,10000

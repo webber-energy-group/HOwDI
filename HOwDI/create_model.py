@@ -4,7 +4,7 @@ import pyomo
 import pyomo.environ as pe
 from networkx import DiGraph
 
-from hydrogen_model.read_inputs import HydrogenInputs
+from HOwDI.read_inputs import HydrogenInputs
 
 start = time.time()
 
@@ -30,7 +30,22 @@ def create_node_sets(m: pe.ConcreteModel, g: DiGraph):
         for node, producer_already_exists in g.nodes(data="existing")
         if producer_already_exists == 1
     ]
-    m.producer_existing_set = pe.Set(initialize=producer_existing_nodes)
+    m.existing_producers = pe.Set(initialize=producer_existing_nodes)
+
+    # set of potential producers
+    m.new_producers = m.producer_set - m.existing_producers
+
+    # set of new thermal producers
+    producer_thermal = [
+        node
+        for node, prod_type in g.nodes(data="prod_tech_type")
+        if prod_type == "thermal"
+    ]
+    m.thermal_producers = pe.Set(initialize=producer_thermal)
+
+    m.new_thermal_producers = m.new_producers & m.thermal_producers
+
+    m.new_electric_producers = m.new_producers - m.new_thermal_producers
 
     # set of node names where all nodes are consumers,
     # which includes demandSectors and price hubs.
@@ -125,9 +140,9 @@ def create_params(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
     )
 
     ## Production
-    m.prod_cost_capital_coeff = pe.Param(
+    m.prod_cost_capital = pe.Param(
         m.producer_set,
-        initialize=lambda m, i: g.nodes[i].get("capital_usd_coefficient", 0),
+        initialize=lambda m, i: g.nodes[i].get("capital_usdPerTonPerDay", 0),
     )
     m.prod_cost_fixed = pe.Param(
         m.producer_set, initialize=lambda m, i: g.nodes[i].get("fixed_usdPerTon", 0)
@@ -142,19 +157,32 @@ def create_params(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         m.producer_set,
         initialize=lambda m, i: g.nodes[i].get("variable_usdPerTon", 0),
     )
-    m.prod_carbonRate = pe.Param(
+    m.co2_emissions_rate = pe.Param(
         m.producer_set,
-        initialize=lambda m, i: g.nodes[i].get("carbon_g_MJ", 0)
-        * H.carbon_g_MJ_to_t_tH2,
+        initialize=lambda m, i: g.nodes[i].get("co2_emissions_per_h2_tons", 0),
+    )
+    m.grid_intensity = pe.Param(
+        m.new_electric_producers,
+        initialize=lambda m, i: g.nodes[i].get("grid_intensity_tonsCO2_per_h2"),
     )
     m.prod_utilization = pe.Param(
         m.producer_set, initialize=lambda m, i: g.nodes[i].get("utilization", 0)
     )
+    m.chec_per_ton = pe.Param(
+        m.new_producers, initialize=lambda m, i: g.nodes[i].get("chec_per_ton", 0)
+    )
+    m.ccs_capture_rate = pe.Param(
+        m.new_thermal_producers,
+        initialize=lambda m, i: g.nodes[i].get("ccs_capture_rate", 0),
+    )
+    m.h2_tax_credit = pe.Param(
+        m.new_producers, initialize=lambda m, i: g.nodes[i].get("h2_tax_credit", 0)
+    )
 
     ## Conversion
-    m.conv_cost_capital_coeff = pe.Param(
+    m.conv_cost_capital = pe.Param(
         m.converter_set,
-        initialize=lambda m, i: g.nodes[i].get("capital_usd_coefficient", 0),
+        initialize=lambda m, i: g.nodes[i].get("capital_usdPerTonPerDay", 0),
     )
     m.conv_cost_fixed = pe.Param(
         m.converter_set,
@@ -181,10 +209,10 @@ def create_params(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
     m.cons_carbonSensitive = pe.Param(
         m.consumer_set, initialize=lambda m, i: g.nodes[i].get("carbonSensitive", 0)
     )
-    m.cons_breakevenCarbon = pe.Param(
+    # consumer's current rate of carbon emissions
+    m.avoided_emissions = pe.Param(
         m.consumer_set,
-        initialize=lambda m, i: g.nodes[i].get("breakevenCarbon_g_MJ", 0)
-        * H.carbon_g_MJ_to_t_tH2,
+        initialize=lambda m, i: g.nodes[i].get("avoided_emissions_tonsCO2_per_H2", 0),
     )
 
     ## CCS Retrofitting
@@ -227,28 +255,24 @@ def create_variables(m):
     m.cons_checs = pe.Var(m.consumer_set, domain=pe.NonNegativeReals)
 
     ## CCS Retrofitting
-    m.ccs1_built = pe.Var(m.producer_set, domain=pe.Binary)
-    m.ccs2_built = pe.Var(m.producer_set, domain=pe.Binary)
+    m.ccs1_built = pe.Var(m.existing_producers, domain=pe.Binary)
+    m.ccs2_built = pe.Var(m.existing_producers, domain=pe.Binary)
     # daily capacity of CCS1 for each producer in tons CO2
-    m.ccs1_capacity_co2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+    m.ccs1_co2_captured = pe.Var(m.existing_producers, domain=pe.NonNegativeReals)
     # daily capacity of CCS2 for each producer in tons CO2
-    m.ccs2_capacity_co2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+    m.ccs2_co2_captured = pe.Var(m.existing_producers, domain=pe.NonNegativeReals)
     # daily capacity of CCS1 for each producer in tons h2
-    m.ccs1_capacity_h2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+    m.ccs1_capacity_h2 = pe.Var(m.existing_producers, domain=pe.NonNegativeReals)
     # daily capacity of CCS2 for each producer in tons h2
-    m.ccs2_capacity_h2 = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+    m.ccs2_capacity_h2 = pe.Var(m.existing_producers, domain=pe.NonNegativeReals)
 
     ## Carbon accounting
     # daily production of CHECs for each producer (sans retrofitted CCS)
-    m.prod_checs = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+    m.prod_checs = pe.Var(m.new_producers, domain=pe.NonNegativeReals)
     # daily production of CHECs for CCS1 for each producer
-    m.ccs1_checs = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
+    m.ccs1_checs = pe.Var(m.existing_producers, domain=pe.NonNegativeReals)
     # daily production of CHECs for CCS2 for each producer
-    m.ccs2_checs = pe.Var(m.producer_set, domain=pe.NonNegativeReals)
-    # carbon emissions for each consumer that is not using hydrogen
-    m.co2_nonHydrogenConsumer = pe.Var(m.consumer_set, domain=pe.Reals)
-    # carbon emissions for each hydrogen producer
-    m.co2_emitted = pe.Var(m.producer_set, domain=pe.Reals)
+    m.ccs2_checs = pe.Var(m.existing_producers, domain=pe.NonNegativeReals)
 
     ## Infrastructure subsidy
     # subsidy dollars used to reduce the capital cost of converter[cv]
@@ -273,24 +297,40 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
     # over all consumers
     U_hydrogen = sum(m.cons_h[c] * m.cons_price[c] for c in m.consumer_set)
 
-    # consumer daily utility from buying checs (clean hydrogen energy credits) is the sum of
-    # [(amount of checs consumed at a node * TODO ... at a node * carbon price)]
-    # over all consumers
-    U_carbon = (
-        sum(m.cons_checs[c] * m.cons_breakevenCarbon[c] for c in m.consumer_set)
-        * H.carbon_price
-    )
-
-    # TODO describe this equation
-    U_carbon_capture_credit = (
+    # Utility gained with carbon capture with new SMR+CCS
+    # Hydrogen produced (tons H2) * Total CO2 Produced (Tons CO2/ Tons H2)
+    #    * % of CO2 Captured * Carbon Capture Price ($/Ton CO2)
+    U_carbon_capture_credit_new = (
         sum(
-            m.ccs1_checs[p] * (m.prod_carbonRate[p] * (1 - H.ccs1_percent_co2_captured))
-            + m.ccs2_checs[p]
-            * (m.prod_carbonRate[p] * (1 - H.ccs2_percent_co2_captured))
-            for p in m.producer_set
+            m.prod_h[p] * H.baseSMR_CO2_per_H2_tons * m.ccs_capture_rate[p]
+            for p in m.new_thermal_producers
         )
         * H.carbon_capture_credit
     )
+
+    # Utility gained by retrofitting existing SMR
+    # CO2 captured (Tons CO2)  * Carbon Capture Price ($/Ton)
+    U_carbon_capture_credit_retrofit = (
+        sum(
+            m.ccs1_co2_captured[p] + m.ccs2_co2_captured[p]
+            for p in m.existing_producers
+        )
+        * H.carbon_capture_credit
+    )
+
+    # Utility gained by adding a per-ton-h2 produced tax credit
+    U_h2_tax_credit = sum(m.prod_h[p] * m.h2_tax_credit[p] for p in m.new_producers)
+
+    U_h2_tax_credit_retrofit_ccs = sum(
+        m.ccs1_capacity_h2[p] * H.ccs1_h2_tax_credit
+        + m.ccs2_capacity_h2[p] * H.ccs2_h2_tax_credit
+        for p in m.existing_producers
+    )
+
+    # Utility gained from from avoiding emissions by switching to hydrogen
+    U_carbon = (
+        sum(m.cons_h[c] * m.avoided_emissions[c] for c in m.consumer_set)
+    ) * H.carbon_price
 
     ## Production
 
@@ -302,7 +342,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
     # daily electricity cost (regional value for e_price)
     P_electricity = sum(m.prod_h[p] * m.prod_e_price[p] for p in m.producer_set)
 
-    # daily natural gas cost (regioanl value for ng_price)
+    # daily natural gas cost (regional value for ng_price)
     P_naturalGas = sum(m.prod_h[p] * m.prod_ng_price[p] for p in m.producer_set)
 
     # The fixed cost of production per ton is the sum of
@@ -314,31 +354,39 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
     # (the production capacity of a node) * (the regional capital cost coefficient of a node)
     # / amortization factor for each producer
     P_capital = (
-        sum(m.prod_capacity[p] * m.prod_cost_capital_coeff[p] for p in m.producer_set)
+        sum(m.prod_capacity[p] * m.prod_cost_capital[p] for p in m.producer_set)
         / H.A
         / H.time_slices
     )
 
-    # Daily price of producing checs (clean hydrogen energy credits) is the sum of
-    # TODO
+    # Cost of producing carbon is
+    # [
+    #   Produced Hydrogen (Ton H2) * CO2 Emissions (Ton CO2/ Ton H2)
+    #   + H2 produced with existing SMR
+    #       * total CO2 produced by SMR
+    #       * (1 - ccs capture %)
+    # ] * Price of carbon emissions ($/Ton CO2)
+    #
+    # CO2 emissions of new builds are (1 - ccs capture %) * H.baseSMr_CO2_per_H2_tons
     P_carbon = (
-        sum(
-            m.prod_checs[p] * m.prod_carbonRate[p]
-            + m.ccs1_checs[p]
-            * (m.prod_carbonRate[p] * (1 - H.ccs1_percent_co2_captured))
-            + m.ccs2_checs[p]
-            * (m.prod_carbonRate[p] * (1 - H.ccs2_percent_co2_captured))
-            for p in m.producer_set
+        sum(m.prod_h[p] * m.co2_emissions_rate[p] for p in m.new_producers)
+        + sum(
+            m.ccs1_capacity_h2[p] * m.co2_emissions_rate[p]
+            for p in m.existing_producers
         )
-        * H.carbon_price
-    )
+        * (1 - H.ccs1_percent_co2_captured)
+        + sum(
+            m.ccs2_capacity_h2[p] * m.co2_emissions_rate[p]
+            for p in m.existing_producers
+        )
+        * (1 - H.ccs2_percent_co2_captured)
+    ) * H.carbon_price
 
-    # ccs variable cost per ton of produced hydrogen
-    # TODO
+    # Retrofitted ccs variable cost per ton of CO2 captured
     CCS_variable = sum(
-        (m.ccs1_capacity_co2[p] * H.ccs1_variable_usdPerTon)
-        + (m.ccs2_capacity_co2[p] * H.ccs2_variable_usdPerTon)
-        for p in m.producer_set
+        (m.ccs1_co2_captured[p] * H.ccs1_variable_usdPerTon)
+        + (m.ccs2_co2_captured[p] * H.ccs2_variable_usdPerTon)
+        for p in m.existing_producers
     )
 
     ## Distribution
@@ -389,7 +437,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
     # (convertor capacity) * (regional capital cost) / (amortization factor)
     # for each convertor
     CV_capital = sum(
-        (m.conv_capacity[cv] * m.conv_cost_capital_coeff[cv]) / H.A / H.time_slices
+        (m.conv_capacity[cv] * m.conv_cost_capital[cv]) / H.A / H.time_slices
         for cv in m.converter_set
     )
 
@@ -401,8 +449,11 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
 
     totalSurplus = (
         U_hydrogen
+        + U_carbon_capture_credit_new
+        + U_carbon_capture_credit_retrofit
+        + U_h2_tax_credit
+        + U_h2_tax_credit_retrofit_ccs
         + U_carbon
-        + U_carbon_capture_credit
         - P_variable
         - P_electricity
         - P_naturalGas
@@ -553,37 +604,7 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         m.converter_set, rule=rule_flowCapacityConverters
     )
 
-    # def rule_flowCapacityBetweenConverters(m, converterNode):
-    #     """Convertor mass balance
-
-    #     TODO Work on this constraint as I don't think it is correct yet.
-    #     If the <= is changed to == or >=, the number of trucks at a distribution
-    #     node is not correct. But with the constraint, the it build too much capacity at
-    #     other convertors.
-
-    #     For convertors, the capacity is the de facto
-    #     distribution capacity at the end of the chain of conversion.
-
-    #     A conversion capacity of x would mean that the convertor is supplying
-    #     x dist_pipeline (always 1 since this is a local node) or
-    #     x dist_trucks (which is the number of trucks)
-
-    #     Constraint:
-    #         Flow capacity in <= flow capacity out (?)
-
-    #     Set:
-    #         All convertors (?)
-    #     """
-    #     in_capacity = pe.summation(m.dist_capacity, index=g.in_edges(converterNode))
-    #     out_capacity = pe.summation(m.dist_capacity, index=g.out_edges(converterNode))
-    #     constraint = in_capacity - out_capacity <= 0
-    #     return constraint
-
-    # m.constr_flowCapacityBetweenConverters = pe.Constraint(
-    #     m.converter_set, rule=rule_flowCapacityBetweenConverters
-    # )
-
-    ## production and ccs
+    ## Production
 
     def rule_forceExistingProduction(m, node):
         """Existing production must be built
@@ -598,23 +619,25 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
         return constraint
 
     m.const_forceExistingProduction = pe.Constraint(
-        m.producer_existing_set, rule=rule_forceExistingProduction
+        m.existing_producers, rule=rule_forceExistingProduction
     )
 
     def rule_productionCapacityExisting(m, node):
         """Capacity of existing producers equals their existing capacity
 
-        Constrains:
-            Model's variable tracking capacity == existing capacity
+        Constraint:
+            Amount of capacity of producer in model == existing capacity
 
         Set:
             Existing producers
+
+        NOTE maybe this could be removed to allow retirement of existing production
         """
         constraint = m.prod_capacity[node] == g.nodes[node]["capacity_tonPerDay"]
         return constraint
 
     m.constr_productionCapacityExisting = pe.Constraint(
-        m.producer_existing_set, rule=rule_productionCapacityExisting
+        m.existing_producers, rule=rule_productionCapacityExisting
     )
 
     def rule_productionCapacity(m, node):
@@ -648,23 +671,19 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
             not built to be zero.
 
         Set:
-            All producer nodes, but all potential producer nodes in effect
+            New producers
         """
-        if node in m.producer_existing_set:
-            # if producer is an existing producer, don't constrain by minimum value
-            constraint = m.prod_h[node] >= 0
-        else:
-            # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
-            # this gives the model the option to not build the producer
-            constraint = m.prod_h[node] >= g.nodes[node]["min_h2"] * m.prod_exists[node]
+        # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
+        # this gives the model the option to not build the producer
+        constraint = m.prod_h[node] >= g.nodes[node]["min_h2"] * m.prod_exists[node]
         return constraint
 
     m.constr_minProductionCapacity = pe.Constraint(
-        m.producer_set, rule=rule_minProductionCapacity
+        m.new_producers, rule=rule_minProductionCapacity
     )
 
     def rule_maxProductionCapacity(m, node):
-        """M bound of production for a producer
+        """Upper bound of production for a producer
         (only on new producers)
 
         Constraint:
@@ -676,21 +695,19 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
             not built to be zero.
 
         Set:
-            All producer nodes, but all potential producer nodes in effect
+            New producers
         """
-        if node in m.producer_existing_set:
-            # if producer is an existing producer, don't constrain by minimum value
-            constraint = m.prod_h[node] <= 1e12  # arbitrarily large number
-        else:
-            # multiply by "prod_exists" (a binary) so that constraint is only enforced
-            # if the producer exists with the prior constraint, forces 0 production
-            # if producer DNE
-            constraint = m.prod_h[node] <= g.nodes[node]["max_h2"] * m.prod_exists[node]
+        # multiply by "prod_exists" (a binary) so that constraint is only enforced
+        # if the producer exists with the prior constraint, forces 0 production
+        # if producer DNE
+        constraint = m.prod_h[node] <= g.nodes[node]["max_h2"] * m.prod_exists[node]
         return constraint
 
     m.constr_maxProductionCapacity = pe.Constraint(
-        m.producer_set, rule=rule_maxProductionCapacity
+        m.new_producers, rule=rule_maxProductionCapacity
     )
+
+    ## CCS (Retrofit)
 
     def rule_onlyOneCCS(m, node):
         """Existing producers can only build one of the ccs tech options
@@ -703,13 +720,13 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
             over all ccs techs <= 1
 
         Set:
-            All producers, defacto existing producers
+            Existing producers
 
         """
         constraint = m.ccs1_built[node] + m.ccs2_built[node] <= 1
         return constraint
 
-    m.constr_onlyOneCCS = pe.Constraint(m.producer_set, rule=rule_onlyOneCCS)
+    m.constr_onlyOneCCS = pe.Constraint(m.existing_producers, rule=rule_onlyOneCCS)
 
     def rule_ccs1CapacityRelationship(m, node):
         """Define CCS1 CO2 Capacity
@@ -721,18 +738,18 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
             * the efficiency of CCS1
 
         Set:
-            All producers, defacto existing producers
+            Existing producers
         """
         constraint = (
-            m.ccs1_capacity_co2[node] * m.can_ccs1[node]
+            m.ccs1_co2_captured[node] * m.can_ccs1[node]
             == m.ccs1_capacity_h2[node]
-            * m.prod_carbonRate[node]
+            * m.co2_emissions_rate[node]
             * H.ccs1_percent_co2_captured
         )
         return constraint
 
     m.constr_ccs1CapacityRelationship = pe.Constraint(
-        m.producer_set, rule=rule_ccs1CapacityRelationship
+        m.existing_producers, rule=rule_ccs1CapacityRelationship
     )
 
     def rule_ccs2CapacityRelationship(m, node):
@@ -745,18 +762,18 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
             * the efficiency of CCS1
 
         Set:
-            All producers, defacto existing producers
+            Existing Producers
         """
         constraint = (
-            m.ccs2_capacity_co2[node] * m.can_ccs2[node]
+            m.ccs2_co2_captured[node] * m.can_ccs2[node]
             == m.ccs2_capacity_h2[node]
-            * m.prod_carbonRate[node]
+            * m.co2_emissions_rate[node]
             * H.ccs2_percent_co2_captured
         )
         return constraint
 
     m.constr_ccs2CapacityRelationship = pe.Constraint(
-        m.producer_set, rule=rule_ccs2CapacityRelationship
+        m.existing_producers, rule=rule_ccs2CapacityRelationship
     )
 
     def rule_mustBuildAllCCS1(m, node):
@@ -767,13 +784,13 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
                 Amount of hydrogen through CCS1 == Amount of hydrogen produced
 
         Set:
-            All producers, defacto existing producers
+            Existing producers
         """
         constraint = m.ccs1_capacity_h2[node] == m.ccs1_built[node] * m.prod_h[node]
         return constraint
 
     m.constr_mustBuildAllCCS1 = pe.Constraint(
-        m.producer_set, rule=rule_mustBuildAllCCS1
+        m.existing_producers, rule=rule_mustBuildAllCCS1
     )
 
     def rule_mustBuildAllCCS2(m, node):
@@ -784,61 +801,14 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
                 Amount of hydrogen through CCS2 == Amount of hydrogen produced
 
         Set:
-            All producers, defacto existing producers
+            Existing producers
         """
         constraint = m.ccs2_capacity_h2[node] == m.ccs2_built[node] * m.prod_h[node]
         return constraint
 
     m.constr_mustBuildAllCCS2 = pe.Constraint(
-        m.producer_set, rule=rule_mustBuildAllCCS2
+        m.existing_producers, rule=rule_mustBuildAllCCS2
     )
-
-    def rule_ccs1Checs(m, node):
-        """CHECs produced from CCS1 cannot exceed the clean hydrogen from CCS1
-
-        Constraint:
-            CHECs from CCS1 <= Clean Hydrogen as a result of CCS1
-
-        Set:
-            All producers, defacto existing producers
-        """
-        constraint = m.ccs1_checs[node] <= m.ccs1_capacity_h2[node]
-        return constraint
-
-    m.constr_ccs1Checs = pe.Constraint(m.producer_set, rule=rule_ccs1Checs)
-
-    def rule_ccs2Checs(m, node):
-        """CHECs produced from CCS2 cannot exceed the clean hydrogen from CCS2
-
-        Constraint:
-            CHECs from CCS2 <= Clean Hydrogen as a result of CCS2
-
-        Set:
-            All producers, defacto existing producers
-        """
-        constraint = m.ccs2_checs[node] <= m.ccs2_capacity_h2[node]
-        return constraint
-
-    m.constr_ccs2Checs = pe.Constraint(m.producer_set, rule=rule_ccs2Checs)
-
-    def rule_productionChec(m, node):
-        """CHEC production cannot exceed hydrogen production
-
-        Constraint:
-            CHECs produced <= hydrogen produced
-
-        Set:
-            All producers
-        """
-
-        total_checs_produced = (
-            m.prod_checs[node] + m.ccs1_checs[node] + m.ccs2_checs[node]
-        )
-
-        constraint = total_checs_produced <= m.prod_h[node]
-        return constraint
-
-    m.constr_productionChecs = pe.Constraint(m.producer_set, rule=rule_productionChec)
 
     ## Consumption
 
@@ -856,23 +826,83 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
 
     m.constr_consumerSize = pe.Constraint(m.consumer_set, rule=rule_consumerSize)
 
+    ## CHECs
+
+    def rule_ccs1Checs(m, node):
+        """CHECs produced from CCS1 cannot exceed the clean hydrogen from CCS1
+
+        Constraint:
+            CHECs from CCS1 <= Clean Hydrogen as a result of CCS1
+
+        Set:
+            All producers, defacto existing producers
+        """
+        if H.fractional_chec:
+            constraint = (
+                m.ccs1_checs[node]
+                <= m.ccs1_capacity_h2[node] * H.ccs1_percent_co2_captured
+            )
+        else:
+            constraint = m.ccs1_checs[node] <= m.ccs1_capacity_h2[node]
+        return constraint
+
+    m.constr_ccs1Checs = pe.Constraint(m.existing_producers, rule=rule_ccs1Checs)
+
+    def rule_ccs2Checs(m, node):
+        """CHECs produced from CCS2 cannot exceed the clean hydrogen from CCS2
+
+        Constraint:
+            CHECs from CCS2 <= Clean Hydrogen as a result of CCS2
+
+        Set:
+            All producers, defacto existing producers
+        """
+        if H.fractional_chec:
+            constraint = (
+                m.ccs2_checs[node]
+                <= m.ccs2_capacity_h2[node] * H.ccs2_percent_co2_captured
+            )
+        else:
+            constraint = m.ccs2_checs[node] <= m.ccs2_capacity_h2[node]
+        return constraint
+
+    m.constr_ccs2Checs = pe.Constraint(m.existing_producers, rule=rule_ccs2Checs)
+
+    def rule_productionChec(m, node):
+        """The amount of CHECs produced by a producer =
+            hydrogen produced * checs / ton
+
+            NOTE I don't think this is necessary, it is just a definition
+
+        Constraint:
+            CHECs produced == hydrogen produced * checs/ton
+
+        Set:
+            New producers
+        """
+
+        constraint = m.prod_checs[node] == m.prod_h[node] * m.chec_per_ton[node]
+        return constraint
+
+    m.constr_productionChecs = pe.Constraint(m.new_producers, rule=rule_productionChec)
+
     def rule_consumerChecs(m, node):
         """Each carbon-sensitive consumer's consumption of CHECs
             equals its consumption of hydrogen
+
+            NOTE I don't think this is necessary, it is just a definition
 
         Constraint:
             consumer CHECs ==
                 consumed hydrogen * binary tracking if consumer is carbon-sensitive
 
         Set:
-            ALl consumers
+            All consumers
         """
         constraint = m.cons_checs[node] == m.cons_h[node] * m.cons_carbonSensitive[node]
         return constraint
 
     m.constr_consumerChec = pe.Constraint(m.consumer_set, rule=rule_consumerChecs)
-
-    ## Carbon Accounting
 
     def rule_checsBalance(m):
         """CHECs mass balance
@@ -882,64 +912,17 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
 
         Set:
             All producers and consumers
-
-        TODO prod_checs not fully implemented
         """
-        checs_produced = sum(
-            m.prod_checs[p] + m.ccs1_checs[p] + m.ccs2_checs[p] for p in m.producer_set
-        )
-        checs_consumed = sum(m.cons_checs[c] for c in m.consumer_set)
+        checs_produced = pe.summation(m.prod_checs)
+        checs_produced += pe.summation(m.ccs1_checs)
+        checs_produced += pe.summation(m.ccs2_checs)
+
+        checs_consumed = pe.summation(m.cons_checs)
+
         constraint = checs_consumed <= checs_produced
         return constraint
 
     m.constr_checsBalance = pe.Constraint(rule=rule_checsBalance)
-
-    def rule_co2Producers(m, node):
-        """CO2 Production
-
-        Constraint:
-            CO2 emitted ==
-                carbon produced per ton of hydrogen * (
-                    hydrogen produced - clean hydrogen produced by CCS
-                )
-
-        Set:
-            All producers
-        """
-        ccs1_clean_hydrogen = m.ccs1_capacity_h2[node] * H.ccs1_percent_co2_captured
-        cc2_clean_hydrogen = m.ccs2_capacity_h2[node] * H.ccs2_percent_co2_captured
-
-        constraint = m.co2_emitted[node] == m.prod_carbonRate[node] * (
-            m.prod_h[node] - (ccs1_clean_hydrogen + cc2_clean_hydrogen)
-        )
-        return constraint
-
-    m.constr_co2Producers = pe.Constraint(m.producer_set, rule=rule_co2Producers)
-
-    # co2 emissions for consumers that are not using hydrogen
-    def rule_co2Consumers(m, node):
-        """CO2 from consumption that was not satisfied with Hydrogen -
-            i.e., CO2 from the existing methods of satisfying demand
-            that were not displaced by hydrogen infrastructure
-
-        Constraint:
-            Amount of CO2 produced by demand not satisfied with H2 ==
-
-        Set:
-            All consumers
-
-        TODO Double check description
-        """
-        consumer_co2_rate = m.cons_breakevenCarbon[node]
-        consumption_not_satisfied_by_h2 = m.cons_size[node] - m.cons_h[node]
-
-        constraint = (
-            m.co2_nonHydrogenConsumer[node]
-            == consumption_not_satisfied_by_h2 * consumer_co2_rate
-        )
-        return constraint
-
-    m.constr_co2Consumers = pe.Constraint(m.consumer_set, rule=rule_co2Consumers)
 
     ###subsidy for infrastructure
     # total subsidy dollars must be less than or equal to the available subsidy funds
@@ -962,12 +945,12 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
             All fuel stations
         """
 
-        conversion_cost = m.conv_capacity[node] * m.conv_cost_capital_coeff[node]
+        conversion_cost = m.conv_capacity[node] * m.conv_cost_capital[node]
 
         constraint = m.fuelStation_cost_capital_subsidy[node] == conversion_cost * (
             1 - H.subsidy_cost_share_fraction
         )
-        # note that existing production facilities have a cost_capital_coeff
+        # note that existing production facilities have a cost_capital
         #  of zero, so they cannot be subsidized
         return constraint
 
