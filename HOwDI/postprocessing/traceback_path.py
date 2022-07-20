@@ -14,8 +14,6 @@ Get prices associated with each step
 Generate graphic to show cost breakdown
 """
 import json
-import sys
-from pathlib import Path
 
 from anytree import Node, RenderTree, Resolver
 
@@ -151,7 +149,7 @@ def trace_back(hub, full_data):
 
 
 def main():
-    args = parse_command_line(sys.argv)
+    args = parse_command_line()
 
     try:
         data = json.load(open(args.scenario_dir + "/outputs/outputs.json"))

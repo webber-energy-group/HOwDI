@@ -20,6 +20,12 @@ def main():
     elif choice == "tracefoward":
         from HOwDI.postprocessing.traceforward_path import main as module
 
+    elif choice == "create_hubs_data" or choice == "create_hub_data":
+        import warnings
+
+        warnings.simplefilter(action="ignore", category=DeprecationWarning)
+        from HOwDI.preprocessing.create_hubs_data import main as module
+
     elif choice == "-h" or choice == "--help" or choice == "help":
         from HOwDI.help import main as module
 
