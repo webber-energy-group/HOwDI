@@ -9,10 +9,7 @@ from HOwDI.postprocessing.generate_outputs import create_outputs_dfs, create_out
 
 
 def main():
-
-    print(__name__)
     args = parse_command_line(sys.argv)
-
     # read inputs
     H = HydrogenData(
         scenario_dir=args.scenario_dir,
