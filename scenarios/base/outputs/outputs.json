@@ -2,10 +2,10 @@
     "brazoria": {
         "production": {
             "smr": {
-                "prod_capacity": 1311.3333333333337,
+                "prod_capacity": 1311.3333333333335,
                 "prod_utilization": 0.9,
                 "prod_h": 1180.2,
-                "prod_cost_capital": 93451.40681852748,
+                "prod_cost_capital": 93451.40681852747,
                 "prod_cost_fixed": 64438.920000000006,
                 "prod_cost_variable": 106218.0,
                 "prod_e_price": 60544.26,
@@ -16,7 +16,7 @@
                 "chec_per_ton": 0.0,
                 "prod_checs": 0.0,
                 "ccs_retrofit_variable_costs": 0.0,
-                "co2_emitted": 10621.8,
+                "co2_emitted": 10621.800000000001,
                 "carbon_tax": 0.0,
                 "co2_captured": 0.0,
                 "carbon_capture_tax_credit": 0.0,
@@ -110,8 +110,8 @@
                 "ccs_capture_rate": 0.55,
                 "chec_per_ton": 0.55,
                 "prod_checs": 238.59,
-                "ccs_retrofit_variable_costs": 107365.5,
-                "co2_emitted": 1756.89,
+                "ccs_retrofit_variable_costs": 107365.50000000001,
+                "co2_emitted": 1756.8899999999999,
                 "carbon_tax": 0.0,
                 "co2_captured": 2147.31,
                 "carbon_capture_tax_credit": 107365.5,
@@ -377,11 +377,11 @@
             "smrExisting": {
                 "prod_capacity": 1264.0,
                 "prod_utilization": 0.9,
-                "prod_h": 1137.6,
+                "prod_h": 1137.6000000000001,
                 "prod_cost_capital": 0.0,
                 "prod_cost_fixed": 0.0,
-                "prod_cost_variable": 113760.0,
-                "prod_e_price": 50168.16,
+                "prod_cost_variable": 113760.00000000001,
+                "prod_e_price": 50168.159999999996,
                 "prod_ng_price": 466444.44,
                 "h2_tax_credit": 0.0,
                 "co2_emissions_rate": 4.05,
@@ -456,7 +456,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 1137.6
+                    "dist_h": 1137.6000000000001
                 }
             },
             "outgoing": {
@@ -464,8 +464,8 @@
                     "source_class": "dist_pipelineLowPurity",
                     "arc_end": "baytown_dist_pipelineLowPurity",
                     "dist_capacity": 1.0,
-                    "dist_cost_capital": 16445296.8,
-                    "dist_cost_fixed": 2253.0056616,
+                    "dist_cost_capital": 16445296.799999999,
+                    "dist_cost_fixed": 2253.0056615999997,
                     "dist_cost_variable": 1.11418,
                     "dist_flowLimit": 999999.0,
                     "dist_h": 3035.20139,
@@ -599,7 +599,7 @@
                     "dist_capacity": 6.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
-                    "dist_cost_variable": 4.743204,
+                    "dist_cost_variable": 4.7432039999999995,
                     "dist_flowLimit": 8.0,
                     "dist_h": 46.00019000000006,
                     "source": "deerPark",
@@ -653,8 +653,8 @@
                 "ccs_capture_rate": 0.55,
                 "chec_per_ton": 0.55,
                 "prod_checs": 238.59,
-                "ccs_retrofit_variable_costs": 107365.5,
-                "co2_emitted": 1756.89,
+                "ccs_retrofit_variable_costs": 107365.50000000001,
+                "co2_emitted": 1756.8899999999999,
                 "carbon_tax": 0.0,
                 "co2_captured": 2147.31,
                 "carbon_capture_tax_credit": 107365.5,
@@ -826,7 +826,7 @@
                     "dist_capacity": 6.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
-                    "dist_cost_variable": 4.743204,
+                    "dist_cost_variable": 4.7432039999999995,
                     "dist_flowLimit": 8.0,
                     "dist_h": 46.00019000000006,
                     "source": "deerPark",
@@ -846,14 +846,14 @@
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 21690.0,
                 "prod_e_price": 8101.215,
-                "prod_ng_price": 127764.945,
+                "prod_ng_price": 127764.94499999999,
                 "h2_tax_credit": 0.0,
                 "co2_emissions_rate": 9.0,
                 "ccs_capture_rate": 0.0,
                 "chec_per_ton": 0.0,
                 "prod_checs": 0.0,
                 "ccs_retrofit_variable_costs": 0.0,
-                "co2_emitted": 1952.1,
+                "co2_emitted": 1952.1000000000001,
                 "carbon_tax": 0.0,
                 "co2_captured": 0.0,
                 "carbon_capture_tax_credit": 0.0,
@@ -976,7 +976,7 @@
                     "dist_cost_fixed": 4788.178934400001,
                     "dist_cost_variable": 2.5548400000000004,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 963.3012000000004,
+                    "dist_h": 963.3012000000003,
                     "source": "montBelvieu",
                     "destination": "channelview",
                     "destination_class": "dist_pipelineLowPurity"
@@ -987,7 +987,7 @@
                     "dist_capacity": 63.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
-                    "dist_cost_variable": 13.029684,
+                    "dist_cost_variable": 13.029684000000001,
                     "dist_flowLimit": 8.0,
                     "dist_h": 504.0,
                     "source": "montBelvieu",
@@ -1063,7 +1063,7 @@
                     "dist_cost_fixed": 4788.178934400001,
                     "dist_cost_variable": 2.5548400000000004,
                     "dist_flowLimit": 999999.0,
-                    "dist_h": 963.3012000000004,
+                    "dist_h": 963.3012000000003,
                     "source": "montBelvieu",
                     "destination": "channelview",
                     "destination_class": "dist_pipelineLowPurity"
@@ -1073,8 +1073,8 @@
                     "arc_end": "portArthur_dist_pipelineLowPurity",
                     "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
-                    "dist_cost_fixed": 15573.056328,
-                    "dist_cost_variable": 10.0773,
+                    "dist_cost_fixed": 15573.056327999999,
+                    "dist_cost_variable": 10.077300000000001,
                     "dist_flowLimit": 999999.0,
                     "dist_h": 1429.7001900000002,
                     "source": "montBelvieu",
@@ -1087,7 +1087,7 @@
                     "dist_capacity": 63.0,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
-                    "dist_cost_variable": 13.029684,
+                    "dist_cost_variable": 13.029684000000001,
                     "dist_flowLimit": 8.0,
                     "dist_h": 504.0,
                     "source": "montBelvieu",
@@ -1114,7 +1114,7 @@
                     "arc_end": "montBelvieu_dist_pipelineLowPurity",
                     "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
-                    "dist_cost_fixed": 3658.0377672,
+                    "dist_cost_fixed": 3658.0377671999995,
                     "dist_cost_variable": 2.0045800000000003,
                     "dist_flowLimit": 999999.0,
                     "dist_h": 2931.0013900000004,
@@ -1154,8 +1154,8 @@
                 "ccs_capture_rate": 0.55,
                 "chec_per_ton": 0.55,
                 "prod_checs": 238.59,
-                "ccs_retrofit_variable_costs": 107365.5,
-                "co2_emitted": 1756.89,
+                "ccs_retrofit_variable_costs": 107365.50000000001,
+                "co2_emitted": 1756.8899999999999,
                 "carbon_tax": 0.0,
                 "co2_captured": 2147.31,
                 "carbon_capture_tax_credit": 107365.5,
@@ -1221,7 +1221,7 @@
                     "arc_end": "montBelvieu_dist_pipelineLowPurity",
                     "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
-                    "dist_cost_fixed": 3658.0377672,
+                    "dist_cost_fixed": 3658.0377671999995,
                     "dist_cost_variable": 2.0045800000000003,
                     "dist_flowLimit": 999999.0,
                     "dist_h": 2931.0013900000004,
@@ -1235,8 +1235,8 @@
                     "source_class": "laPorte_dist_pipelineLowPurity",
                     "arc_end": "baytown_dist_pipelineLowPurity",
                     "dist_capacity": 1.0,
-                    "dist_cost_capital": 16445296.8,
-                    "dist_cost_fixed": 2253.0056616,
+                    "dist_cost_capital": 16445296.799999999,
+                    "dist_cost_fixed": 2253.0056615999997,
                     "dist_cost_variable": 1.11418,
                     "dist_flowLimit": 999999.0,
                     "dist_h": 3035.20139,
@@ -1257,7 +1257,7 @@
                 "prod_cost_fixed": 0.0,
                 "prod_cost_variable": 173430.0,
                 "prod_e_price": 56191.31999999999,
-                "prod_ng_price": 981527.085,
+                "prod_ng_price": 981527.0850000001,
                 "h2_tax_credit": 0.0,
                 "co2_emissions_rate": 4.05,
                 "ccs_capture_rate": 0.55,
@@ -1279,7 +1279,7 @@
                 "conv_cost_variable": 0,
                 "conv_e_price": 97.2,
                 "conv_utilization": 0.95,
-                "fuelStation_cost_capital_subsidy": 0.0
+                "fuelStation_cost_capital_subsidy": "n/a"
             }
         },
         "consumption": {
@@ -1321,7 +1321,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 184.29980999999972
+                    "dist_h": 184.29980999999975
                 },
                 "converter_purification_TO_center_highPurity": {
                     "source_class": "converter_purification",
@@ -1369,7 +1369,7 @@
                     "source_class": "dist_pipelineHighPurity",
                     "arc_end": "beaumont_dist_pipelineHighPurity",
                     "dist_capacity": 1.0,
-                    "dist_cost_capital": 26965597.8,
+                    "dist_cost_capital": 26965597.799999997,
                     "dist_cost_fixed": 3694.2868986,
                     "dist_cost_variable": 2.8625900000000004,
                     "dist_flowLimit": 999999.0,
@@ -1411,8 +1411,8 @@
                     "arc_end": "portArthur_dist_pipelineLowPurity",
                     "dist_capacity": 1.0,
                     "dist_cost_capital": 0.0,
-                    "dist_cost_fixed": 15573.056328,
-                    "dist_cost_variable": 10.0773,
+                    "dist_cost_fixed": 15573.056327999999,
+                    "dist_cost_variable": 10.077300000000001,
                     "dist_flowLimit": 999999.0,
                     "dist_h": 1429.7001900000002,
                     "source": "montBelvieu",
@@ -1442,7 +1442,7 @@
                 "conv_cost_variable": 0,
                 "conv_e_price": 561.6,
                 "conv_utilization": 0.95,
-                "fuelStation_cost_capital_subsidy": 0.0
+                "fuelStation_cost_capital_subsidy": "n/a"
             },
             "terminalLiquid": {
                 "conv_capacity": 1823.529635294118,
@@ -1451,7 +1451,7 @@
                 "conv_cost_variable": 0,
                 "conv_e_price": 0.0,
                 "conv_utilization": 0.85,
-                "fuelStation_cost_capital_subsidy": 0.0
+                "fuelStation_cost_capital_subsidy": "n/a"
             }
         },
         "consumption": {
@@ -1556,7 +1556,7 @@
                 "dist_truckLiquefied_TO_texarkana_dist_truckLiquefied": {
                     "source_class": "dist_truckLiquefied",
                     "arc_end": "texarkana_dist_truckLiquefied",
-                    "dist_capacity": 62.99999999999999,
+                    "dist_capacity": 62.999999999999986,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 214.62279,
@@ -1572,7 +1572,7 @@
                     "source_class": "portArthur_dist_pipelineHighPurity",
                     "arc_end": "beaumont_dist_pipelineHighPurity",
                     "dist_capacity": 1.0,
-                    "dist_cost_capital": 26965597.8,
+                    "dist_cost_capital": 26965597.799999997,
                     "dist_cost_fixed": 3694.2868986,
                     "dist_cost_variable": 2.8625900000000004,
                     "dist_flowLimit": 999999.0,
@@ -1732,11 +1732,11 @@
             "smr": {
                 "prod_capacity": 1111.111111110335,
                 "prod_utilization": 0.9,
-                "prod_h": 999.9999999993016,
+                "prod_h": 999.9999999993015,
                 "prod_cost_capital": 74106.87343027192,
                 "prod_cost_fixed": 51099.99999996431,
                 "prod_cost_variable": 89999.99999993714,
-                "prod_e_price": 30352.4999999788,
+                "prod_e_price": 30352.499999978798,
                 "prod_ng_price": 524999.9999996333,
                 "h2_tax_credit": 0.0,
                 "co2_emissions_rate": 9.0,
@@ -1768,7 +1768,7 @@
                 "conv_cost_variable": 0,
                 "conv_e_price": 383.4,
                 "conv_utilization": 0.95,
-                "fuelStation_cost_capital_subsidy": 0.0
+                "fuelStation_cost_capital_subsidy": "n/a"
             },
             "purification": {
                 "conv_capacity": 1052.6315789473683,
@@ -1777,16 +1777,16 @@
                 "conv_cost_variable": 0,
                 "conv_e_price": 95.85,
                 "conv_utilization": 0.95,
-                "fuelStation_cost_capital_subsidy": 0.0
+                "fuelStation_cost_capital_subsidy": "n/a"
             },
             "terminalLiquid": {
-                "conv_capacity": 1176.470588235294,
+                "conv_capacity": 1176.4705882352941,
                 "conv_cost_capital": 857750.0,
                 "conv_cost_fixed": 211.7,
                 "conv_cost_variable": 0,
                 "conv_e_price": 0.0,
                 "conv_utilization": 0.85,
-                "fuelStation_cost_capital_subsidy": 0.0
+                "fuelStation_cost_capital_subsidy": "n/a"
             }
         },
         "consumption": {
@@ -1905,7 +1905,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
-                    "dist_h": 999.9999999993016
+                    "dist_h": 999.9999999993015
                 }
             },
             "outgoing": {
@@ -1934,7 +1934,7 @@
                 "conv_cost_capital": 4199000.0,
                 "conv_cost_fixed": 1140.0,
                 "conv_cost_variable": 0,
-                "conv_e_price": 49.56,
+                "conv_e_price": 49.559999999999995,
                 "conv_utilization": 0.6,
                 "fuelStation_cost_capital_subsidy": 349916666.66666657
             }
@@ -2093,7 +2093,7 @@
                 "abilene_dist_truckLiquefied_TO_sonora_dist_truckLiquefied": {
                     "source_class": "abilene_dist_truckLiquefied",
                     "arc_end": "sonora_dist_truckLiquefied",
-                    "dist_capacity": 62.99999999999999,
+                    "dist_capacity": 62.999999999999986,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 127.495563,
@@ -2199,7 +2199,7 @@
     "abilene": {
         "production": {
             "smr": {
-                "prod_capacity": 3333.333333333333,
+                "prod_capacity": 3333.3333333333335,
                 "prod_utilization": 0.9,
                 "prod_h": 3000.0,
                 "prod_cost_capital": 268002.9395288418,
@@ -2217,7 +2217,7 @@
                 "carbon_tax": 0.0,
                 "co2_captured": 0.0,
                 "carbon_capture_tax_credit": 0.0,
-                "total_cost": 1981269.1895288415
+                "total_cost": 1981269.1895288418
             }
         },
         "conversion": {
@@ -2237,7 +2237,7 @@
                 "conv_cost_variable": 0,
                 "conv_e_price": 394.2,
                 "conv_utilization": 0.95,
-                "fuelStation_cost_capital_subsidy": 0.0
+                "fuelStation_cost_capital_subsidy": "n/a"
             },
             "purification": {
                 "conv_capacity": 3157.894736842105,
@@ -2246,7 +2246,7 @@
                 "conv_cost_variable": 0,
                 "conv_e_price": 98.55,
                 "conv_utilization": 0.95,
-                "fuelStation_cost_capital_subsidy": 0.0
+                "fuelStation_cost_capital_subsidy": "n/a"
             },
             "terminalLiquid": {
                 "conv_capacity": 3529.4117647058824,
@@ -2255,7 +2255,7 @@
                 "conv_cost_variable": 0,
                 "conv_e_price": 0.0,
                 "conv_utilization": 0.85,
-                "fuelStation_cost_capital_subsidy": 0.0
+                "fuelStation_cost_capital_subsidy": "n/a"
             }
         },
         "consumption": {
@@ -2331,7 +2331,7 @@
                     "destination_class": "dist_truckLiquefied",
                     "dist_capacity": 377.0,
                     "dist_cost_capital": 0.0,
-                    "dist_cost_fixed": 122.4784,
+                    "dist_cost_fixed": 122.47840000000001,
                     "dist_cost_variable": 0.0,
                     "dist_flowLimit": 99999999.9,
                     "dist_h": 3000.0
@@ -2407,7 +2407,7 @@
                 "dist_truckLiquefied_TO_sonora_dist_truckLiquefied": {
                     "source_class": "dist_truckLiquefied",
                     "arc_end": "sonora_dist_truckLiquefied",
-                    "dist_capacity": 62.99999999999999,
+                    "dist_capacity": 62.999999999999986,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 127.495563,
@@ -2425,7 +2425,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 161.133888,
                     "dist_flowLimit": 8.0,
-                    "dist_h": 1000.0,
+                    "dist_h": 1000.0000000000001,
                     "source": "abilene",
                     "destination": "waco",
                     "destination_class": "dist_truckLiquefied"
@@ -2511,7 +2511,7 @@
                 "beaumont_dist_truckLiquefied_TO_texarkana_dist_truckLiquefied": {
                     "source_class": "beaumont_dist_truckLiquefied",
                     "arc_end": "texarkana_dist_truckLiquefied",
-                    "dist_capacity": 62.99999999999999,
+                    "dist_capacity": 62.999999999999986,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 214.62279,
@@ -2620,7 +2620,7 @@
                     "dist_cost_fixed": 0.0,
                     "dist_cost_variable": 161.133888,
                     "dist_flowLimit": 8.0,
-                    "dist_h": 1000.0,
+                    "dist_h": 1000.0000000000001,
                     "source": "abilene",
                     "destination": "waco",
                     "destination_class": "dist_truckLiquefied"
@@ -2638,7 +2638,7 @@
                 "conv_cost_variable": 0,
                 "conv_e_price": 47.88,
                 "conv_utilization": 0.6,
-                "fuelStation_cost_capital_subsidy": 497250000.0
+                "fuelStation_cost_capital_subsidy": 497249999.99999994
             }
         },
         "consumption": {
@@ -2728,7 +2728,7 @@
                 "conv_cost_variable": 0,
                 "conv_e_price": 51.24,
                 "conv_utilization": 0.6,
-                "fuelStation_cost_capital_subsidy": 386750000.0
+                "fuelStation_cost_capital_subsidy": 386749999.99999994
             }
         },
         "consumption": {
@@ -2818,7 +2818,7 @@
                 "conv_cost_variable": 0,
                 "conv_e_price": 33.18,
                 "conv_utilization": 0.6,
-                "fuelStation_cost_capital_subsidy": 483437500.0
+                "fuelStation_cost_capital_subsidy": 483437499.99999994
             }
         },
         "consumption": {
@@ -2888,7 +2888,7 @@
                     "dist_capacity": 63.00000000000001,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
-                    "dist_cost_variable": 120.213426,
+                    "dist_cost_variable": 120.21342600000001,
                     "dist_flowLimit": 8.0,
                     "dist_h": 500.0,
                     "source": "laredo",
@@ -2904,18 +2904,18 @@
                 "prod_capacity": 2777.7777777777856,
                 "prod_utilization": 0.9,
                 "prod_h": 2500.000000000007,
-                "prod_cost_capital": 210646.2498190713,
+                "prod_cost_capital": 210646.24981907132,
                 "prod_cost_fixed": 145250.00000000038,
                 "prod_cost_variable": 225000.0000000006,
                 "prod_e_price": 84431.25000000023,
-                "prod_ng_price": 984375.0000000028,
+                "prod_ng_price": 984375.0000000027,
                 "h2_tax_credit": 0.0,
                 "co2_emissions_rate": 9.0,
                 "ccs_capture_rate": 0.0,
                 "chec_per_ton": 0.0,
                 "prod_checs": 0.0,
                 "ccs_retrofit_variable_costs": 0.0,
-                "co2_emitted": 22500.000000000065,
+                "co2_emitted": 22500.000000000062,
                 "carbon_tax": 0.0,
                 "co2_captured": 0.0,
                 "carbon_capture_tax_credit": 0.0,
@@ -2937,27 +2937,27 @@
                 "conv_cost_capital": 1593600.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
-                "conv_e_price": 426.6,
+                "conv_e_price": 426.59999999999997,
                 "conv_utilization": 0.95,
-                "fuelStation_cost_capital_subsidy": 0.0
+                "fuelStation_cost_capital_subsidy": "n/a"
             },
             "purification": {
                 "conv_capacity": 2631.578947368428,
                 "conv_cost_capital": 398400.0,
                 "conv_cost_fixed": 0.0,
                 "conv_cost_variable": 0,
-                "conv_e_price": 106.65,
+                "conv_e_price": 106.64999999999999,
                 "conv_utilization": 0.95,
-                "fuelStation_cost_capital_subsidy": 0.0
+                "fuelStation_cost_capital_subsidy": "n/a"
             },
             "terminalLiquid": {
-                "conv_capacity": 2941.176470588244,
+                "conv_capacity": 2941.1764705882433,
                 "conv_cost_capital": 975250.0,
                 "conv_cost_fixed": 240.7,
                 "conv_cost_variable": 0,
                 "conv_e_price": 0.0,
                 "conv_utilization": 0.85,
-                "fuelStation_cost_capital_subsidy": 0.0
+                "fuelStation_cost_capital_subsidy": "n/a"
             }
         },
         "consumption": {
@@ -3099,7 +3099,7 @@
                     "dist_capacity": 63.00000000000001,
                     "dist_cost_capital": 0.0,
                     "dist_cost_fixed": 0.0,
-                    "dist_cost_variable": 120.213426,
+                    "dist_cost_variable": 120.21342600000001,
                     "dist_flowLimit": 8.0,
                     "dist_h": 500.0,
                     "source": "laredo",

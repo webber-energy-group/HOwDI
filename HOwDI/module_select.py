@@ -23,4 +23,8 @@ def main():
     elif choice == "-h" or choice == "--help" or choice == "help":
         from HOwDI.help import main as module
 
+    else:
+        print("Bad/invalid arguments provided. For a list of options, see `HOwDI -h`")
+        return
+
     module()
