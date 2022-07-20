@@ -435,6 +435,13 @@ if __name__ == "__main__":
     scenario_path = Path("scenarios/base")
     H = HydrogenData(scenario_path, raiseFileNotFoundError=False)
 
-    H.output_dict = load(open(H.outputs_dir / "outputs.json"))
+    try:
+        H.output_dict = load(open(H.outputs_dir / "outputs.json"))
+    except FileNotFoundError:
+        from HOwDI.postprocessing.generate_outputs import create_output_dict
+
+        H.create_output_dfs()
+        H.output_dict = create_output_dict(H)
+        H.write_output_dict()
 
     fig = main(H).savefig(H.outputs_dir / "fig.png")

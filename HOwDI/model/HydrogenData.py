@@ -157,15 +157,11 @@ class HydrogenData:
         # else:
         #   logger.warning("The file {} was not found.".format(fn))
 
-    def read_file(self, fn, io="i") -> pd.DataFrame:
+    def read_file(self, fn) -> pd.DataFrame:
         """reads file in input directory,
         fn is filename w/o .csv"""
-        if io == "i":
-            dir = self.inputs_dir
-        elif io == "o":
-            dir = self.output_dir
 
-        file_name = dir / "{}.csv".format(fn)
+        file_name = self.inputs_dir / "{}.csv".format(fn)
         try:
             return pd.read_csv(file_name)
         except FileNotFoundError:
@@ -201,6 +197,6 @@ class HydrogenData:
 
     def create_output_dfs(self):
         self.output_dfs = {
-            x: self.read_file(x, io="o")
+            x: pd.read_csv(self.outputs_dir / (x + ".csv"), index_col=0).fillna(0)
             for x in ["production", "conversion", "consumption", "distribution"]
         }
