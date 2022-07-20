@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 import yaml
 
+from HOwDI.postprocessing.generate_outputs import create_outputs_dfs
+
 
 class HydrogenData:
     """
@@ -146,10 +148,7 @@ class HydrogenData:
         self.output_dict = None
 
         if read_output_dir:
-            self.output_dfs = {
-                x: self.read_file(x, io="o")
-                for x in ["production", "conversion", "consumption", "distribution"]
-            }
+            self.create_outputs_dfs()
 
     def raiseFileNotFoundError(self, fn):
         if self.raiseFileNotFoundError_bool:
@@ -199,3 +198,9 @@ class HydrogenData:
 
         with (self.outputs_dir / "outputs.json").open("w", encoding="utf-8") as f:
             dump(self.output_dict, f, ensure_ascii=False, indent=4)
+
+    def create_output_dfs(self):
+        self.output_dfs = {
+            x: self.read_file(x, io="o")
+            for x in ["production", "conversion", "consumption", "distribution"]
+        }
