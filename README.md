@@ -29,19 +29,19 @@ Within a directory that contains a subdirectory named "inputs" (that contains th
 ```bash
 (HOwDI) ~ ls
 inputs
-(HOwDI) ~ HOwDI-run
+(HOwDI) ~ HOwDI run
 ```
 
-Alternatively, use `HOwDI-run -h` to browse alternative options.
+Use `HOwDI-run -h` for a list of options.
 
 ## Postprocessing Tools
 
-HOwDI has several postprocessing tools. Use `HOwDI-help` for a full list.
+HOwDI has several postprocessing tools. Use `HOwDI help` for a full list.
 
 ```bash
-Create a figure:        HOwDI-create_fig
-Traceback:              HOwDI-traceback
-Traceforward:           HOwDI-tracefoward
+Create a figure:        HOwDI create_fig
+Traceback:              HOwDI traceback
+Traceforward:           HOwDI tracefoward
 ```
 
 ## Contributing
