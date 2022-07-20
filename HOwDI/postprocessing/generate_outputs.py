@@ -12,7 +12,7 @@ from numpy import int64, isclose, where
 pd.options.mode.chained_assignment = None
 
 
-def recursive_clean(nested_dict):
+def _recursive_clean(nested_dict):
     """Removes unnecessary data from Pyomo model serialized as a JSON dict"""
     black_list = ["__type__", "__id__", "_mutable", "fixed", "stale", "lb", "ub"]
     for key in list(nested_dict):
@@ -22,21 +22,21 @@ def recursive_clean(nested_dict):
             nested_dict[key] = int(nested_dict[key])
         elif type(nested_dict[key]) is dict:
             if key == "data":
-                nested_dict = recursive_clean(nested_dict[key])
+                nested_dict = _recursive_clean(nested_dict[key])
             else:
-                nested_dict[key] = recursive_clean(nested_dict[key])
+                nested_dict[key] = _recursive_clean(nested_dict[key])
 
     return nested_dict
 
 
-def create_df(label, data):
+def _create_df(label, data):
     """Creates dataframe from dictionary {data}, changing name of 'value' column to {label}"""
     df = pd.DataFrame.from_dict(data, orient="index")
     df = df.rename(columns={"value": label})
     return df
 
 
-def join_multiple_dfs(dfs_labels, dfs_values):
+def _join_multiple_dfs(dfs_labels, dfs_values):
     """From a dictionary of dataframes ({label: data_frame}) {dfs_values},
     merges all dataframes with label in {dfs_labels}"""
     dfs = [dfs_values[label] for label in dfs_labels]
@@ -51,7 +51,7 @@ def join_multiple_dfs(dfs_labels, dfs_values):
     return df
 
 
-def tuple_split(df, index, name1, name2):
+def _tuple_split(df, index, name1, name2):
     """Assuming df[index] is a tuple, splits df[index] into df[name1] df[name2]"""
     # unpack tuples from string, delete old index
     df[index] = df[index].apply(eval)
@@ -61,7 +61,7 @@ def tuple_split(df, index, name1, name2):
     return df
 
 
-def create_hub_data(df, hub, start=-1):
+def _create_hub_data(df, hub, start=-1):
     index_column = df.index.name
     df = df.reset_index()
     # find values in index column that match the hub name
@@ -79,7 +79,7 @@ def create_hub_data(df, hub, start=-1):
     return df.to_dict("index")
 
 
-def create_hub_distribution_data(df, hub):
+def _create_hub_distribution_data(df, hub):
     # this is largely an abstraction tool to make main less messy
     df = df.reset_index()
 
@@ -98,7 +98,7 @@ def create_hub_distribution_data(df, hub):
         columns={"arc_start": "source_class", "arc_end": "destination_class"}
     )
 
-    def out_in_add_info(df):
+    def _out_in_add_info(df):
         # I'm not sure how python's "pass by object reference" works in for loops so I opted for a function to avoid repeating code
         df["source"] = df["arc_start"].str.split("_").str[0]
         df["arc_start"] = df["arc_start"].str.replace(hub_string, "")
@@ -111,8 +111,8 @@ def create_hub_distribution_data(df, hub):
         df = df[df["dist_h"] > 0]
         return df
 
-    outgoing = out_in_add_info(outgoing)
-    incoming = out_in_add_info(incoming)
+    outgoing = _out_in_add_info(outgoing)
+    incoming = _out_in_add_info(incoming)
 
     return {
         "local": local.to_dict("index"),
@@ -121,18 +121,18 @@ def create_hub_distribution_data(df, hub):
     }
 
 
-def generate_outputs(m, H):
+def create_outputs_dfs(m, H):
     hubs_list = H.get_hubs_list()
 
     outputs = to_json(m, return_dict=True)
     outputs = outputs["unknown"]["data"]["None"]["__pyomo_components__"]
-    outputs = recursive_clean(outputs)
+    outputs = _recursive_clean(outputs)
 
     ## CREATE DATAFRAME OUTPUTS
     # create relevant dataframes from json output
     black_list = ["OBJ"]
     all_dfs = {
-        key: create_df(key, value)
+        key: _create_df(key, value)
         for key, value in outputs.items()
         if not ("constr_" in key) and not (key in black_list)
     }
@@ -187,13 +187,13 @@ def generate_outputs(m, H):
         "dist_h",
     ]
     dfs = {
-        name: join_multiple_dfs(df_whitelist, all_dfs)
+        name: _join_multiple_dfs(df_whitelist, all_dfs)
         for name, df_whitelist in merge_lists.items()
     }
 
     # split tuple string in distribution index
     # ! if my guess on arc_start and arc_end was incorrect, swap arc_start and arc_end in the function arguments
-    dfs["distribution"] = tuple_split(
+    dfs["distribution"] = _tuple_split(
         dfs["distribution"], "index", "arc_start", "arc_end"
     )
 
@@ -378,16 +378,6 @@ def generate_outputs(m, H):
 
     dfs["production"] = prod
 
-    ## CREATE JSON OUTPUTS FROM DATAFRAMES
-    hub_dict = {hub: {} for hub in hubs_list}
-    for hub in hubs_list:
-        hub_dict[hub]["production"] = create_hub_data(dfs["production"], hub)
-        hub_dict[hub]["conversion"] = create_hub_data(dfs["conversion"], hub)
-        hub_dict[hub]["consumption"] = create_hub_data(dfs["consumption"], hub, 1)
-        hub_dict[hub]["distribution"] = create_hub_distribution_data(
-            dfs["distribution"], hub
-        )
-
     ## Post Processing print
     print("Summary Results:")
 
@@ -396,4 +386,20 @@ def generate_outputs(m, H):
     print("Hydrogen Consumed (Tonnes/day): {}".format(total_h_consumed))
     print("Hydrogen Produced (Tonnes/day): {}".format(total_h_produced))
 
-    return dfs, hub_dict
+    return dfs
+
+
+def create_output_dict(H):
+    hubs_list = H.get_hubs_list()
+    dfs = H.output_dfs
+    hub_dict = {hub: {} for hub in hubs_list}
+
+    for hub in hubs_list:
+        hub_dict[hub]["production"] = _create_hub_data(dfs["production"], hub)
+        hub_dict[hub]["conversion"] = _create_hub_data(dfs["conversion"], hub)
+        hub_dict[hub]["consumption"] = _create_hub_data(dfs["consumption"], hub, 1)
+        hub_dict[hub]["distribution"] = _create_hub_distribution_data(
+            dfs["distribution"], hub
+        )
+
+    return hub_dict

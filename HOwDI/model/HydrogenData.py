@@ -15,7 +15,11 @@ class HydrogenData:
     """
 
     def __init__(
-        self, scenario_dir: Path, store_outputs=True, raiseFileNotFoundError=True
+        self,
+        scenario_dir: Path,
+        store_outputs=True,
+        raiseFileNotFoundError=True,
+        read_output_dir=False,
     ):
         """
         carbon_price_dollars_per_ton: dollars per ton penalty on CO2 emissions
@@ -139,7 +143,13 @@ class HydrogenData:
 
         # initialize
         self.output_dfs = None
-        self.output_json = None
+        self.output_dict = None
+
+        if read_output_dir:
+            self.output_dfs = {
+                x: self.read_file(x, io="o")
+                for x in ["production", "conversion", "consumption", "distribution"]
+            }
 
     def raiseFileNotFoundError(self, fn):
         if self.raiseFileNotFoundError_bool:
@@ -148,10 +158,15 @@ class HydrogenData:
         # else:
         #   logger.warning("The file {} was not found.".format(fn))
 
-    def read_file(self, fn) -> pd.DataFrame:
+    def read_file(self, fn, io="i") -> pd.DataFrame:
         """reads file in input directory,
         fn is filename w/o .csv"""
-        file_name = self.inputs_dir / "{}.csv".format(fn)
+        if io == "i":
+            dir = self.inputs_dir
+        elif io == "o":
+            dir = self.output_dir
+
+        file_name = dir / "{}.csv".format(fn)
         try:
             return pd.read_csv(file_name)
         except FileNotFoundError:
@@ -179,8 +194,8 @@ class HydrogenData:
             for key, df in self.output_dfs.items()
         ]
 
-    def write_output_json(self):
+    def write_output_dict(self):
         from json import dump
 
         with (self.outputs_dir / "outputs.json").open("w", encoding="utf-8") as f:
-            dump(self.output_json, f, ensure_ascii=False, indent=4)
+            dump(self.output_dict, f, ensure_ascii=False, indent=4)

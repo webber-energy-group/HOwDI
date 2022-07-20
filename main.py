@@ -2,9 +2,9 @@ from pathlib import Path
 
 from HOwDI.model.create_model import build_h2_model
 from HOwDI.model.create_network import build_hydrogen_network
-from HOwDI.model.read_inputs import HydrogenData
+from HOwDI.model.HydrogenData import HydrogenData
 from HOwDI.postprocessing.create_plot import main as create_plot
-from HOwDI.postprocessing.generate_outputs import generate_outputs
+from HOwDI.postprocessing.generate_outputs import create_outputs_dfs, create_output_dict
 
 
 def main():
@@ -19,13 +19,14 @@ def main():
     m = build_h2_model(H, g)
 
     # clean outputs
-    H.output_dfs, H.output_json = generate_outputs(m, H)
+    H.output_dfs = create_outputs_dfs(m, H)
+    H.output_dict = create_output_dict(H)
 
     # write outputs dataframes
     H.write_output_dataframes()
 
     # write outputs to json
-    H.write_output_json()
+    H.write_output_dict()
 
     # create figure
     create_plot(H).savefig(H.outputs_dir / "fig.png")

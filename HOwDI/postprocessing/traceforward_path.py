@@ -16,6 +16,7 @@ sum of parent hydrogen * percent sent downstream (from sum) = hydrogen at node
 import json
 import sys
 from math import isclose
+from pathlib import Path
 
 from anytree import Node, RenderTree, Resolver
 
@@ -201,7 +202,15 @@ def main(hub_name, full_data):
 
 
 if __name__ == "__main__":
-    # WIP
     hub = sys.argv[1]
-    data = json.load(open("base/outputs/outputs.json"))
+    cwd = Path(".")
+
+    try:
+        data = json.load(open(cwd / "outputs/outputs.json"))
+    except FileNotFoundError:
+        from HOwDI.model.HydrogenData import HydrogenData
+        from HOwDI.postprocessing.generate_outputs import create_output_dict
+
+        H = HydrogenData(cwd, read_output_dir=True)
+        data = create_output_dict(H)
     main(hub, data)

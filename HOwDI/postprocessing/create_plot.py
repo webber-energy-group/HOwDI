@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from shapely.wkt import loads
 
-from HOwDI.model.read_inputs import HydrogenData
+from HOwDI.model.HydrogenData import HydrogenData
 
 # ignore warning about plotting empty frame
 warnings.simplefilter(action="ignore", category=UserWarning)
@@ -109,7 +109,7 @@ def main(H: HydrogenData):
     H is a HydrogenData object with the following:
 
     H.hubs_dir: directory where hubs geo files are stored (hubs.geojson, roads.csv)
-    H.output_json: output dictionary of model
+    H.output_dict: output dictionary of model
     H.shpfile: location of shapefile to use as background
     H.prod_therm and H.prod_elec: DataFrame with column "Type",
      used for determining if a node has thermal, electric, or both types of production.
@@ -134,7 +134,7 @@ def main(H: HydrogenData):
 
     dist_data = {
         hub: get_relevant_dist_data(hub_data)
-        for hub, hub_data in H.output_json.items()
+        for hub, hub_data in H.output_dict.items()
         if hub_data["distribution"] != {"local": {}, "outgoing": {}, "incoming": {}}
     }
 
@@ -149,11 +149,11 @@ def main(H: HydrogenData):
 
     prod_data = {
         hub: get_relevant_p_or_c_data(hub_data["production"])
-        for hub, hub_data in H.output_json.items()
+        for hub, hub_data in H.output_dict.items()
     }
     cons_data = {
         hub: get_relevant_p_or_c_data(hub_data["consumption"])
-        for hub, hub_data in H.output_json.items()
+        for hub, hub_data in H.output_dict.items()
     }
 
     def get_production_capacity(hub_data_prod):
@@ -169,7 +169,7 @@ def main(H: HydrogenData):
 
     prod_capacity = {
         hub: get_production_capacity(hub_data["production"])
-        for hub, hub_data in H.output_json.items()
+        for hub, hub_data in H.output_dict.items()
     }
 
     marker_size_default = 20
@@ -435,6 +435,6 @@ if __name__ == "__main__":
     scenario_path = Path("scenarios/base")
     H = HydrogenData(scenario_path, raiseFileNotFoundError=False)
 
-    H.output_json = load(open(H.outputs_dir / "outputs.json"))
+    H.output_dict = load(open(H.outputs_dir / "outputs.json"))
 
     fig = main(H).savefig(H.outputs_dir / "fig.png")
