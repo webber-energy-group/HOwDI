@@ -160,4 +160,8 @@ if __name__ == "__main__":
 
         H = HydrogenData(cwd, read_output_dir=True)
         data = create_output_dict(H)
+
+        H.output_dict = data
+        H.write_output_dict()
+
     main(hub, data)
