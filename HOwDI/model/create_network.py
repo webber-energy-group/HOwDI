@@ -608,7 +608,7 @@ def add_price_nodes(g: DiGraph, H):
 
 def build_hydrogen_network(H) -> DiGraph:
     """Builds appropriate hydrogen network
-    from H (a HydrogenInputs object)
+    from H (a HydrogenData object)
 
     returns g: a networkx.DiGraph object
     """

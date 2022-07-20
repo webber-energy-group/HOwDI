@@ -4,7 +4,7 @@ import pyomo
 import pyomo.environ as pe
 from networkx import DiGraph
 
-from HOwDI.model.read_inputs import HydrogenInputs
+from HOwDI.model.read_inputs import HydrogenData
 
 start = time.time()
 
@@ -116,7 +116,7 @@ def create_arc_sets(m: pe.ConcreteModel, g: DiGraph):
     m.converter_arc_set = pe.Set(initialize=conversion_arcs)
 
 
-def create_params(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
+def create_params(m: pe.ConcreteModel, H: HydrogenData, g: DiGraph):
     """Loads parameters from network object (g) into pe.Param objects, which are
     used as coefficients in the model objective"""
     # TODO Add units ?
@@ -281,7 +281,7 @@ def create_variables(m):
     )
 
 
-def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
+def obj_rule(m: pe.ConcreteModel, H: HydrogenData):
     """Defines the objective function.
 
     Some values are described as "regional prices", which means that a
@@ -473,7 +473,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenInputs):
     return totalSurplus
 
 
-def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
+def apply_constraints(m: pe.ConcreteModel, H: HydrogenData, g: DiGraph):
     """Applies constraints to the model"""
 
     ## Distribution
@@ -959,7 +959,7 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenInputs, g: DiGraph):
     )
 
 
-def build_h2_model(H: HydrogenInputs, g: DiGraph):
+def build_h2_model(H: HydrogenData, g: DiGraph):
     print("Building model")
     m = pe.ConcreteModel()
 

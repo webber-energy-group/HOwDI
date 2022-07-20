@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from shapely.wkt import loads
 
+from HOwDI.model.read_inputs import HydrogenData
+
 # ignore warning about plotting empty frame
 warnings.simplefilter(action="ignore", category=UserWarning)
 
@@ -101,12 +103,19 @@ def _diff_of_list(a: list, b: list) -> list:
     return list(difference)
 
 
-def main(data, H):
+def main(H: HydrogenData):
     """
-    data: outputs of model
-    data_dir: location of data for hubs and shapefile
-    prod_types: dictionary with keys "thermal" and "electric"
-                values are the production technologies (smr, electrolysis)
+    Parameters:
+    H is a HydrogenData object with the following:
+
+    H.hubs_dir: directory where hubs geo files are stored (hubs.geojson, roads.csv)
+    H.output_json: output dictionary of model
+    H.shpfile: location of shapefile to use as background
+    H.prod_therm and H.prod_elec: DataFrame with column "Type",
+     used for determining if a node has thermal, electric, or both types of production.
+
+    Returns:
+    fig: a matplotlib.plt object which is a figure of the results.
     """
 
     hub_data = json.load(open(H.hubs_dir / "hubs.geojson"))["features"]
@@ -125,7 +134,7 @@ def main(data, H):
 
     dist_data = {
         hub: get_relevant_dist_data(hub_data)
-        for hub, hub_data in data.items()
+        for hub, hub_data in H.output_json.items()
         if hub_data["distribution"] != {"local": {}, "outgoing": {}, "incoming": {}}
     }
 
@@ -140,11 +149,11 @@ def main(data, H):
 
     prod_data = {
         hub: get_relevant_p_or_c_data(hub_data["production"])
-        for hub, hub_data in data.items()
+        for hub, hub_data in H.output_json.items()
     }
     cons_data = {
         hub: get_relevant_p_or_c_data(hub_data["consumption"])
-        for hub, hub_data in data.items()
+        for hub, hub_data in H.output_json.items()
     }
 
     def get_production_capacity(hub_data_prod):
@@ -160,7 +169,7 @@ def main(data, H):
 
     prod_capacity = {
         hub: get_production_capacity(hub_data["production"])
-        for hub, hub_data in data.items()
+        for hub, hub_data in H.output_json.items()
     }
 
     marker_size_default = 20
@@ -416,18 +425,16 @@ def main(data, H):
 
     ax.legend(handles=legend_elements, loc="upper left")
 
-    fig.savefig(H.outputs_dir / "fig.png")
+    return fig
 
 
 if __name__ == "__main__":
     from json import load
     from pathlib import Path
-    from HOwDI.model.read_inputs import HydrogenInputs
 
     scenario_path = Path("scenarios/base")
-    data_path = scenario_path / "outputs" / "outputs.json"
-    data = load(open(data_path))
+    H = HydrogenData(scenario_path, raiseFileNotFoundError=False)
 
-    H = HydrogenInputs(scenario_path, raiseFileNotFoundError=False)
+    H.output_json = load(open(H.outputs_dir / "outputs.json"))
 
-    main(data, H)
+    fig = main(H).savefig(H.outputs_dir / "fig.png")

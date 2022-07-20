@@ -8,7 +8,7 @@ import pandas as pd
 import yaml
 
 
-class HydrogenInputs:
+class HydrogenData:
     """
     stores all of the input files needed to run the hydrogen model
     stores some hard coded variables used for the hydrogen model

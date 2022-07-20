@@ -1,9 +1,8 @@
-from json import dump
 from pathlib import Path
 
 from HOwDI.model.create_model import build_h2_model
 from HOwDI.model.create_network import build_hydrogen_network
-from HOwDI.model.read_inputs import HydrogenInputs
+from HOwDI.model.read_inputs import HydrogenData
 from HOwDI.postprocessing.create_plot import main as create_plot
 from HOwDI.postprocessing.generate_outputs import generate_outputs
 
@@ -13,7 +12,7 @@ def main():
     scenario_dir = Path("scenarios") / "base"
 
     # read inputs
-    H = HydrogenInputs(scenario_dir)
+    H = HydrogenData(scenario_dir)
     # generate network
     g = build_hydrogen_network(H)
     # build model
@@ -29,7 +28,7 @@ def main():
     H.write_output_json()
 
     # create figure
-    create_plot(H.output_json, H)
+    create_plot(H).savefig(H.outputs_dir / "fig.png")
 
 
 if __name__ == "__main__":
