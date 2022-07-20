@@ -12,14 +12,36 @@ from itertools import combinations
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+from shapely.wkt import loads
 
-try:
-    from data.hubs.roads_to_gdf import roads_to_gdf
-except ModuleNotFoundError:
-    from hubs.roads_to_gdf import roads_to_gdf
+from HOwDI.arg_parse import parse_command_line
+from HOwDI.model.HydrogenData import HydrogenData
 
 # ignore warning about plotting empty frame
 warnings.simplefilter(action="ignore", category=UserWarning)
+
+
+def roads_to_gdf(wd):
+    """Converts roads.csv into a GeoDataFrame object
+
+    This is necessary since .geojson files can not handle LineStrings with multiple points.
+    Road geodata are stored as csv, where the geodata are stored as literal strings.
+    The shapely.wkt function "loads" can interpret this literal string and convert into a LineString object
+    """
+    # wd is path where 'hubs.geojson' and 'roads.csv' are located
+
+    # get hubs for crs
+    hubs = gpd.read_file(wd / "hubs.geojson")
+
+    # read csv and convert geometry column
+    roads = gpd.read_file(wd / "roads.csv")
+    roads["geometry"] = roads["road_geometry"].apply(
+        loads
+    )  # convert string into Linestring
+    roads = roads.set_crs(hubs.crs)
+    del roads["road_geometry"]
+
+    return roads
 
 
 def _all_possible_combos(items: list, existing=False) -> list:
@@ -82,15 +104,22 @@ def _diff_of_list(a: list, b: list) -> list:
     return list(difference)
 
 
-def main(data, data_dir, scenario_dir, prod_types):
+def create_plot(H: HydrogenData):
     """
-    data: outputs of model
-    data_dir: location of data for hubs and shapefile
-    prod_types: dictionary with keys "thermal" and "electric"
-                values are the production technologies (smr, electrolysis)
+    Parameters:
+    H is a HydrogenData object with the following:
+
+    H.hubs_dir: directory where hubs geo files are stored (hubs.geojson, roads.csv)
+    H.output_dict: output dictionary of model
+    H.shpfile: location of shapefile to use as background
+    H.prod_therm and H.prod_elec: DataFrame with column "Type",
+     used for determining if a node has thermal, electric, or both types of production.
+
+    Returns:
+    fig: a matplotlib.plt object which is a figure of the results.
     """
 
-    hub_data = json.load(open(data_dir / "hubs" / "hubs.geojson"))["features"]
+    hub_data = json.load(open(H.hubs_dir / "hubs.geojson"))["features"]
     locations = {d["properties"]["hub"]: d["geometry"]["coordinates"] for d in hub_data}
 
     # clean data
@@ -106,7 +135,7 @@ def main(data, data_dir, scenario_dir, prod_types):
 
     dist_data = {
         hub: get_relevant_dist_data(hub_data)
-        for hub, hub_data in data.items()
+        for hub, hub_data in H.output_dict.items()
         if hub_data["distribution"] != {"local": {}, "outgoing": {}, "incoming": {}}
     }
 
@@ -121,11 +150,11 @@ def main(data, data_dir, scenario_dir, prod_types):
 
     prod_data = {
         hub: get_relevant_p_or_c_data(hub_data["production"])
-        for hub, hub_data in data.items()
+        for hub, hub_data in H.output_dict.items()
     }
     cons_data = {
         hub: get_relevant_p_or_c_data(hub_data["consumption"])
-        for hub, hub_data in data.items()
+        for hub, hub_data in H.output_dict.items()
     }
 
     def get_production_capacity(hub_data_prod):
@@ -141,7 +170,7 @@ def main(data, data_dir, scenario_dir, prod_types):
 
     prod_capacity = {
         hub: get_production_capacity(hub_data["production"])
-        for hub, hub_data in data.items()
+        for hub, hub_data in H.output_dict.items()
     }
 
     marker_size_default = 20
@@ -214,7 +243,7 @@ def main(data, data_dir, scenario_dir, prod_types):
     # initialize figure
     fig, ax = plt.subplots(figsize=(10, 10), dpi=300)
     # get Texas plot
-    us_county = gpd.read_file(data_dir / "US_COUNTY_SHPFILE" / "US_county_cont.shp")
+    us_county = gpd.read_file(H.shpfile)
     # us_county = gpd.read_file('US_COUNTY_SHPFILE/US_county_cont.shp')
     tx_county = us_county[us_county["STATE_NAME"] == "Texas"]
     tx = tx_county.dissolve()
@@ -223,6 +252,7 @@ def main(data, data_dir, scenario_dir, prod_types):
     # Plot hubs
     hubs = distribution[distribution.type == "Point"]
 
+    prod_types = H.get_prod_types()
     thermal_prod_combos = _all_possible_combos(prod_types["thermal"], existing=True)
     electric_prod_combos = _all_possible_combos(prod_types["electric"])
     both_prod_combos = _diff_of_list(thermal_prod_combos, electric_prod_combos)
@@ -301,7 +331,7 @@ def main(data, data_dir, scenario_dir, prod_types):
     if not roads_connections.empty:
 
         # get data from roads csv, which draws out the road path along a connection
-        roads = roads_to_gdf(data_dir / "hubs")
+        roads = roads_to_gdf(H.hubs_dir)
 
         for row in roads.itertuples():
             # get road geodata for each connection in connections df
@@ -396,14 +426,30 @@ def main(data, data_dir, scenario_dir, prod_types):
 
     ax.legend(handles=legend_elements, loc="upper left")
 
-    fig.savefig(scenario_dir / "outputs" / "fig.png")
+    return fig
+
+
+def main():
+    args = parse_command_line()
+
+    H = HydrogenData(
+        scenario_dir=args.scenario_dir,
+        inputs_dir=args.inputs_dir,
+        outputs_dir=args.outputs_dir,
+        raiseFileNotFoundError=False,
+    )
+
+    try:
+        H.output_dict = json.load(open(H.outputs_dir / "outputs.json"))
+    except FileNotFoundError:
+        from HOwDI.postprocessing.generate_outputs import create_output_dict
+
+        H.create_output_dfs()
+        H.output_dict = create_output_dict(H)
+        H.write_output_dict()
+
+    create_plot(H).savefig(H.outputs_dir / "fig.png")
 
 
 if __name__ == "__main__":
-    from json import load
-    from pathlib import Path
-
-    scenario_path = Path("base")
-    data_path = scenario_path / "outputs" / "outputs.json"
-    data = load(open(data_path))
-    main(data, Path("."), scenario_path)
+    main()

@@ -1,9 +1,0 @@
-idaes-pse
-pandas
-networkx
-pyomo
-numpy
-geopandas
-geopy
-anytree
-pyyaml

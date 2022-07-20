@@ -13,8 +13,13 @@ TODO
 Get prices associated with each step
 Generate graphic to show cost breakdown
 """
-import json, sys
+import json
+import sys
+from pathlib import Path
+
 from anytree import Node, RenderTree, Resolver
+
+from HOwDI.arg_parse import parse_command_line
 
 
 class MetaNode(Node):
@@ -123,7 +128,7 @@ def print_tree(parent: MetaNode):
         )
 
 
-def main(hub, full_data):
+def trace_back(hub, full_data):
 
     # #debug
     # node = 'channelview'
@@ -145,7 +150,27 @@ def main(hub, full_data):
     print_tree(hub_metanode)
 
 
+def main():
+    args = parse_command_line(sys.argv)
+
+    try:
+        data = json.load(open(args.scenario_dir + "/outputs/outputs.json"))
+    except FileNotFoundError:
+        from HOwDI.model.HydrogenData import HydrogenData
+        from HOwDI.postprocessing.generate_outputs import create_output_dict
+
+        H = HydrogenData(
+            scenario_dir=args.scenario_dir,
+            outputs_dir=args.outputs_dir,
+            read_output_dir=True,
+        )
+        data = create_output_dict(H)
+
+        H.output_dict = data
+        H.write_output_dict()
+
+    trace_back(args.hub, data)
+
+
 if __name__ == "__main__":
-    hub = sys.argv[1]
-    data = json.load(open("base/outputs/outputs.json"))
-    main(hub, data)
+    main()
