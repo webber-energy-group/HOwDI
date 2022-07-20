@@ -18,7 +18,9 @@ class HydrogenData:
 
     def __init__(
         self,
-        scenario_dir: Path,
+        scenario_dir,
+        inputs_dir="inputs",
+        outputs_dir="outputs",
         store_outputs=True,
         raiseFileNotFoundError=True,
         read_output_dir=False,
@@ -33,9 +35,9 @@ class HydrogenData:
         """
         self.raiseFileNotFoundError_bool = raiseFileNotFoundError
 
-        self.scenario_dir = scenario_dir
-        self.inputs_dir = scenario_dir / "inputs"
-        self.outputs_dir = scenario_dir / "outputs"
+        self.scenario_dir = Path(scenario_dir)
+        self.inputs_dir = self.scenario_dir / inputs_dir
+        self.outputs_dir = self.scenario_dir / outputs_dir
 
         if store_outputs:
             # if being used in a model run, make outputs dir if DNE

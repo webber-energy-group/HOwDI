@@ -20,6 +20,8 @@ from pathlib import Path
 
 from anytree import Node, RenderTree, Resolver
 
+from HOwDI.arg_parse import parse_command_line
+
 
 class MetaNode(Node):
     """Inherits from anytree.Node and adds data storage"""
@@ -173,7 +175,7 @@ def print_tree(parent):
         print("{}{} ({})".format(pre, node.print_name, node.get_mass_equation()))
 
 
-def main(hub_name, full_data):
+def trace_forward(hub_name, full_data):
     # # debug
     # producer_node_name = 'elPaso'
     # full_data = json.load(open('base/outputs/outputs.json'))
@@ -201,20 +203,27 @@ def main(hub_name, full_data):
     print_tree(parent_node)
 
 
-if __name__ == "__main__":
-    hub = sys.argv[1]
-    cwd = Path(".")
+def main():
+    args = parse_command_line(sys.argv)
 
     try:
-        data = json.load(open(cwd / "outputs/outputs.json"))
+        data = json.load(open(args.scenario_dir + "outputs/outputs.json"))
     except FileNotFoundError:
         from HOwDI.model.HydrogenData import HydrogenData
         from HOwDI.postprocessing.generate_outputs import create_output_dict
 
-        H = HydrogenData(cwd, read_output_dir=True)
+        H = HydrogenData(
+            scenario_dir=args.scenario_dir,
+            outputs_dir=args.outputs_dir,
+            read_output_dir=True,
+        )
         data = create_output_dict(H)
 
         H.output_dict = data
         H.write_output_dict()
 
-    main(hub, data)
+    trace_forward(args.hub, data)
+
+
+if __name__ == "__main__":
+    main()

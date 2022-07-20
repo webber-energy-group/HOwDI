@@ -19,6 +19,8 @@ from pathlib import Path
 
 from anytree import Node, RenderTree, Resolver
 
+from HOwDI.arg_parse import parse_command_line
+
 
 class MetaNode(Node):
     """Class that inherits from anytree.Node and adds additional metadata & methods"""
@@ -126,7 +128,7 @@ def print_tree(parent: MetaNode):
         )
 
 
-def main(hub, full_data):
+def trace_back(hub, full_data):
 
     # #debug
     # node = 'channelview'
@@ -148,20 +150,27 @@ def main(hub, full_data):
     print_tree(hub_metanode)
 
 
-if __name__ == "__main__":
-    hub = sys.argv[1]
-    cwd = Path(".")
+def main():
+    args = parse_command_line(sys.argv)
 
     try:
-        data = json.load(open(cwd / "outputs/outputs.json"))
+        data = json.load(open(args.scenario_dir + "/outputs/outputs.json"))
     except FileNotFoundError:
         from HOwDI.model.HydrogenData import HydrogenData
         from HOwDI.postprocessing.generate_outputs import create_output_dict
 
-        H = HydrogenData(cwd, read_output_dir=True)
+        H = HydrogenData(
+            scenario_dir=args.scenario_dir,
+            outputs_dir=args.outputs_dir,
+            read_output_dir=True,
+        )
         data = create_output_dict(H)
 
         H.output_dict = data
         H.write_output_dict()
 
-    main(hub, data)
+    trace_back(args.hub, data)
+
+
+if __name__ == "__main__":
+    main()

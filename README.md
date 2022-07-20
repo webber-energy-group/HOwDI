@@ -1,24 +1,49 @@
-# h2_model
+# HOwDI (Hydrogen Optimization with Distribution Infrastructure)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-## WIP
+## Installation
 
-Install:
+1. Create a conda environment from the `env.yml` file and activate it:
+
+    ```bash
+    conda env create -f env.yml
+    ```
+
+2. Activate the conda environment
+
+    ```bash
+    conda activate HOwDI
+    ```
+
+3. Install an editable version of HOwDI in your HOwDI environment with pip.
+
+    ```bash
+    pip install -e .
+    ```
+
+## Usage
+
+Within a directory that contains a subdirectory named "inputs" (that contains the necessary inputs), run the model:
 
 ```bash
-conda env create -f env.yml
+(HOwDI) ~ ls
+inputs
+(HOwDI) ~ HOwDI-run
 ```
 
-Set up package (optional):
+Alternatively, use `HOwDI-run -h` to browse alternative options.
+
+## Postprocessing Tools
+
+HOwDI has several postprocessing tools. Use `HOwDI-help` for a full list.
+
 ```bash
-pip install -e .
+Create a figure:        HOwDI-create_fig
+Traceback:              HOwDI-traceback
+Traceforward:           HOwDI-tracefoward
 ```
 
-Run the model with `python main.py`.
-`trackeback_path.py` and `traceforward_path.py` can be sued for post processing.
+## Contributing
 
-## Notes
-
-- `data/generate_inputs_json.py` converts the contents of `data/inputs/` into a JSON file that is read by the model.
-- price multipliers in hubs.csv are randomly generated and currently not valid
+HOwDI uses the Black code style. Please format your code accordingly before making a pull request.

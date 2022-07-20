@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from shapely.wkt import loads
 
+from HOwDI.arg_parse import parse_command_line
 from HOwDI.model.HydrogenData import HydrogenData
 
 # ignore warning about plotting empty frame
@@ -103,7 +104,7 @@ def _diff_of_list(a: list, b: list) -> list:
     return list(difference)
 
 
-def main(H: HydrogenData):
+def create_plot(H: HydrogenData):
     """
     Parameters:
     H is a HydrogenData object with the following:
@@ -428,15 +429,18 @@ def main(H: HydrogenData):
     return fig
 
 
-if __name__ == "__main__":
-    from json import load
-    from pathlib import Path
+def main():
+    args = parse_command_line()
 
-    scenario_path = Path("scenarios/base")
-    H = HydrogenData(scenario_path, raiseFileNotFoundError=False)
+    H = HydrogenData(
+        scenario_dir=args.scenario_dir,
+        inputs_dir=args.inputs_dir,
+        outputs_dir=args.outputs_dir,
+        raiseFileNotFoundError=False,
+    )
 
     try:
-        H.output_dict = load(open(H.outputs_dir / "outputs.json"))
+        H.output_dict = json.load(open(H.outputs_dir / "outputs.json"))
     except FileNotFoundError:
         from HOwDI.postprocessing.generate_outputs import create_output_dict
 
@@ -444,4 +448,8 @@ if __name__ == "__main__":
         H.output_dict = create_output_dict(H)
         H.write_output_dict()
 
-    fig = main(H).savefig(H.outputs_dir / "fig.png")
+    create_plot(H).savefig(H.outputs_dir / "fig.png")
+
+
+if __name__ == "__main__":
+    main()
