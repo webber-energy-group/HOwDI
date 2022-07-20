@@ -23,4 +23,4 @@ def main():
     elif choice == "-h" or choice == "--help" or choice == "help":
         from HOwDI.help import main as module
 
-    a = module()
+    module()
