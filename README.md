@@ -32,7 +32,7 @@ inputs
 (HOwDI) ~ HOwDI run
 ```
 
-Use `HOwDI-run -h` for a list of options.
+Use `HOwDI run -h` for a list of options.
 
 ## Postprocessing Tools
 
