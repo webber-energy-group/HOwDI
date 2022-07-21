@@ -3,11 +3,7 @@ import sys
 from pathlib import Path
 
 
-
-
-
 def parse_command_line(module=Path(sys.argv[1]).name, argv=sys.argv):
-
     def name(*args):
         return any([arg == module for arg in args])
 
@@ -81,21 +77,21 @@ Location where necessary hub files are required. (hubs.csv, arcs_blacklist.csv, 
             help="Location of where to save output files. Defaults to --dir",
         )
         parser.add_argument(
-            "-cf"
-            "--create_figure",
+            "-cf" "--create_figure",
             dest="create_fig",
             action="store_true",
-            help="Create a figure showing all arcs."
+            help="Create a figure showing all arcs.",
         )
         parser.add_argument(
             "-shp",
             "--shapefile",
             dest="shapefile",
             default=None,
-            help="Location of Shapefile to be used in figure."
+            help="Location of Shapefile to be used in figure.",
         )
-        
+
     return parser.parse_args(argv[2:])
+
 
 s = """
 Location where necessary hub files are required. Make sure that the hubs directory (specified with -d) contains the following files: 

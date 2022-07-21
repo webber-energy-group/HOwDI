@@ -12,9 +12,11 @@ def geocode_hubs(file="hubs.csv"):
 
     return geohubs
 
+
 def main():
     geohubs = geocode_hubs()
     geohubs.to_file("hubs.geojson", driver="GeoJSON")
+
 
 if __name__ == "__main__":
     main()
