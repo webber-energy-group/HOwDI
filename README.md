@@ -41,7 +41,7 @@ HOwDI has several postprocessing tools. Use `HOwDI help` for a full list.
 ```bash
 Create a figure:        HOwDI create_fig
 Traceback:              HOwDI traceback
-Traceforward:           HOwDI tracefoward
+Traceforward:           HOwDI traceforward
 ```
 
 ## Contributing

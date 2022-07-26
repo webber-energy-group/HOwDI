@@ -7,7 +7,9 @@ https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#trip-servi
 https://2.python-requests.org/en/master/user/advanced/#session-objects
 """
 import warnings
+from shapely.errors import ShapelyDeprecationWarning
 
+warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
 warnings.simplefilter(action="ignore", category=DeprecationWarning)
 # ignore warning :
 # The array interface is deprecated and will no longer work in Shapely 2.0.
@@ -61,14 +63,12 @@ def make_route(row):
     return pd.Series([duration, km_distance, road_geometry])
 
 
-def main():
+def create_arcs(geohubs, hubs_dir, create_fig=False, shpfile=None):
     # read files and establish parameters
-    current_dir = Path(".")
-    hubs_dir = current_dir / "hubs"
 
     hubs_df = pd.read_csv(hubs_dir / "hubs.csv").set_index("hub")
     # sort by minor; important for indexing direction
-    hubs_df = hubs_df.sort_values(by=["minor"], ascending=False)
+    hubs_df = hubs_df.sort_values(by=["status"], ascending=True)
     hubs = hubs_df.index.tolist()
 
     epsg = 3082
@@ -77,8 +77,8 @@ def main():
     geohubs = geohubs.set_index("hub")
     geohubs = geohubs.to_crs(epsg=epsg)
 
-    existing_arcs = pd.read_csv(hubs_dir / "existing_arcs.csv")
-    blacklist_arcs = pd.read_csv(hubs_dir / "blacklist_arcs.csv")
+    existing_arcs = pd.read_csv(hubs_dir / "arcs_whitelist.csv")
+    blacklist_arcs = pd.read_csv(hubs_dir / "arcs_blacklist.csv")
 
     # length factors (lf) are effective reach
     # length factor > 1, restricts max distance to min*lf
@@ -91,19 +91,27 @@ def main():
     min_hubs = 3  # 4 is not bad either
 
     # Initialize Figure with Texas base
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=300)
-    us_county = gpd.read_file(current_dir / "US_COUNTY_SHPFILE/US_county_cont.shp")
-    tx_county = us_county[us_county["STATE_NAME"] == "Texas"]
-    tx = tx_county.dissolve().to_crs(epsg=epsg)
-    tx.plot(ax=ax, color="white", edgecolor="black")
+    if create_fig:
+        fig, ax = plt.subplots(figsize=(10, 10), dpi=300)
+        if shpfile is None:
+            # logger.warning()
+            print(
+                "An arcs figure is being generated but no underlying shapefile exists!"
+            )
+        else:
+            # TODO make generic
+            us_county = gpd.read_file(shpfile)
+            tx_county = us_county[us_county["STATE_NAME"] == "Texas"]
+            tx = tx_county.dissolve().to_crs(epsg=epsg)
+            tx.plot(ax=ax, color="white", edgecolor="black")
 
     # get all possible combinations of size 2, output is list of tuples turned into a multiindex
     hubs_combinations = list(itertools.combinations(hubs, 2))
-    index = pd.MultiIndex.from_tuples(hubs_combinations, names=["hubA", "hubB"])
+    index = pd.MultiIndex.from_tuples(hubs_combinations, names=["startHub", "endHub"])
     gdf = gpd.GeoDataFrame(index=index)
 
-    hubA = gdf.join(geohubs.rename_axis("hubA"))
-    hubB = gdf.join(geohubs.rename_axis("hubB"))
+    hubA = gdf.join(geohubs.rename_axis("startHub"))
+    hubB = gdf.join(geohubs.rename_axis("endHub"))
 
     # create line from hubAA to hubB (for plotting purposes)
     gdf["LINE"] = [
@@ -131,8 +139,21 @@ def main():
             self.lengths = self._make_length_dict()
 
             self.series = hubs_df.loc[hub]
-            self.major = self.series["major"]
-            self.minor = self.series["minor"]
+
+            status = int(self.series["status"])
+            if status == 1:
+                self.major = 1
+                self.minor = 0
+            elif status == 0:
+                self.major = 0
+                self.minor = 0
+            elif status == -1:
+                self.major = 0
+                self.minor = 1
+            else:
+                raise ValueError(
+                    "Status of {} is not specified properly".format(self.hub)
+                )
 
         def _make_length_dict(self):
             # make dictionary that describes euclidian distance to destination
@@ -165,18 +186,27 @@ def main():
             a_str = self.hub
             b_str = hubB.hub
 
-            self.dests.remove(b_str)
-            hubB.dests.remove(a_str)
+            try:
+                self.dests.remove(b_str)
 
-            connection = self.connection_with(hubB)
-            self.connections.remove(connection)
-            hubB.connections.remove(connection)
+                hubB.dests.remove(a_str)
 
-            del self.lengths[b_str]
-            del hubB.lengths[a_str]
+                connection = self.connection_with(hubB)
+                self.connections.remove(connection)
+                hubB.connections.remove(connection)
 
-            self.n = self.n - 1
-            hubB.n = hubB.n - 1
+                del self.lengths[b_str]
+                del hubB.lengths[a_str]
+
+                self.n = self.n - 1
+                hubB.n = hubB.n - 1
+            except ValueError:
+                print(
+                    "Tried to remove connection '{} to {}', but this connection was not created in the first place!".format(
+                        a_str, b_str
+                    )
+                )
+                pass
 
         def has_remaining_valid_connections(self, current_length, length_factor):
             # returns boolean if has enough remaining valid connections
@@ -227,7 +257,7 @@ def main():
     # remove blacklisted arcs
     [
         hub_conn[_hubA].remove_connection(hub_conn[_hubB])
-        for _hubA, _hubB in zip(blacklist_arcs["hubA"], blacklist_arcs["hubB"])
+        for _hubA, _hubB in zip(blacklist_arcs["startHub"], blacklist_arcs["endHub"])
     ]
 
     valid_connections = []
@@ -265,16 +295,23 @@ def main():
     gdf_latlong[["road_duration", "kmLength_road", "road_geometry"]] = gdf_latlong[
         "LINE"
     ].apply(make_route)
-    gdf_roads = gdf_latlong.set_geometry("road_geometry").to_crs(epsg=epsg)
+    gdf_roads = (
+        gdf_latlong.set_geometry("road_geometry")
+        .set_crs(crs=lat_long_crs)
+        .to_crs(epsg=epsg)
+    )
 
     # save roads data
     roads_df = gdf_roads.to_crs(crs=lat_long_crs)
     roads_df = pd.DataFrame(roads_df.geometry)
-    roads_df.to_csv(hubs_dir / "roads.csv")
+    # roads_df.to_csv(hubs_dir / "roads.csv")
 
-    gdf_trimmed.plot(ax=ax, color="grey")
-    gdf_roads.plot(ax=ax)
-    fig.savefig(hubs_dir / "fig.png")
+    if create_fig:
+        gdf_trimmed.plot(ax=ax, color="grey")
+        gdf_roads.plot(ax=ax)
+        # fig.savefig(hubs_dir / "fig.png")
+    else:
+        fig = None
 
     # convert to df and format
     df = pd.DataFrame(gdf_roads)
@@ -282,9 +319,16 @@ def main():
     df = df.rename(columns={"mLength_euclid": "kmLength_euclid"})
     df = df.rename_axis(["startHub", "endHub"])
 
-    return df[["kmLength_euclid", "kmLength_road", "exist_pipeline"]]
+    return {
+        "arcs": df[["kmLength_euclid", "kmLength_road", "exist_pipeline"]],
+        "roads": roads_df,
+        "fig": fig,
+    }
+
+
+def main():
+    create_arcs()
 
 
 if __name__ == "__main__":
-    df = main()
-    df.to_csv("base/inputs/arcs.csv")
+    main()

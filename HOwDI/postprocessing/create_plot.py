@@ -335,8 +335,8 @@ def create_plot(H: HydrogenData):
 
         for row in roads.itertuples():
             # get road geodata for each connection in connections df
-            hubA = row.hubA
-            hubB = row.hubB
+            hubA = row.startHub
+            hubB = row.endHub
             roads_connections.loc[
                 (roads_connections["start"] == hubA)
                 & (roads_connections["end"] == hubB),

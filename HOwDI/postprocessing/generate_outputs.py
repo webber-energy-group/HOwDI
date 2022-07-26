@@ -65,7 +65,7 @@ def _create_hub_data(df, hub, start=-1):
     index_column = df.index.name
     df = df.reset_index()
     # find values in index column that match the hub name
-    df = df[df[index_column].str.contains(hub + "_")]
+    df = df[df[index_column].str.startswith(hub + "_")]
     # split values in index column into a list based on the character "_"
     # takes the indexes from variable {start} in the list and merge back into a single string
     df[index_column] = (

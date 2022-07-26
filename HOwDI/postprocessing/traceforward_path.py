@@ -14,9 +14,7 @@ sum of parent hydrogen * percent sent downstream (from sum) = hydrogen at node
 """
 
 import json
-import sys
 from math import isclose
-from pathlib import Path
 
 from anytree import Node, RenderTree, Resolver
 
@@ -204,7 +202,7 @@ def trace_forward(hub_name, full_data):
 
 
 def main():
-    args = parse_command_line(sys.argv)
+    args = parse_command_line()
 
     try:
         data = json.load(open(args.scenario_dir + "outputs/outputs.json"))

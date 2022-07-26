@@ -1,0 +1,17 @@
+startHub,endHub,exist_pipeline
+brazoria,freeport,1
+freeport,chocolateBay,1
+chocolateBay,texasCity,1
+texasCity,laPorte,1
+laPorte,sanJacinto,1
+sanJacinto,deerPark,1
+deerPark,pasadena,1
+pasadena,channelview,1
+channelview,deerPark,1
+channelview,montBelvieu,1
+montBelvieu,baytown,1
+baytown,sanJacinto,1
+montBelvieu,portArthur,1
+portArthur,beaumont,1
+portArthur,orange,1
+sanAntonio,houston,0

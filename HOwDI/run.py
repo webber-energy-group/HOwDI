@@ -1,5 +1,3 @@
-import sys
-
 from HOwDI.arg_parse import parse_command_line
 from HOwDI.model.create_model import build_h2_model
 from HOwDI.model.create_network import build_hydrogen_network
@@ -9,7 +7,7 @@ from HOwDI.postprocessing.generate_outputs import create_outputs_dfs, create_out
 
 
 def main():
-    args = parse_command_line(sys.argv)
+    args = parse_command_line()
     # read inputs
     H = HydrogenData(
         scenario_dir=args.scenario_dir,
