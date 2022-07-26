@@ -77,7 +77,7 @@ Location where necessary hub files are required. (hubs.csv, arcs_blacklist.csv, 
             help="Location of where to save output files. Defaults to --dir",
         )
         parser.add_argument(
-            "-cf" "--create_figure",
+            "-f" "--create_figure",
             dest="create_fig",
             action="store_true",
             help="Create a figure showing all arcs.",
@@ -88,6 +88,33 @@ Location where necessary hub files are required. (hubs.csv, arcs_blacklist.csv, 
             dest="shapefile",
             default=None,
             help="Location of Shapefile to be used in figure.",
+        )
+        parser.add_argument(
+            "-pm",
+            "--price_multipliers",
+            dest="price_multipliers",
+            default=False,
+            help="Location of price multiplier file",
+        )
+        parser.add_argument(
+            "-c",
+            "--price_multipliers_column",
+            dest="price_multipliers_column",
+            default="County",
+            help="Column to merge price multipliers on. ONLY SUPPORT COUNTY (which is the default).",
+        )
+        parser.add_argument(
+            "-r" "--replace_model_inputs",
+            dest="replace_model_inputs",
+            action="store_true",
+            help="Replace the hubs.csv and arcs.csv to use the new generated hubs and price multipliers. Other columns are preserved.",
+        )
+        parser.add_argument(
+            "-i",
+            "--model_inputs_dir",
+            dest="model_inputs_dir",
+            default=None,
+            help="Location of model inputs where files we be adjusted with new hubs.",
         )
 
     return parser.parse_args(argv[2:])
