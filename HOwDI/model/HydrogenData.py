@@ -1,6 +1,8 @@
 # TODO add upload_to_sql method.
 # TODO docstrings, but maybe not needed as most functions are a few lines
 
+import uuid
+
 from inspect import getsourcefile
 from pathlib import Path
 
@@ -35,6 +37,7 @@ class HydrogenData:
 
     def __init__(
         self,
+        uuid=uuid.uuid4(),
         read_type="csv",
         settings=None,
         # if read_type == "csv"
@@ -57,6 +60,7 @@ class HydrogenData:
             timestep units. Default is 365 because the investment period units are in
             years (20 years default) and the simulation units are in days.
         """
+        self.uuid = uuid
         self.raiseFileNotFoundError_bool = raiseFileNotFoundError
 
         if read_type == "csv":
@@ -69,7 +73,7 @@ class HydrogenData:
                 read_output_dir,
             )
         elif read_type == "dataframe" or read_type == "DataFrame" or read_type == "df":
-            self.init_from_dfs()
+            self.init_from_dfs(dfs)
 
         settings = self.get_settings(settings)
         self.get_other_data(settings)
@@ -94,7 +98,7 @@ class HydrogenData:
         ## File
         self.prod_therm = self.read_file("production_thermal")
         self.prod_elec = self.read_file("production_electric")
-        self.storage = self.read_file("storage")
+        # self.storage = self.read_file("storage")
         self.distributors = self.read_file("distribution")
         self.converters = self.read_file("conversion")
         self.demand = self.read_file("demand")
@@ -105,11 +109,19 @@ class HydrogenData:
         ## (Retrofitted) CCS data
         # in the future change to nested dictionaries please!
         ccs_data = self.read_file("ccs")
-        ccs_data.set_index("type", inplace=True)
         self.initialize_ccs(ccs_data)
 
-    def init_from_dfs(self):
-        pass
+    def init_from_dfs(self, dfs):
+        self.prod_therm = dfs.get("production_thermal")
+        self.prod_elec = dfs.get("production_electric")
+        # self.storage = dfs.get("storage")
+        self.distributors = dfs.get("distribution")
+        self.converters = dfs.get("conversion")
+        self.demand = dfs.get("demand")
+        self.hubs = dfs.get("hubs")
+        self.arcs = dfs.get("arcs")
+        self.producers_existing = dfs.get("production_existing")
+        self.initialize_ccs(dfs.get("ccs"))
 
     def raiseFileNotFoundError(self, fn):
         """Raises FileNotFoundError if self.raiseFileNotFoundError_bool is True,
@@ -248,6 +260,8 @@ class HydrogenData:
         return settings
 
     def initialize_ccs(self, ccs_data):
+        ccs_data.set_index("type", inplace=True)
+
         self.ccs1_percent_co2_captured = ccs_data.loc["ccs1", "percent_CO2_captured"]
         self.ccs2_percent_co2_captured = ccs_data.loc["ccs2", "percent_CO2_captured"]
         self.ccs1_h2_tax_credit = ccs_data.loc["ccs1", "h2_tax_credit"]
@@ -271,3 +285,34 @@ class HydrogenData:
         # initialize
         self.output_dfs = None
         self.output_dict = None
+
+    def all_dfs(self):
+        return {
+            "input-thermal_production": self.prod_therm,
+            "input-electric_production": self.prod_elec,
+            "input-distribution": self.distributors,
+            "input-conversion": self.converters,
+            "input-demand": self.demand,
+            "input-hubs": self.hubs,
+            "input-arcs": self.arcs,
+            "input-existing_production": self.producers_existing,
+            "output-production": self.output_dfs["production"],
+            "output-consumption": self.output_dfs["consumption"],
+            "output-conversion": self.output_dfs["conversion"],
+            "output-distribution": self.output_dfs["distribution"],
+        }
+
+    def add_uuid_to_all_dfs(self):
+        all_dfs = self.all_dfs()
+        for _, table in all_dfs.items():
+            table["uuid"] = str(self.uuid)
+
+        return self.uuid
+
+    def upload_to_sql(self, engine):
+        instance_uuid = self.add_uuid_to_all_dfs()
+
+        for table_name, table in self.all_dfs().items():
+            table.to_sql(table_name, con=engine, if_exists="append")
+
+        return instance_uuid
