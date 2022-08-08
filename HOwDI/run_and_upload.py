@@ -8,13 +8,16 @@ from HOwDI.model.HydrogenData import HydrogenData
 from HOwDI.postprocessing.generate_outputs import create_outputs_dfs
 
 
-def run_and_upload(engine, settings, dfs):
-    H = HydrogenData(read_type="DataFrame", settings=settings, dfs=dfs)
+def run_and_upload(engine, settings, dfs, uuid=None, trial_number=None):
+    H = HydrogenData(read_type="DataFrame", settings=settings, dfs=dfs, uuid=uuid)
     g = build_hydrogen_network(H)
     m = build_h2_model(H, g)
     H.output_dfs = create_outputs_dfs(m, H)
 
-    uuid = H.upload_to_sql(engine=engine)
+    metadata = {"uuid": str(uuid), "trial": trial_number}
+    H.add_value_to_all_dfs(**metadata)
+
+    H.upload_to_sql(engine=engine)
 
     return uuid
 
@@ -39,8 +42,7 @@ def main():
     ]
     dfs = {fn: pd.read_csv("../scenarios/base/inputs/" + fn + ".csv") for fn in fns}
 
-    uuid = run_and_upload(engine, settings, dfs)
-    print(uuid)
+    run_and_upload(engine, settings, dfs)
 
 
 if __name__ == "__main__":

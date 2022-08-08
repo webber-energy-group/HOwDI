@@ -302,17 +302,15 @@ class HydrogenData:
             "output-distribution": self.output_dfs["distribution"],
         }
 
-    def add_uuid_to_all_dfs(self):
+    def add_value_to_all_dfs(self, **kwargs):
         all_dfs = self.all_dfs()
-        for _, table in all_dfs.items():
-            table["uuid"] = str(self.uuid)
+        for k, v in kwargs.items():
+            for table in all_dfs.values():
+                table[k] = v
 
-        return self.uuid
+    def add_uuid_to_all_dfs(self):
+        self.add_value_to_all_dfs(**{"uuid": self.uuid})
 
     def upload_to_sql(self, engine):
-        instance_uuid = self.add_uuid_to_all_dfs()
-
         for table_name, table in self.all_dfs().items():
             table.to_sql(table_name, con=engine, if_exists="append")
-
-        return instance_uuid

@@ -39,8 +39,6 @@ def monte_carlo():
     }
     settings = read_yaml(base_input_dir / "settings.yml")
 
-    trial_uuids = []
-
     for n in range(number_of_trials):
 
         files_instance = copy.deepcopy(files)
@@ -55,10 +53,14 @@ def monte_carlo():
                     )
 
         [file.reset_index(inplace=True) for file in files_instance.values()]
-        trial_uuid = run_and_upload(
-            engine=engine, settings=settings, dfs=files_instance
+
+        run_and_upload(
+            engine=engine,
+            settings=settings,
+            dfs=files_instance,
+            uuid=run_uuid,
+            trial_number=n,
         )
-        trial_uuids.append(str(trial_uuid))
 
     metadata_df = pd.DataFrame({"uuid": [run_uuid], "metadata": [json.dumps(mc_dict)]})
     metadata_df.to_sql("metadata", con=engine, if_exists="append")
