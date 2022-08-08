@@ -14,7 +14,7 @@ def run_and_upload(engine, settings, dfs, uuid=None, trial_number=None):
     m = build_h2_model(H, g)
     H.output_dfs = create_outputs_dfs(m, H)
 
-    metadata = {"uuid": str(uuid), "trial": trial_number}
+    metadata = {"uuid": str(uuid)}
     H.add_value_to_all_dfs(**metadata)
 
     H.upload_to_sql(engine=engine)
