@@ -1,0 +1,19 @@
+metadata:
+  base_input_dir: "inputs"
+  sql_engine: "sqlite:///C:/Users/bpeco/Box/h2@scale/h2_model/test.sqlite" # "sqlite:// for mac"
+  number_of_trials: 10
+
+distributions:
+  # filename:
+  #   row_name:
+  #     column_name:
+  #       distribution: "normal"
+  #       distr_param1: 10
+  #       distr_param2: 20
+  production_thermal:
+    smr:
+      fixed_usdPerTon:
+        distribution: "normal"
+        parameters:
+          loc: ~ # optional, ~ means use value from file
+          scale: 10
