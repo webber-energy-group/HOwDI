@@ -26,6 +26,9 @@ def main():
         warnings.simplefilter(action="ignore", category=DeprecationWarning)
         from HOwDI.preprocessing.create_hubs_data import main as module
 
+    elif choice == "monte_carlo":
+        from HOwDI.monte_carlo import monte_carlo as module
+
     elif choice == "-h" or choice == "--help" or choice == "help":
         from HOwDI.help import main as module
 

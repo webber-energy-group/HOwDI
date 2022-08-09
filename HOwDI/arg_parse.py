@@ -116,6 +116,14 @@ Location where necessary hub files are required. (hubs.csv, arcs_blacklist.csv, 
             default=None,
             help="Location of model inputs where files we be adjusted with new hubs.",
         )
+    if name("monte_carlo"):
+        parser.add_argument(
+            "-f",
+            "--file",
+            dest="monte_carlo_file",
+            default="monte_carlo",
+            help="Location of monte carlo file",
+        )
 
     return parser.parse_args(argv[2:])
 

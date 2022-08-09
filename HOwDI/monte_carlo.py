@@ -13,6 +13,7 @@ from HOwDI.model.create_model import build_h2_model
 from HOwDI.model.create_network import build_hydrogen_network
 from HOwDI.model.HydrogenData import HydrogenData
 from HOwDI.postprocessing.generate_outputs import create_outputs_dfs
+from HOwDI.arg_parse import parse_command_line
 
 
 class NpEncoder(json.JSONEncoder):
@@ -149,11 +150,11 @@ def generate_monte_carlo_trial_settings(settings, distrs, n):
     return settings
 
 
-def monte_carlo():
-    # temp
-    base_dir = Path("../scenarios/base")
-    mc_dict = read_yaml(base_dir / "monte_carlo.yml")
-    # end temp
+def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
+    if monte_carlo_file == None:
+        args = parse_command_line(module="monte_carlo")
+        monte_carlo_file = args.monte_carlo_file
+    mc_dict = read_yaml(base_dir / (monte_carlo_file.replace(".yml", "") + ".yml"))
 
     run_uuid = str(uuid.uuid4())
     metadata = mc_dict.get("metadata")
@@ -256,7 +257,7 @@ def monte_carlo():
 
 
 def main():
-    monte_carlo()
+    monte_carlo(Path("../scenarios/base"), "monte_carlo")
 
 
 if __name__ == "__main__":
