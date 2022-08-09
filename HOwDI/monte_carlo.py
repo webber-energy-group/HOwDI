@@ -245,7 +245,6 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
         ]
     )
     settings_df.to_sql("input-settings", con=engine, if_exists="append")
-    settings_df.to_sql("settings", con=engine, if_exists="append")
 
     # upload metadata
     metadata_df = pd.DataFrame(
