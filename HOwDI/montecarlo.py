@@ -1,5 +1,3 @@
-# TODO monte carlo on settings as well
-
 import copy
 import json
 import uuid
@@ -61,7 +59,28 @@ class MonteCarloTrial:
 
     def update_file(self, files):
         """updates file with Monte Carlo'd value"""
-        files[self.file].at[self.row, self.column] = self.value
+        if self.file == "settings":
+            update_nested_dict_with_slash(files, self.row, self.value)
+        else:
+            files[self.file].at[self.row, self.column] = self.value
+
+
+class MovingList:
+    def __init__(self, l):
+        self.l = l
+        self.len = len(l)
+        self.i = 0
+
+    def update_index(self):
+        self.i += 1
+
+    def get(self):
+        if self.i >= self.len:
+            out = None
+        else:
+            out = self.l[self.i]
+        self.update_index()
+        return out
 
 
 def run_model(settings, trial, uuid, trial_number):
@@ -80,10 +99,40 @@ def read_yaml(fn):
         return yaml.load(f, Loader=yaml.FullLoader)
 
 
+def nested_dict_with_slash(d: dict, dict_path: str):
+    moving_list = MovingList([p for p in dict_path.split("/")])
+
+    def recurse_through_dict(r):
+        path = moving_list.get()
+        if path is not None:
+            return recurse_through_dict(r.get(path))
+        else:
+            return r
+
+    return recurse_through_dict(d)
+
+
+def update_nested_dict_with_slash(d: dict, dict_path: str, new_value):
+    paths = [p for p in dict_path.split("/")]
+    moving_list = MovingList(paths[0:-1])
+
+    def recurse_through_dict(r):
+        path = moving_list.get()
+        if path is not None:
+            return recurse_through_dict(r.get(path))
+        else:
+            r[paths[-1]] = new_value
+
+    recurse_through_dict(d)
+
+
 def adjust_parameters(files, file_name, row, column, parameters):
     none_keys = [k for k, v in parameters.items() if v is None]
     if none_keys != []:
-        default_value = files[file_name].loc[row, column]
+        if file_name == "settings":
+            default_value = nested_dict_with_slash(files, row)
+        else:
+            default_value = files[file_name].loc[row, column]
         parameters.update({k: default_value for k in none_keys})
     return parameters
 
@@ -92,6 +141,12 @@ def generate_monte_carlo_trial(files, mc_distributions, n):
     files = copy.deepcopy(files)
     [mc_distribution[n].update_file(files) for mc_distribution in mc_distributions]
     return files
+
+
+def generate_monte_carlo_trial_settings(settings, distrs, n):
+    settings = copy.deepcopy(settings)
+    [distr[n].update_file(settings) for distr in distrs]
+    return settings
 
 
 def monte_carlo():
@@ -127,6 +182,7 @@ def monte_carlo():
             files=files,
         )
         for file, row_data in distributions.items()
+        if file != "settings"
         for row, column_data in row_data.items()
         for column, distribution_data in column_data.items()
     ]
@@ -137,28 +193,66 @@ def monte_carlo():
         for n in range(number_of_trials)
     ]
 
+    if "settings" in distributions.keys():
+        settings_distr = [
+            MonteCarloParameter(
+                file="settings",
+                row=key,
+                column=None,
+                distribution_data=value,
+                number_of_trials=number_of_trials,
+                files=settings,
+            )
+            for key, value in distributions["settings"].items()
+        ]
+        settings_trials = [
+            generate_monte_carlo_trial_settings(settings, settings_distr, n)
+            for n in range(number_of_trials)
+        ]
+    else:
+        settings_trials = [settings] * number_of_trials
+
     # temp
     for trial in trials:
         [file.reset_index(inplace=True) for file in trial.values()]
     # end temp
 
     # set up model run
-    def run_trial(n, trial):
+    def run_trial(n, trial, settings):
         return run_model(settings=settings, trial=trial, uuid=run_uuid, trial_number=n)
 
     # run model
     model_instances = Parallel(
         n_jobs=metadata.get("number_of_jobs", 1), backend="loky"
-    )(delayed(run_trial)(n, trial) for n, trial in zip(range(number_of_trials), trials))
+    )(
+        delayed(run_trial)(n, trial, settings)
+        for n, trial, settings in zip(range(number_of_trials), trials, settings_trials)
+    )
 
     # upload data to sql
     [model_instance.upload_to_sql(engine=engine) for model_instance in model_instances]
+
+    # upload settings to sql
+    settings_df = pd.DataFrame(
+        [
+            {
+                "settings": json.dumps(settings_trial, cls=NpEncoder),
+                "uuid": run_uuid,
+                "trial": n,
+            }
+            for settings_trial, n in zip(settings_trials, range(number_of_trials))
+        ]
+    )
+    settings_df.to_sql("input-settings", con=engine, if_exists="append")
+    settings_df.to_sql("settings", con=engine, if_exists="append")
 
     # upload metadata
     metadata_df = pd.DataFrame(
         {"uuid": [run_uuid], "metadata": [json.dumps(mc_dict, cls=NpEncoder)]}
     )
     metadata_df.to_sql("metadata", con=engine, if_exists="append")
+
+    print(run_uuid)
 
 
 def main():

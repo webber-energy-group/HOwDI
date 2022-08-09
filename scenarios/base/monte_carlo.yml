@@ -1,22 +1,23 @@
 metadata:
   base_input_dir: "inputs"
   sql_engine: "sqlite:///C:/Users/bpeco/Box/h2@scale/h2_model/test.sqlite" # "sqlite:// for mac"
-  number_of_trials: 10
-  number_of_jobs: -1
+  number_of_trials: 5
+  number_of_jobs: -1 #-1 for max
 
 distributions:
   # filename:
   #   row_name:
   #     column_name:
   #       distribution: "normal"
-  #       distr_param1: 10
-  #       distr_param2: 20
+  #       parameters:
+  #         distr_param1: 10
+  #         distr_param2: 20
   production_thermal:
     smr:
       fixed_usdPerTon:
         distribution: "normal"
         parameters:
-          loc: ~ # optional, ~ means use value from file
+          loc: ~ # ~ means use value from file
           scale: 10
       capital_usdPerTonPerDay:
         distribution: "normal"
@@ -30,9 +31,14 @@ distributions:
         parameters:
           loc: ~
           scale: 15
-  # settings:
-  #   carbon_capture_credit_dollars_per_ton:
-  #     distribution: "normal"
-  #     parameters:
-  #       loc: ~
-  #       scale: 5
+  settings:
+    carbon_capture_credit_dollars_per_ton:
+      distribution: "normal"
+      parameters:
+        loc: ~
+        scale: 5
+    price_tracking_array/step: # use slashes for "nested" settings, this isn't the best example of a use case.
+      distribution: "normal"
+      parameters:
+        loc: ~
+        scale: 0.01

@@ -312,5 +312,7 @@ class HydrogenData:
         self.add_value_to_all_dfs(**{"uuid": self.uuid})
 
     def upload_to_sql(self, engine):
-        for table_name, table in self.all_dfs().items():
+        [
             table.to_sql(table_name, con=engine, if_exists="append")
+            for table_name, table in self.all_dfs().items()
+        ]
