@@ -2,12 +2,13 @@
 # TODO docstrings, but maybe not needed as most functions are a few lines
 
 import uuid
-
+import json
 from inspect import getsourcefile
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import sqlalchemy as db
 import yaml
 
 
@@ -50,6 +51,7 @@ class HydrogenData:
         # if read_type == "dataframe"
         dfs=None,
         upload_to_sql=False,
+        trial_number=None,
         sql_database=None,
     ):
         """
@@ -65,63 +67,98 @@ class HydrogenData:
 
         if read_type == "csv":
             self.init_from_csvs(
-                scenario_dir,
-                inputs_dir,
-                outputs_dir,
-                store_outputs,
-                raiseFileNotFoundError,
-                read_output_dir,
+                scenario_dir, inputs_dir, outputs_dir, store_outputs, settings
             )
         elif read_type == "dataframe" or read_type == "DataFrame" or read_type == "df":
-            self.init_from_dfs(dfs)
-
-        settings = self.get_settings(settings)
-        self.get_other_data(settings)
+            self.init_from_dfs(dfs, settings)
+        elif read_type == "sql":
+            self.trial_number = trial_number
+            self.init_from_sql(sql_database)
+        else:
+            raise ValueError
 
         if read_output_dir:
             self.create_outputs_dfs()
 
+    def init_files(self, how):
+        self.prod_therm = how("production_thermal")
+        self.prod_elec = how("production_electric")
+        # self.storage = how("storage")
+        self.distributors = how("distribution")
+        self.converters = how("conversion")
+        self.demand = how("demand")
+        self.hubs = how("hubs")
+        self.arcs = how("arcs")
+        self.producers_existing = how("production_existing")
+
+        ## (Retrofitted) CCS data
+        # in the future change to nested dictionaries please!
+        # ccs_data = how("ccs")
+        # self.initialize_ccs(ccs_data)
+
     def init_from_csvs(
-        self,
-        scenario_dir,
-        inputs_dir,
-        outputs_dir,
-        store_outputs,
-        raiseFileNotFoundError,
-        read_output_dir,
+        self, scenario_dir, inputs_dir, outputs_dir, store_outputs, settings
     ):
 
         self.scenario_dir = Path(scenario_dir)
         self.inputs_dir = self.scenario_dir / inputs_dir
         self.make_output_dir(outputs_dir, store_outputs)
 
-        ## File
-        self.prod_therm = self.read_file("production_thermal")
-        self.prod_elec = self.read_file("production_electric")
-        # self.storage = self.read_file("storage")
-        self.distributors = self.read_file("distribution")
-        self.converters = self.read_file("conversion")
-        self.demand = self.read_file("demand")
-        self.hubs = self.read_file("hubs")
-        self.arcs = self.read_file("arcs")
-        self.producers_existing = self.read_file("production_existing")
+        self.init_files(how=self.read_file)
 
         ## (Retrofitted) CCS data
         # in the future change to nested dictionaries please!
         ccs_data = self.read_file("ccs")
         self.initialize_ccs(ccs_data)
 
-    def init_from_dfs(self, dfs):
-        self.prod_therm = dfs.get("production_thermal")
-        self.prod_elec = dfs.get("production_electric")
-        # self.storage = dfs.get("storage")
-        self.distributors = dfs.get("distribution")
-        self.converters = dfs.get("conversion")
-        self.demand = dfs.get("demand")
-        self.hubs = dfs.get("hubs")
-        self.arcs = dfs.get("arcs")
-        self.producers_existing = dfs.get("production_existing")
+        ## settings
+        settings = self.get_settings(settings)
+        self.get_other_data(settings)
+
+    def init_from_dfs(self, dfs, settings):
+        self.init_files(dfs.get)
+
+        ## (Retrofitted) CCS data
+        # in the future change to nested dictionaries please!
         self.initialize_ccs(dfs.get("ccs"))
+
+        # settings
+        settings = self.get_settings(settings)
+        self.get_other_data(settings)
+
+    def read_sql(self, table_name, engine):
+        sql = f"""SELECT * FROM '{table_name}'
+                  WHERE uuid = '{self.uuid}'
+                  AND trial = {self.trial_number}"""
+
+        df = pd.read_sql(sql=sql, con=engine).drop(columns=["uuid", "trial"])
+
+        return df
+
+    def init_from_sql(self, engine):
+        if self.trial_number is None:
+            return ValueError(
+                "Tried to pull data from SQL but a run number was not specified"
+            )
+
+        if isinstance(engine, str):
+            engine = db.create_engine(engine)
+
+        assert isinstance(engine, db.engine.base.Engine)
+
+        # sql tables names are "input-{file_name}"
+        read_table = lambda file_name: self.read_sql(
+            table_name="input-" + file_name, engine=engine
+        )
+
+        self.init_files(read_table)
+
+        settings_df = read_table("settings")
+        settings_json_str = settings_df.iloc[0]["settings"]
+        settings = json.loads(settings_json_str)
+
+        settings = self.get_settings(settings)
+        self.get_other_data(settings)
 
     def raiseFileNotFoundError(self, fn):
         """Raises FileNotFoundError if self.raiseFileNotFoundError_bool is True,
@@ -288,14 +325,14 @@ class HydrogenData:
 
     def all_dfs(self):
         return {
-            "input-thermal_production": self.prod_therm,
-            "input-electric_production": self.prod_elec,
+            "input-production_thermal": self.prod_therm,
+            "input-production_electric": self.prod_elec,
             "input-distribution": self.distributors,
             "input-conversion": self.converters,
             "input-demand": self.demand,
             "input-hubs": self.hubs,
             "input-arcs": self.arcs,
-            "input-existing_production": self.producers_existing,
+            "input-production_existing": self.producers_existing,
             "output-production": self.output_dfs["production"],
             "output-consumption": self.output_dfs["consumption"],
             "output-conversion": self.output_dfs["conversion"],
