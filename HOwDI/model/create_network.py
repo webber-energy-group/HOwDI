@@ -36,23 +36,22 @@ def initialize_graph(H):
     """
     g = DiGraph()
 
-    for _, hub_series in H.hubs.iterrows():
+    for hub_name, hub_series in H.hubs.iterrows():
         ### 1) create the nodes and associated data for each hub_name
         hub_data = dict(hub_series)
-
-        hub_name = hub_data["hub"]
         capital_price_multiplier = hub_data["capital_pm"]
 
         ## 1.1) add a node for each of the hubs, separating low-purity
         # from high-purity (i.e., fuel cell quality)
         for purity_type in ["lowPurity", "highPurity"]:
+            hub_data["hub"] = hub_name
             hub_data["node"] = "{}_center_{}".format(hub_name, purity_type)
             hub_data["class"] = "center_{}".format(purity_type)
 
             g.add_node(hub_data["node"], **hub_data)
 
         ## 1.2) add a node for each distribution type (i.e., pipelines and trucks)
-        for d in H.distributors["distributor"]:
+        for d in H.distributors.index:
             # add both low and high purity pipelines
             if d == "pipeline":
                 for purity_type in ["LowPurity", "HighPurity"]:
@@ -98,9 +97,7 @@ def initialize_graph(H):
         # capital and fixed cost of the trucks--it represents the trucking fleet that
         # is based out of that hub. The truck fleet size ultimately limits the amount
         # of hydrogen that can flow from the hub node to the truck distribution hub.
-        truck_distribution = H.distributors[
-            H.distributors["distributor"].str.contains("truck")
-        ].set_index("distributor")
+        truck_distribution = H.distributors[H.distributors.index.str.contains("truck")]
 
         for truck_type, truck_info in truck_distribution.iterrows():
             # costs and flow limits, (note the the unit for trucks is an individual
@@ -124,9 +121,7 @@ def initialize_graph(H):
         ## 2.3) Connect distribution nodes to demand nodes
 
         # Series where index is flow type and value is flow limit:
-        flow_limit_series = H.distributors.set_index("distributor")[
-            "flowLimit_tonsPerDay"
-        ]
+        flow_limit_series = H.distributors["flowLimit_tonsPerDay"]
         # for every distribution node and every demand node,
         # add an edge:
         # Flow from truck distribution and flow from highPurity
@@ -167,12 +162,12 @@ def initialize_graph(H):
     #  (e.g., baytown to montBelvieu): i.e., add pipelines and truck routes between
     # connected hub_names
 
-    pipeline_data = H.distributors.set_index("distributor").loc["pipeline"]
+    pipeline_data = H.distributors.loc["pipeline"]
 
-    for _, arc_data in H.arcs.iterrows():
-        start_hub = arc_data["startHub"]
+    for start_hub, arc_data in H.arcs.iterrows():
+        # maybe double index
         end_hub = arc_data["endHub"]
-        hubs_df = H.hubs[(H.hubs["hub"] == start_hub) | (H.hubs["hub"] == end_hub)]
+        hubs_df = H.hubs[(H.hubs.index == start_hub) | (H.hubs.index == end_hub)]
 
         # take the average of the two hubs' capital price multiplier to get the pm of the arc
         capital_price_multiplier = hubs_df["capital_pm"].sum() / 2
@@ -272,11 +267,9 @@ def add_consumers(g: DiGraph, H):
     # loop through the hubs, add a node for each demand, and connect it to the appropriate demand hub
     # loop through the hub names, add a network node for each type of demand, and add a network arc
     # connecting that demand to the appropriate demand hub
-    for _, hub_data in H.hubs.iterrows():
-        hub_name = hub_data["hub"]
+    for hub_name, hub_data in H.hubs.iterrows():
 
-        for _, demand_data in H.demand.iterrows():
-            demand_sector = demand_data["sector"]
+        for demand_sector, demand_data in H.demand.iterrows():
             demand_value = hub_data["{}_tonnesperday".format(demand_sector)]
             demand_type = demand_data["demandType"]
             demand_node = "{}_demand_{}".format(hub_name, demand_type)
@@ -295,6 +288,7 @@ def add_consumers(g: DiGraph, H):
                 )
 
                 demand_sector_char["class"] = demand_sector_class
+                demand_sector_char["sector"] = demand_sector
                 demand_sector_char["node"] = demand_sector_node
                 demand_sector_char["size"] = demand_value
                 demand_sector_char["hub"] = hub_name
@@ -318,9 +312,7 @@ def add_producers(g: DiGraph, H):
         "electric": H.prod_elec,
         "thermal": H.prod_therm,
     }.items():
-        for _, prod_data_series in prod_df.iterrows():
-            prod_type = prod_data_series["type"]
-
+        for prod_type, prod_data_series in prod_df.iterrows():
             try:
                 H.hubs["build_{}".format(prod_type)]
             except KeyError:
@@ -332,8 +324,7 @@ def add_producers(g: DiGraph, H):
                 )
                 H.hubs["build_{}".format(prod_type)] = 1
 
-            for _, hub_data in H.hubs.iterrows():
-                hub_name = hub_data["hub"]
+            for hub_name, hub_data in H.hubs.iterrows():
                 capital_price_multiplier = hub_data["capital_pm"]
                 ng_price = hub_data["ng_usd_per_mmbtu"]
                 e_price = hub_data["e_usd_per_kwh"]
@@ -348,6 +339,7 @@ def add_producers(g: DiGraph, H):
 
                     prod_data = prod_data_series.to_dict()
                     prod_data["node"] = prod_node
+                    prod_data["type"] = prod_type
                     prod_data["prod_tech_type"] = prod_tech_type
                     prod_data["class"] = "producer"
                     prod_data["existing"] = 0
@@ -419,17 +411,17 @@ def add_producers(g: DiGraph, H):
 
     ## EXISTING PRODUCTION
     # loop through the existing producers and add them
-    for _, prod_existing_series in H.producers_existing.iterrows():
+    for prod_type, prod_existing_series in H.producers_existing.iterrows():
         hub_name = prod_existing_series["hub"]
-        prod_type = prod_existing_series["type"]
         prod_node = "{}_production_{}Existing".format(hub_name, prod_type)
         destination_node = "{}_center_{}Purity".format(hub_name, purity)
 
         # get hub data
-        hub_data = H.hubs.set_index("hub").loc[hub_name]
+        hub_data = H.hubs.loc[hub_name]
 
         prod_exist_data = prod_existing_series.to_dict()
         prod_exist_data["node"] = prod_node
+        prod_exist_data["type"] = prod_type
         prod_exist_data["class"] = "producer"
         prod_exist_data["existing"] = 1
         prod_exist_data["purity"] = prod_data["purity"]
@@ -455,7 +447,7 @@ def add_converters(g: DiGraph, H):
     each converter is a node and arc that splits an existing arc into two
     """
     # loop through the nodes and converters to add the necessary nodes and arcs
-    for _, converter_data_series in H.converters.iterrows():
+    for converter, converter_data_series in H.converters.iterrows():
         if converter_data_series["arc_start_class"] == "pass":
             pass
         else:
@@ -472,13 +464,14 @@ def add_converters(g: DiGraph, H):
             for node_b4_cv, node_b4_cv_class in potential_start_nodes:
                 if node_b4_cv_class == converter_data_series["arc_start_class"]:
                     hub_name = g.nodes[node_b4_cv]["hub"]
-                    hub_data = H.hubs.set_index("hub").loc[hub_name]
+                    hub_data = H.hubs.loc[hub_name]
                     # regional values:
                     capital_pm = hub_data["capital_pm"]
                     e_price = hub_data["e_usd_per_kwh"]
 
                     # add a new node for the converter at the hub
                     cv_data = converter_data_series.to_dict()
+                    cv_data["converter"] = converter
                     cv_data["hub"] = hub_name
                     cv_class = "converter_{}".format(cv_data["converter"])
                     cv_data["class"] = cv_class
@@ -555,7 +548,7 @@ def add_price_nodes(g: DiGraph, H):
     if not H.find_prices:
         return
     else:
-        demand_sector2type_map = H.demand.set_index("sector")["demandType"].to_dict()
+        demand_sector2type_map = H.demand["demandType"].to_dict()
         # demand sectors are "transportationFuel, industrialFuel, existing"
         # demand types are "fuelStation, lowPurity, highPurity"
 

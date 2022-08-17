@@ -1,4 +1,3 @@
-# TODO add upload_to_sql method.
 # TODO docstrings, but maybe not needed as most functions are a few lines
 
 import uuid
@@ -50,6 +49,7 @@ class HydrogenData:
         read_output_dir=False,
         # if read_type == "dataframe"
         dfs=None,
+        # if read_type == "sql"
         trial_number=None,
         sql_database=None,
     ):
@@ -92,8 +92,8 @@ class HydrogenData:
 
         ## (Retrofitted) CCS data
         # in the future change to nested dictionaries please!
-        # ccs_data = how("ccs")
-        # self.initialize_ccs(ccs_data)
+        ccs_data = how("ccs")
+        self.initialize_ccs(ccs_data)
 
     def init_from_csvs(
         self, scenario_dir, inputs_dir, outputs_dir, store_outputs, settings
@@ -107,19 +107,20 @@ class HydrogenData:
 
         ## (Retrofitted) CCS data
         # in the future change to nested dictionaries please!
-        ccs_data = self.read_file("ccs")
-        self.initialize_ccs(ccs_data)
+        # ccs_data = self.read_file("ccs")
+        # self.initialize_ccs(ccs_data)
 
         ## settings
         settings = self.get_settings(settings)
         self.get_other_data(settings)
 
     def init_from_dfs(self, dfs, settings):
-        self.init_files(dfs.get)
+        get_df = lambda key: read_df_from_dict(dfs=dfs, key=key)
+        self.init_files(get_df)
 
         ## (Retrofitted) CCS data
         # in the future change to nested dictionaries please!
-        self.initialize_ccs(dfs.get("ccs"))
+        # self.initialize_ccs(dfs.get("ccs"))
 
         # settings
         settings = self.get_settings(settings)
@@ -131,6 +132,8 @@ class HydrogenData:
                   AND trial = {self.trial_number}"""
 
         df = pd.read_sql(sql=sql, con=engine).drop(columns=["uuid", "trial"])
+
+        df = first_column_as_index(df)
 
         return df
 
@@ -174,12 +177,12 @@ class HydrogenData:
 
         file_name = self.inputs_dir / "{}.csv".format(fn)
         try:
-            return pd.read_csv(file_name)
+            return pd.read_csv(file_name, index_col=0)
         except FileNotFoundError:
             self.raiseFileNotFoundError(file_name)
 
     def get_hubs_list(self) -> list:
-        return list(self.hubs["hub"])
+        return list(self.hubs.index)
 
     def get_price_hub_params(self) -> dict:
         return {
@@ -190,8 +193,8 @@ class HydrogenData:
 
     def get_prod_types(self) -> dict:
         return {
-            "thermal": list(self.prod_therm["type"]),
-            "electric": list(self.prod_elec["type"]),
+            "thermal": list(self.prod_therm.index),
+            "electric": list(self.prod_elec.index),
         }
 
     def write_output_dataframes(self):
@@ -296,8 +299,7 @@ class HydrogenData:
         return settings
 
     def initialize_ccs(self, ccs_data):
-        ccs_data.set_index("type", inplace=True)
-
+        self.ccs_data = ccs_data
         self.ccs1_percent_co2_captured = ccs_data.loc["ccs1", "percent_CO2_captured"]
         self.ccs2_percent_co2_captured = ccs_data.loc["ccs2", "percent_CO2_captured"]
         self.ccs1_h2_tax_credit = ccs_data.loc["ccs1", "h2_tax_credit"]
@@ -331,6 +333,7 @@ class HydrogenData:
             "input-demand": self.demand,
             "input-hubs": self.hubs,
             "input-arcs": self.arcs,
+            "input-ccs": self.ccs_data,
             "input-production_existing": self.producers_existing,
             "output-production": self.output_dfs["production"],
             "output-consumption": self.output_dfs["consumption"],
@@ -352,3 +355,12 @@ class HydrogenData:
             table.to_sql(table_name, con=engine, if_exists="append")
             for table_name, table in self.all_dfs().items()
         ]
+
+
+def first_column_as_index(df):
+    return df.reset_index().set_index(df.columns[0])
+
+
+def read_df_from_dict(dfs, key):
+    df = dfs.get(key)
+    return first_column_as_index(df)
