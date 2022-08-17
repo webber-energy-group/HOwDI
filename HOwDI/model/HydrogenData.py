@@ -50,7 +50,6 @@ class HydrogenData:
         read_output_dir=False,
         # if read_type == "dataframe"
         dfs=None,
-        upload_to_sql=False,
         trial_number=None,
         sql_database=None,
     ):
