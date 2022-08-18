@@ -1,6 +1,5 @@
 # TODO docstrings, but maybe not needed as most functions are a few lines
 
-import copy
 import uuid
 import json
 from inspect import getsourcefile
