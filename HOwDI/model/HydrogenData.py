@@ -1,5 +1,6 @@
 # TODO docstrings, but maybe not needed as most functions are a few lines
 
+import copy
 import uuid
 import json
 from inspect import getsourcefile
@@ -95,6 +96,23 @@ class HydrogenData:
         ccs_data = how("ccs")
         self.initialize_ccs(ccs_data)
 
+    def create_output_dict(self):
+        from HOwDI.postprocessing.generate_outputs import create_output_dict
+
+        self.output_dict = create_output_dict(self)
+
+    def init_outputs(self, how):
+        # temp:
+        self.initialize_outputs = True
+
+        if self.initialize_outputs:
+            self.output_dfs = {
+                x: how(x)
+                for x in ["production", "consumption", "conversion", "distribution"]
+            }
+
+            self.create_output_dict()
+
     def init_from_csvs(
         self, scenario_dir, inputs_dir, outputs_dir, store_outputs, settings
     ):
@@ -105,18 +123,13 @@ class HydrogenData:
 
         self.init_files(how=self.read_file)
 
-        ## (Retrofitted) CCS data
-        # in the future change to nested dictionaries please!
-        # ccs_data = self.read_file("ccs")
-        # self.initialize_ccs(ccs_data)
-
         ## settings
         settings = self.get_settings(settings)
         self.get_other_data(settings)
 
     def init_from_dfs(self, dfs, settings):
-        get_df = lambda key: read_df_from_dict(dfs=dfs, key=key)
-        self.init_files(get_df)
+        # get_df = lambda key: read_df_from_dict(dfs=dfs, key=key)
+        self.init_files(dfs.get)
 
         ## (Retrofitted) CCS data
         # in the future change to nested dictionaries please!
@@ -131,8 +144,8 @@ class HydrogenData:
                   WHERE uuid = '{self.uuid}'
                   AND trial = {self.trial_number}"""
 
-        df = pd.read_sql(sql=sql, con=engine).drop(columns=["uuid", "trial"])
-
+        df = pd.read_sql(sql=sql, con=engine)
+        df = df.drop(columns=["uuid", "trial"])
         df = first_column_as_index(df)
 
         return df
@@ -148,19 +161,24 @@ class HydrogenData:
 
         assert isinstance(engine, db.engine.base.Engine)
 
-        # sql tables names are "input-{file_name}"
-        read_table = lambda file_name: self.read_sql(
-            table_name="input-" + file_name, engine=engine
+        # sql tables names are "input/output-{file_name}"
+        read_table = lambda table_name: self.read_sql(
+            table_name=table_name,
+            engine=engine,
         )
+        read_inputs = lambda file_name: read_table("input-" + file_name)
+        read_outputs = lambda file_name: read_table("output-" + file_name)
 
-        self.init_files(read_table)
+        self.init_files(read_inputs)
 
-        settings_df = read_table("settings")
+        settings_df = read_inputs("settings")
         settings_json_str = settings_df.iloc[0]["settings"]
         settings = json.loads(settings_json_str)
 
         settings = self.get_settings(settings)
         self.get_other_data(settings)
+
+        self.init_outputs(read_outputs)
 
     def raiseFileNotFoundError(self, fn):
         """Raises FileNotFoundError if self.raiseFileNotFoundError_bool is True,
@@ -352,15 +370,65 @@ class HydrogenData:
 
     def upload_to_sql(self, engine):
         [
-            table.to_sql(table_name, con=engine, if_exists="append")
+            table.to_sql(
+                name=table_name,
+                con=engine,
+                if_exists="append",
+                method="multi",
+            )
             for table_name, table in self.all_dfs().items()
         ]
 
+    def output_vector_dict(self):
+        vectors = {
+            name: create_dataframe_vector(name, df)
+            for name, df in self.output_dfs.items()
+        }
+
+        return vectors
+
+    def output_vector(self):
+        vectors = self.output_vector_dict()
+        vectors = list(vectors.values())
+        for df in vectors:
+            df.index = df.index.map("-".join)
+
+        output_vector = pd.concat(vectors)
+
+        assert len(output_vector) == sum([len(df) for df in vectors])
+        return output_vector
+
+    def plot(self):
+        from HOwDI.postprocessing.create_plot import create_plot
+
+        if self.output_dict is None:
+            self.create_output_dict()
+        return create_plot(self)
+
 
 def first_column_as_index(df):
-    return df.reset_index().set_index(df.columns[0])
+    df = df.reset_index().set_index(df.columns[0])
+    df = df.drop(columns="index", errors="ignore")
+    return df
 
 
 def read_df_from_dict(dfs, key):
     df = dfs.get(key)
     return first_column_as_index(df)
+
+
+def add_name_to_index(df, name):
+    df.index = name + "-" + df.index
+
+    return df
+
+
+def create_dataframe_vector(name, df):
+    index = [[name] * len(df), df.index]
+    df.set_index([[name] * len(df), df.index], inplace=True)
+    if name == "distribution":
+        index.append("arc_end")
+
+    df = df.set_index(index)
+
+    return df.stack()

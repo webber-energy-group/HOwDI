@@ -13,7 +13,6 @@ from HOwDI.model.create_model import build_h2_model
 from HOwDI.model.create_network import build_hydrogen_network
 from HOwDI.model.HydrogenData import HydrogenData
 from HOwDI.postprocessing.generate_outputs import create_outputs_dfs
-from HOwDI.arg_parse import parse_command_line
 
 
 class NpEncoder(json.JSONEncoder):
@@ -152,6 +151,8 @@ def generate_monte_carlo_trial_settings(settings, distrs, n):
 
 def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
     if monte_carlo_file == None:
+        from HOwDI.arg_parse import parse_command_line
+
         args = parse_command_line(module="monte_carlo")
         monte_carlo_file = args.monte_carlo_file
     mc_dict = read_yaml(base_dir / (monte_carlo_file.replace(".yml", "") + ".yml"))
@@ -213,10 +214,10 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
     else:
         settings_trials = [settings] * number_of_trials
 
-    # temp
-    for trial in trials:
-        [file.reset_index(inplace=True) for file in trial.values()]
-    # end temp
+    # # temp
+    # for trial in trials:
+    #     [file.reset_index(inplace=True) for file in trial.values()]
+    # # end temp
 
     # set up model run
     def run_trial(n, trial, settings):
