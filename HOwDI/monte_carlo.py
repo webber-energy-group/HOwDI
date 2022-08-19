@@ -5,14 +5,13 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import yaml
 from joblib import Parallel, delayed
-from sqlalchemy import create_engine
 
 from HOwDI.model.create_model import build_h2_model
 from HOwDI.model.create_network import build_hydrogen_network
 from HOwDI.model.HydrogenData import HydrogenData
 from HOwDI.postprocessing.generate_outputs import create_outputs_dfs
+from HOwDI.util import create_db_engine, read_yaml
 
 
 class NpEncoder(json.JSONEncoder):
@@ -94,11 +93,6 @@ def run_model(settings, trial, uuid, trial_number):
     return H
 
 
-def read_yaml(fn):
-    with open(fn) as f:
-        return yaml.load(f, Loader=yaml.FullLoader)
-
-
 def nested_dict_with_slash(d: dict, dict_path: str):
     moving_list = MovingList([p for p in dict_path.split("/")])
 
@@ -163,7 +157,7 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
 
     # instantiate metadata
     base_input_dir = base_dir / metadata.get("base_input_dir", "inputs")
-    engine = create_engine(metadata.get("sql_engine"))
+    engine = create_db_engine()
     number_of_trials = metadata.get("number_of_trials", 1)
 
     # read base data
