@@ -10,6 +10,8 @@ import pandas as pd
 import sqlalchemy as db
 import yaml
 
+from HOwDI.util import get_number_of_trials
+
 
 class HydrogenData:
     """
@@ -49,6 +51,7 @@ class HydrogenData:
         read_output_dir=False,
         # if read_type == "dataframe"
         dfs=None,
+        outputs=None,
         # if read_type == "sql"
         trial_number=None,
         sql_database=None,
@@ -63,6 +66,7 @@ class HydrogenData:
         """
         self.uuid = uuid
         self.raiseFileNotFoundError_bool = raiseFileNotFoundError
+        self.trial_number = trial_number
 
         if read_type == "csv":
             self.init_from_csvs(
@@ -70,14 +74,17 @@ class HydrogenData:
             )
         elif read_type == "dataframe" or read_type == "DataFrame" or read_type == "df":
             self.init_from_dfs(dfs, settings)
+
         elif read_type == "sql":
-            self.trial_number = trial_number
             self.init_from_sql(sql_database)
         else:
             raise ValueError
 
         if read_output_dir:
             self.create_outputs_dfs()
+
+        if outputs is not None:
+            self.output_dfs == outputs
 
     def init_files(self, how):
         self.prod_therm = how("production_thermal")
@@ -128,7 +135,7 @@ class HydrogenData:
 
     def init_from_dfs(self, dfs, settings):
         # get_df = lambda key: read_df_from_dict(dfs=dfs, key=key)
-        self.init_files(dfs.get)
+        self.init_files(lambda name: first_column_as_index(dfs.get(name)))
 
         ## (Retrofitted) CCS data
         # in the future change to nested dictionaries please!
@@ -431,3 +438,71 @@ def create_dataframe_vector(name, df):
     df = df.set_index(index)
 
     return df.stack()
+
+
+def init_multiple(uuid, engine):
+    """Returns a list of all HydrogenData objects from the database {engine} that have uuid {uuid}"""
+    sql = lambda table_name: f"""SELECT * FROM '{table_name}' WHERE uuid = '{uuid}'"""
+    read_table = lambda table_name: pd.read_sql(sql=sql(table_name), con=engine)
+
+    tables = [
+        "input-production_thermal",
+        "input-production_electric",
+        "input-distribution",
+        "input-conversion",
+        "input-demand",
+        "input-hubs",
+        "input-arcs",
+        "input-ccs",
+        "input-settings",
+        "input-production_existing",
+        "output-production",
+        "output-consumption",
+        "output-conversion",
+        "output-distribution",
+    ]
+
+    dfs = {table: read_table(table) for table in tables}
+
+    number_of_trials = get_number_of_trials(uuid, engine)
+
+    inputs = [
+        {
+            table_name.replace("input-", ""): table[table["trial"] == trial]
+            for table_name, table in dfs.items()
+            if (
+                table_name.startswith("input-")
+                and not (table_name.endswith("settings"))
+            )
+        }
+        for trial in range(number_of_trials)
+    ]
+    outputs = [
+        {
+            table_name.replace("output", ""): table[table["trial"] == trial]
+            for table_name, table in dfs.items()
+            if table_name.startswith("outputs-")
+        }
+        for trial in range(number_of_trials)
+    ]
+    settings = [
+        json.loads(
+            dfs["input-settings"][dfs["input-settings"]["trial"] == trial][
+                "settings"
+            ].values[0]
+        )
+        for trial in range(number_of_trials)
+    ]
+
+    h_objs = [
+        HydrogenData(
+            uuid=uuid,
+            read_type="dataframe",
+            dfs=input_dfs,
+            outputs=output_dfs,
+            settings=settings_instance,
+        )
+        for input_dfs, output_dfs, settings_instance in zip(inputs, outputs, settings)
+    ]
+
+    return h_objs
