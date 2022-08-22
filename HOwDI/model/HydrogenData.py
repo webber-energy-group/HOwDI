@@ -84,22 +84,22 @@ class HydrogenData:
             self.create_outputs_dfs()
 
         if outputs is not None:
-            self.output_dfs == outputs
+            self.output_dfs = outputs
 
     def init_files(self, how):
-        self.prod_therm = how("production_thermal")
-        self.prod_elec = how("production_electric")
+        self.prod_therm = set_index(how("production_thermal"), "type")
+        self.prod_elec = set_index(how("production_electric"), "type")
         # self.storage = how("storage")
-        self.distributors = how("distribution")
-        self.converters = how("conversion")
-        self.demand = how("demand")
-        self.hubs = how("hubs")
-        self.arcs = how("arcs")
-        self.producers_existing = how("production_existing")
+        self.distributors = set_index(how("distribution"), "distributor")
+        self.converters = set_index(how("conversion"), "converter")
+        self.demand = set_index(how("demand"), "sector")
+        self.hubs = set_index(how("hubs"), "hub")
+        self.arcs = set_index(how("arcs"), "startHub")
+        self.producers_existing = set_index(how("production_existing"), "type")
 
         ## (Retrofitted) CCS data
         # in the future change to nested dictionaries please!
-        ccs_data = how("ccs")
+        ccs_data = set_index(how("ccs"), "type")
         self.initialize_ccs(ccs_data)
 
     def create_output_dict(self):
@@ -411,6 +411,13 @@ class HydrogenData:
             self.create_output_dict()
         return create_plot(self)
 
+    def get_prices_dict(self):
+        consumption_df = self.output_dfs.get("consumption")
+        if consumption_df is None:
+            raise ValueError
+        ph_dict = {ph: get_prices_at_hub(consumption_df, ph) for ph in self.price_hubs}
+        return ph_dict
+
 
 def first_column_as_index(df):
     df = df.reset_index().set_index(df.columns[0])
@@ -468,7 +475,9 @@ def init_multiple(uuid, engine):
 
     inputs = [
         {
-            table_name.replace("input-", ""): table[table["trial"] == trial]
+            table_name.replace("input-", ""): first_column_as_index(
+                table[table["trial"] == trial]
+            )
             for table_name, table in dfs.items()
             if (
                 table_name.startswith("input-")
@@ -479,9 +488,11 @@ def init_multiple(uuid, engine):
     ]
     outputs = [
         {
-            table_name.replace("output", ""): table[table["trial"] == trial]
+            table_name.replace("output-", ""): first_column_as_index(
+                table[table["trial"] == trial]
+            )
             for table_name, table in dfs.items()
-            if table_name.startswith("outputs-")
+            if table_name.startswith("output-")
         }
         for trial in range(number_of_trials)
     ]
@@ -506,3 +517,22 @@ def init_multiple(uuid, engine):
     ]
 
     return h_objs
+
+
+def set_index(df, index_name):
+    try:
+        if not isinstance(df.index, pd.RangeIndex):
+            df[df.index.name] = df.index
+        df = df.set_index(index_name)
+    except KeyError:
+        assert df.index.name == index_name
+    return df
+
+
+def get_prices_at_hub(df, hub):
+    price_str = f"{hub}_price"
+    prices_df = df[df.index.str.startswith(price_str)]
+    prices_list = list(prices_df.index.str.replace(price_str, ""))
+    price_list_separate = [x.split("_") for x in prices_list]
+    price_dict = {sector: amount for sector, amount in price_list_separate}
+    return price_dict

@@ -16,8 +16,9 @@ def input_scenarios():
     uuid = "ae83c384-8da6-41e6-99a7-13732a7f520d"
 
     hs = init_multiple(uuid, engine)
+    prices = [h.get_prices_dict() for h in hs]
 
-    # TODO write method for H to generate prices at each node
+    pass
     # TODO set up selecting input parameters to show on graph
 
 
