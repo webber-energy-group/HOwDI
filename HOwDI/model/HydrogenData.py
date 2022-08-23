@@ -416,6 +416,7 @@ class HydrogenData:
         if consumption_df is None:
             raise ValueError
         ph_dict = {ph: get_prices_at_hub(consumption_df, ph) for ph in self.price_hubs}
+        self.prices = ph_dict
         return ph_dict
 
 

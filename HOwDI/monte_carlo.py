@@ -184,6 +184,7 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
     ]
 
     # put distributions into files
+    # TODO put this stuff into the function that is run in parallel to save memory?
     trials = [
         generate_monte_carlo_trial(files, mc_distributions, n)
         for n in range(number_of_trials)
