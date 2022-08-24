@@ -10,9 +10,13 @@ def read_yaml(fn):
         return yaml.load(f, Loader=yaml.FullLoader)
 
 
-def create_db_engine():
+def read_config() -> dict:
     p = Path(__file__) / ".."
-    config = read_yaml(p / "config.yml")
+    return read_yaml(p / "config.yml")
+
+
+def create_db_engine():
+    config = read_config()
     db = config.get("db")
     engine = create_engine(db)
     return engine

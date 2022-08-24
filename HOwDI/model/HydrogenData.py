@@ -10,7 +10,7 @@ import pandas as pd
 import sqlalchemy as db
 import yaml
 
-from HOwDI.util import get_number_of_trials
+from HOwDI.util import get_number_of_trials, dict_keys_to_list, read_config
 
 
 class HydrogenData:
@@ -135,7 +135,14 @@ class HydrogenData:
 
     def init_from_dfs(self, dfs, settings):
         # get_df = lambda key: read_df_from_dict(dfs=dfs, key=key)
-        self.init_files(lambda name: first_column_as_index(dfs.get(name)))
+        def init_dfs_method(name):
+            try:
+                return first_column_as_index(dfs[name])
+            except KeyError:
+                self.raiseFileNotFoundError(name)
+                return None
+
+        self.init_files(init_dfs_method)
 
         ## (Retrofitted) CCS data
         # in the future change to nested dictionaries please!
@@ -323,13 +330,18 @@ class HydrogenData:
         return settings
 
     def initialize_ccs(self, ccs_data):
-        self.ccs_data = ccs_data
-        self.ccs1_percent_co2_captured = ccs_data.loc["ccs1", "percent_CO2_captured"]
-        self.ccs2_percent_co2_captured = ccs_data.loc["ccs2", "percent_CO2_captured"]
-        self.ccs1_h2_tax_credit = ccs_data.loc["ccs1", "h2_tax_credit"]
-        self.ccs2_h2_tax_credit = ccs_data.loc["ccs2", "h2_tax_credit"]
-        self.ccs1_variable_usdPerTon = ccs_data.loc["ccs1", "variable_usdPerTonCO2"]
-        self.ccs2_variable_usdPerTon = ccs_data.loc["ccs2", "variable_usdPerTonCO2"]
+        if ccs_data is not None:
+            self.ccs_data = ccs_data
+            self.ccs1_percent_co2_captured = ccs_data.loc[
+                "ccs1", "percent_CO2_captured"
+            ]
+            self.ccs2_percent_co2_captured = ccs_data.loc[
+                "ccs2", "percent_CO2_captured"
+            ]
+            self.ccs1_h2_tax_credit = ccs_data.loc["ccs1", "h2_tax_credit"]
+            self.ccs2_h2_tax_credit = ccs_data.loc["ccs2", "h2_tax_credit"]
+            self.ccs1_variable_usdPerTon = ccs_data.loc["ccs1", "variable_usdPerTonCO2"]
+            self.ccs2_variable_usdPerTon = ccs_data.loc["ccs2", "variable_usdPerTonCO2"]
 
     def get_other_data(self, settings):
         self.data_dir = self.find_data_dir()
@@ -448,29 +460,66 @@ def create_dataframe_vector(name, df):
     return df.stack()
 
 
-def init_multiple(uuid, engine):
+def init_multiple(uuid, engine, data_filter: dict = None):
     """Returns a list of all HydrogenData objects from the database {engine} that have uuid {uuid}"""
     sql = lambda table_name: f"""SELECT * FROM '{table_name}' WHERE uuid = '{uuid}'"""
     read_table = lambda table_name: pd.read_sql(sql=sql(table_name), con=engine)
 
-    tables = [
-        "input-production_thermal",
-        "input-production_electric",
-        "input-distribution",
-        "input-conversion",
-        "input-demand",
-        "input-hubs",
-        "input-arcs",
-        "input-ccs",
-        "input-settings",
-        "input-production_existing",
+    if data_filter:
+        # remove "settings" from data_filter, if it exists
+        data_filter.pop("settings", None)
+
+        input_tables_names = dict_keys_to_list(data_filter)
+        input_tables = ["input-" + x for x in input_tables_names]
+        tables_map = {
+            name_with_prefix: name
+            for name, name_with_prefix in zip(input_tables_names, input_tables)
+        }
+
+        index_columns = read_config().get("database_index_columns")
+        tables2columns_dict = {
+            table: index_columns.get(table) for table in input_tables
+        }
+
+        sql_statements = [
+            "SELECT "
+            + ", ".join([index] + columns + ["trial"])
+            + f" FROM '{table_name}' WHERE uuid = '{uuid}' AND "
+            + "("
+            + " OR ".join([f"{index} = '{row}'"])
+            + ")"
+            for table_name, index in tables2columns_dict.items()
+            for row, columns in data_filter[tables_map[table_name]].items()
+        ]
+
+        input_dfs = {
+            table: pd.read_sql(sql=sql_statement, con=engine)
+            for table, sql_statement in zip(input_tables, sql_statements)
+        }
+    else:
+        input_tables = [
+            "input-production_thermal",
+            "input-production_electric",
+            "input-distribution",
+            "input-conversion",
+            "input-demand",
+            "input-hubs",
+            "input-arcs",
+            "input-ccs",
+            "input-production_existing",
+        ]
+        input_dfs = {table: read_table(table) for table in input_tables}
+
+    output_tables = [
         "output-production",
         "output-consumption",
         "output-conversion",
         "output-distribution",
     ]
 
-    dfs = {table: read_table(table) for table in tables}
+    output_dfs = {table: read_table(table) for table in output_tables}
+
+    settings_table = read_table("input-settings")
 
     number_of_trials = get_number_of_trials(uuid, engine)
 
@@ -479,11 +528,7 @@ def init_multiple(uuid, engine):
             table_name.replace("input-", ""): first_column_as_index(
                 table[table["trial"] == trial]
             )
-            for table_name, table in dfs.items()
-            if (
-                table_name.startswith("input-")
-                and not (table_name.endswith("settings"))
-            )
+            for table_name, table in input_dfs.items()
         }
         for trial in range(number_of_trials)
     ]
@@ -492,19 +537,19 @@ def init_multiple(uuid, engine):
             table_name.replace("output-", ""): first_column_as_index(
                 table[table["trial"] == trial]
             )
-            for table_name, table in dfs.items()
+            for table_name, table in output_dfs.items()
             if table_name.startswith("output-")
         }
         for trial in range(number_of_trials)
     ]
     settings = [
         json.loads(
-            dfs["input-settings"][dfs["input-settings"]["trial"] == trial][
-                "settings"
-            ].values[0]
+            settings_table[settings_table["trial"] == trial]["settings"].values[0]
         )
         for trial in range(number_of_trials)
     ]
+
+    raise_fnf = not bool(data_filter)
 
     h_objs = [
         HydrogenData(
@@ -513,6 +558,7 @@ def init_multiple(uuid, engine):
             dfs=input_dfs,
             outputs=output_dfs,
             settings=settings_instance,
+            raiseFileNotFoundError=raise_fnf,
         )
         for input_dfs, output_dfs, settings_instance in zip(inputs, outputs, settings)
     ]
@@ -521,12 +567,15 @@ def init_multiple(uuid, engine):
 
 
 def set_index(df, index_name):
+    if df is None:
+        return None
     try:
         if not isinstance(df.index, pd.RangeIndex):
             df[df.index.name] = df.index
         df = df.set_index(index_name)
     except KeyError:
         assert df.index.name == index_name
+
     return df
 
 
