@@ -1,6 +1,8 @@
+import copy
 import json
 from pathlib import Path
 
+import pandas as pd
 import yaml
 from sqlalchemy import create_engine
 
@@ -132,3 +134,21 @@ def dict_keys_to_list(d):
 def monte_carlo_keys(uuid, engine=None):
     d = get_flat_monte_carlo_options_dict(uuid, engine)
     return dict_keys_to_list(d)
+
+
+def set_index(df, index_name):
+    df = copy.deepcopy(df)
+    if df is None:
+        return None
+    try:
+        if not isinstance(df.index, pd.RangeIndex):
+            df[df.index.name] = df.index
+        df = df.set_index(index_name)
+    except KeyError:
+        assert df.index.name == index_name
+
+    return df
+
+
+def normalize_df(df):
+    return df / df.abs().max()

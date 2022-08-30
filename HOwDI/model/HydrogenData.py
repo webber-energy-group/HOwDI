@@ -1,7 +1,8 @@
 # TODO docstrings, but maybe not needed as most functions are a few lines
 
-import uuid
+import copy
 import json
+import uuid
 from inspect import getsourcefile
 from pathlib import Path
 
@@ -9,8 +10,13 @@ import numpy as np
 import pandas as pd
 import sqlalchemy as db
 import yaml
-
-from HOwDI.util import get_number_of_trials, dict_keys_to_list, read_config
+from HOwDI.util import (
+    dict_keys_to_list,
+    flatten_dict,
+    get_number_of_trials,
+    read_config,
+    set_index,
+)
 
 
 class HydrogenData:
@@ -198,6 +204,8 @@ class HydrogenData:
         WIP: Else, print FNF to logger."""
         if self.raiseFileNotFoundError_bool:
             raise FileNotFoundError("The file {} was not found.".format(fn))
+        else:
+            return None
         # TODO
         # else:
         #   logger.warning("The file {} was not found.".format(fn))
@@ -342,6 +350,8 @@ class HydrogenData:
             self.ccs2_h2_tax_credit = ccs_data.loc["ccs2", "h2_tax_credit"]
             self.ccs1_variable_usdPerTon = ccs_data.loc["ccs1", "variable_usdPerTonCO2"]
             self.ccs2_variable_usdPerTon = ccs_data.loc["ccs2", "variable_usdPerTonCO2"]
+        else:
+            self.ccs_data = self.raiseFileNotFoundError("ccs")
 
     def get_other_data(self, settings):
         self.data_dir = self.find_data_dir()
@@ -430,6 +440,25 @@ class HydrogenData:
         ph_dict = {ph: get_prices_at_hub(consumption_df, ph) for ph in self.price_hubs}
         self.prices = ph_dict
         return ph_dict
+
+    def get_trial_info(self):
+        prices = self.get_prices_dict()
+        prices = flatten_dict(prices)
+        prices = pd.DataFrame(prices, index=[self.trial_number])
+        prices.index.name = "trial"
+
+        all_dfs = self.all_dfs()
+        trial_vector = pd.concat(
+            [
+                transform_df_to_trial(df, name, self.trial_number)
+                for name, df in all_dfs.items()
+                if name.startswith("input")
+            ]
+            + [prices],
+            axis=1,
+        )
+
+        return trial_vector
 
 
 def first_column_as_index(df):
@@ -559,24 +588,14 @@ def init_multiple(uuid, engine, data_filter: dict = None):
             outputs=output_dfs,
             settings=settings_instance,
             raiseFileNotFoundError=raise_fnf,
+            trial_number=trial_number,
         )
-        for input_dfs, output_dfs, settings_instance in zip(inputs, outputs, settings)
+        for input_dfs, output_dfs, settings_instance, trial_number in zip(
+            inputs, outputs, settings, range(number_of_trials)
+        )
     ]
 
     return h_objs
-
-
-def set_index(df, index_name):
-    if df is None:
-        return None
-    try:
-        if not isinstance(df.index, pd.RangeIndex):
-            df[df.index.name] = df.index
-        df = df.set_index(index_name)
-    except KeyError:
-        assert df.index.name == index_name
-
-    return df
 
 
 def get_prices_at_hub(df, hub):
@@ -586,3 +605,29 @@ def get_prices_at_hub(df, hub):
     price_list_separate = [x.split("_") for x in prices_list]
     price_dict = {sector: amount for sector, amount in price_list_separate}
     return price_dict
+
+
+def transform_df_to_trial(df, file_name, trial_number):
+    if df is None:
+        return None
+
+    df = df.drop(columns=["trial"])
+
+    df = pd.concat(
+        [
+            add_index_to_row(row, index_name, trial_number)
+            for index_name, row in df.iterrows()
+        ]
+    )
+
+    df.columns = file_name + "/" + df.columns
+    return df
+
+
+def add_index_to_row(row, index, trial_number):
+    row = copy.deepcopy(row)
+    row.index = index + "/" + row.index
+    row = row.to_frame().T
+    row.index = [trial_number]
+    row.index.name = "trial"
+    return row
