@@ -21,11 +21,14 @@ investment_interest: 0.06
 investment_period: 20
 time_slices: 365
 
+# percent of capital used to estimate fixed costs
+fixedcost_percent: 0.02
+
 # Solver settings
 solver_settings:
   solver: "gurobi"
   solver_debug: False
-  mipgap: 1.0E-7
+  mipgap: 1.0E-2
 
 # other options
 fractional_chec: True # True - CHECs are assigned based on carbon free hydrogen, False - CHECs are given for all production if producer has any form of carbon reduction
