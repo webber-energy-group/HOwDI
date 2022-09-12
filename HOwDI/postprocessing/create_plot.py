@@ -15,7 +15,6 @@ from matplotlib.lines import Line2D
 from shapely.wkt import loads
 
 from HOwDI.arg_parse import parse_command_line
-from HOwDI.model.HydrogenData import HydrogenData
 
 # ignore warning about plotting empty frame
 warnings.simplefilter(action="ignore", category=UserWarning)
@@ -104,7 +103,7 @@ def _diff_of_list(a: list, b: list) -> list:
     return list(difference)
 
 
-def create_plot(H: HydrogenData):
+def create_plot(H):
     """
     Parameters:
     H is a HydrogenData object with the following:
@@ -430,6 +429,8 @@ def create_plot(H: HydrogenData):
 
 
 def main():
+    from HOwDI.model.HydrogenData import HydrogenData
+
     args = parse_command_line()
 
     H = HydrogenData(
