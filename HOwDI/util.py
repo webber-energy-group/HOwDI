@@ -14,7 +14,13 @@ def read_yaml(fn):
 
 def read_config() -> dict:
     p = Path(__file__) / ".."
-    return read_yaml(p / "config.yml")
+    yaml_out = read_yaml(p / "config.yml")
+
+    config_local_path = p / "config_local.yml"
+    if config_local_path.exists():
+        yaml_out.update(read_yaml(config_local_path))
+
+    return yaml_out
 
 
 def create_db_engine():

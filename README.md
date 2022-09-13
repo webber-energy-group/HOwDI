@@ -55,3 +55,7 @@ Traceforward:           HOwDI traceforward
 ## Contributing
 
 HOwDI uses the Black code style. Please format your code accordingly before making a pull request.
+
+## TEMP
+
+Create a file called `HOwDI/config_local.yml`. Add key `db` and follow with db path.

@@ -1,5 +1,3 @@
-db: "sqlite:///C:/Users/bpeco/Box/h2@scale/h2_model/test.sqlite" # "sqlite:// for mac"
-
 database_index_columns:
   input-arcs: startHub
   input-ccs: type
