@@ -17,7 +17,9 @@ distributions:
         distribution: "normal"
         parameters:
           loc: ~ # ~ means use value from file
-          scale: 10
+          scale: ["mul", 0.1] # means multiply value from file by 0.1
+          # https://docs.python.org/3/library/operator.html for all operators
+          # "add" and "mul" are primary
       capital_usdPerTonPerDay:
         distribution: "normal"
         parameters:

@@ -1,5 +1,6 @@
 import copy
 import json
+import operator
 import uuid
 from pathlib import Path
 
@@ -120,14 +121,27 @@ def update_nested_dict_with_slash(d: dict, dict_path: str, new_value):
     recurse_through_dict(d)
 
 
+def new_value(existing_value, operator_str, operator_value):
+    f = operator.attrgetter(operator_str)
+    new_value = f(operator)(existing_value, operator_value)
+    return new_value
+
+
 def adjust_parameters(files, file_name, row, column, parameters):
     none_keys = [k for k, v in parameters.items() if v is None]
-    if none_keys != []:
+    adjust_dict = {k: v for k, v in parameters.items() if isinstance(v, list)}
+    if none_keys != [] or adjust_dict != {}:
         if file_name == "settings":
             default_value = nested_dict_with_slash(files, row)
         else:
             default_value = files[file_name].loc[row, column]
         parameters.update({k: default_value for k in none_keys})
+        parameters.update(
+            {
+                k: new_value(default_value, *adjust_list)
+                for k, adjust_list in adjust_dict.items()
+            }
+        )
     return parameters
 
 
