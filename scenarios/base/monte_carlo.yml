@@ -1,6 +1,6 @@
 metadata:
   base_input_dir: "inputs"
-  sql_engine: "sqlite:///C:/Users/bpeco/Box/h2@scale/h2_model/test.sqlite" # "sqlite:// for mac"
+  sql_engine: "sqlite:////Users/ebeagle/Documents/WEG/Hydrogen/HOwDI/HOwDI/scenarios/base/test_sql.sql" # "sqlite:// for mac"
   number_of_trials: 5
   number_of_jobs: -1 #-1 for max
 
@@ -14,11 +14,6 @@ distributions:
   #         distr_param2: 20
   production_thermal:
     smr:
-      fixed_usdPerTon:
-        distribution: "normal"
-        parameters:
-          loc: ~ # ~ means use value from file
-          scale: 10
       capital_usdPerTonPerDay:
         distribution: "normal"
         parameters:
@@ -26,11 +21,11 @@ distributions:
           scale: 10_000
   production_electric:
     electrolyzer:
-      fixed_usdPerTon:
-        distribution: "normal"
+      capEx_$_per_kW:
+        distribution: "uniform"
         parameters:
-          loc: ~
-          scale: 15
+          low: 200
+          high: ~
   settings:
     carbon_capture_credit_dollars_per_ton:
       distribution: "normal"
@@ -42,3 +37,35 @@ distributions:
       parameters:
         loc: ~
         scale: 0.01
+  distribution:
+    pipeline:
+      capital_usdPerUnit:
+           distribution: "normal"
+           parameters:
+             loc: ~
+             scale: 50_000
+    truckCompressed:
+      capital_usdPerUnit:
+           distribution: "normal"
+           parameters:
+             loc: ~
+             scale: 50_000
+    truckLiquefied:
+      capital_usdPerUnit:
+           distribution: "normal"
+           parameters:
+             loc: ~
+             scale: 50_000
+  conversion:
+    liquefaction:
+      capital_usdPerTonPerDay:
+           distribution: "normal"
+           parameters:
+             loc: ~
+             scale: 100_000
+    fuelDispenserGas:
+      capital_usdPerTonPerDay:
+           distribution: "normal"
+           parameters:
+             loc: ~
+             scale: 100_000
