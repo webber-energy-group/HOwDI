@@ -1,6 +1,5 @@
 metadata:
   base_input_dir: "inputs"
-  sql_engine: "sqlite:////Users/ebeagle/Documents/WEG/Hydrogen/HOwDI/HOwDI/scenarios/base/test_sql.sql" # "sqlite:// for mac"
   number_of_trials: 5
   number_of_jobs: -1 #-1 for max
 
@@ -40,32 +39,32 @@ distributions:
   distribution:
     pipeline:
       capital_usdPerUnit:
-           distribution: "normal"
-           parameters:
-             loc: ~
-             scale: 50_000
+        distribution: "normal"
+        parameters:
+          loc: ~
+          scale: 50_000
     truckCompressed:
       capital_usdPerUnit:
-           distribution: "normal"
-           parameters:
-             loc: ~
-             scale: 50_000
+        distribution: "normal"
+        parameters:
+          loc: ~
+          scale: 50_000
     truckLiquefied:
       capital_usdPerUnit:
-           distribution: "normal"
-           parameters:
-             loc: ~
-             scale: 50_000
+        distribution: "normal"
+        parameters:
+          loc: ~
+          scale: 50_000
   conversion:
     liquefaction:
       capital_usdPerTonPerDay:
-           distribution: "normal"
-           parameters:
-             loc: ~
-             scale: 100_000
+        distribution: "normal"
+        parameters:
+          loc: ~
+          scale: 100_000
     fuelDispenserGas:
       capital_usdPerTonPerDay:
-           distribution: "normal"
-           parameters:
-             loc: ~
-             scale: 100_000
+        distribution: "normal"
+        parameters:
+          loc: ~
+          scale: 100_000
