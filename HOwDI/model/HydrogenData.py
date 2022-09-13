@@ -544,13 +544,22 @@ def init_multiple(uuid, engine, data_filter: dict = None):
 
         sql_statements = [
             "SELECT "
-            + ", ".join([index] + columns + ["trial"])
+            + ", ".join(
+                [index]
+                + list(data_filter[tables_map[table_name]].values())[0]
+                + ["trial"]
+            )
             + f" FROM '{table_name}' WHERE uuid = '{uuid}' AND "
             + "("
-            + " OR ".join([f"{index} = '{row}'"])
+            + " OR ".join(
+                [
+                    f"{index} = '{row}'"
+                    for row in data_filter[tables_map[table_name]].keys()
+                ]
+            )
             + ")"
             for table_name, index in tables2columns_dict.items()
-            for row, columns in data_filter[tables_map[table_name]].items()
+            # for row, columns in data_filter[tables_map[table_name]].items()
         ]
 
         input_dfs = {
@@ -649,7 +658,8 @@ def transform_df_to_trial(df, file_name, trial_number):
         [
             add_index_to_row(row, index_name, trial_number)
             for index_name, row in df.iterrows()
-        ]
+        ],
+        axis=1,
     )
 
     df.columns = file_name + "/" + df.columns
