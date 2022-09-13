@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import sqlalchemy as db
+from sqlalchemy.orm import Session
 import yaml
 from HOwDI.util import (
     dict_keys_to_list,
@@ -397,13 +398,44 @@ class HydrogenData:
         self.add_value_to_all_dfs(**{"uuid": self.uuid})
 
     def upload_to_sql(self, engine):
+        def _upload_indiv_table(table, table_name, chunksize=499):
+            try:
+                table.to_sql(
+                    name=table_name,
+                    con=engine,
+                    if_exists="append",
+                    method="multi",
+                    chunksize=chunksize,
+                )
+            except db.exc.OperationalError:
+                # if a column is missing in database, update schema
+                # NOTE allows for sql injection by changing name of producer
+                print("Updating schema of {}".format(table_name))
+                import sqlite3
+
+                db2 = sqlite3.connect(engine.url.database)
+                cursor = db2.execute(f"""SELECT * from '{table_name}'""")
+                columns_in_sql = set(
+                    [description[0] for description in cursor.description]
+                )
+
+                columns_in_table = set(table.columns)
+                new_columns_for_sql = columns_in_table - columns_in_sql
+
+                for c in new_columns_for_sql:
+                    db2.execute(f"""ALTER TABLE '{table_name}' ADD COLUMN '{c}'""")
+                db2.close()
+
+                table.to_sql(
+                    name=table_name,
+                    con=engine,
+                    if_exists="append",
+                    method="multi",
+                    chunksize=chunksize,
+                )
+
         [
-            table.to_sql(
-                name=table_name,
-                con=engine,
-                if_exists="append",
-                method="multi",
-            )
+            _upload_indiv_table(table, table_name)
             for table_name, table in self.all_dfs().items()
         ]
 

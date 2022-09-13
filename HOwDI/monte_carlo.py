@@ -252,7 +252,7 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
 
 
 def main():
-    monte_carlo(Path("../scenarios/base"), "monte_carlo")
+    monte_carlo(Path("scenarios/base"), "monte_carlo")
 
 
 if __name__ == "__main__":
