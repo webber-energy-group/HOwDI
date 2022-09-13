@@ -181,6 +181,18 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
     }
     settings = read_yaml(base_input_dir / "settings.yml")
 
+    def adjust_row_data(row_data, file):
+        """Add all columns if row data has "ALL" as a key"""
+        all_rows_name = "ALL"
+        if all_rows_name in row_data.keys():
+            column_data = row_data[all_rows_name]
+            f = files[file]
+            rows = list(f.index)
+            new_rows_data = {row: column_data for row in rows}
+            row_data.update(new_rows_data)
+            row_data.pop(all_rows_name)
+        return row_data
+
     # generate distributions
     mc_distributions = [
         MonteCarloParameter(
@@ -193,7 +205,7 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
         )
         for file, row_data in distributions.items()
         if file != "settings"
-        for row, column_data in row_data.items()
+        for row, column_data in adjust_row_data(row_data, file).items()
         for column, distribution_data in column_data.items()
     ]
 
