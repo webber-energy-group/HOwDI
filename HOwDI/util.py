@@ -13,7 +13,7 @@ def read_yaml(fn):
 
 
 def read_config() -> dict:
-    p = Path(__file__) / ".."
+    p = Path(__file__).parents[0]
     yaml_out = read_yaml(p / "config.yml")
 
     config_local_path = p / "config_local.yml"
