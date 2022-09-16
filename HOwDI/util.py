@@ -23,9 +23,10 @@ def read_config() -> dict:
     return yaml_out
 
 
-def create_db_engine():
+def create_db_engine(db=None):
     config = read_config()
-    db = config.get("db")
+    if db is None:
+        db = config.get("db")
     engine = create_engine(db)
     return engine
 
@@ -158,3 +159,7 @@ def set_index(df, index_name):
 
 def normalize_df(df):
     return df / df.abs().max()
+
+
+def scale_by_distance_from_mean(df):
+    return normalize_df(df - df.mean())

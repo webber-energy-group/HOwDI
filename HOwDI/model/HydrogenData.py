@@ -9,7 +9,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import sqlalchemy as db
-from sqlalchemy.orm import Session
 import yaml
 from HOwDI.util import (
     dict_keys_to_list,
@@ -298,6 +297,8 @@ class HydrogenData:
         ## Price tracking settings
         self.price_tracking_array = np.arange(**settings.get("price_tracking_array"))
         self.price_hubs = settings.get("price_hubs")
+        if self.price_hubs == "all" and self.hubs is not None:
+            self.price_hubs = self.get_hubs_list()
         self.price_demand = settings.get("price_demand")
         self.find_prices = settings.get("find_prices")
 

@@ -1,6 +1,7 @@
 import copy
 import json
 import operator
+from symbol import parameters
 import uuid
 from pathlib import Path
 
@@ -26,25 +27,42 @@ class NpEncoder(json.JSONEncoder):
         return super(NpEncoder, self).default(obj)
 
 
+def create_distribution(distribution_name, number_of_trials, **kwargs):
+    return getattr(np.random, distribution_name)(size=number_of_trials, **kwargs)
+
+
 class MonteCarloParameter:
     def __init__(
         self,
         file: str,
         column: str,
         row: str,
-        distribution_data,
-        number_of_trials,
         files,
+        number_of_trials=None,
+        distribution_data=None,
+        standard_distribution=None,
     ):
         self.file = file
         self.column = column
         self.row = row
-        self.distribution = getattr(np.random, distribution_data["distribution"])(
-            size=number_of_trials,
-            **adjust_parameters(
-                files, file, row, column, distribution_data["parameters"]
-            )
+
+        parameters = adjust_parameters(
+            files, file, row, column, distribution_data["parameters"]
         )
+        if standard_distribution is None:
+            self.distribution = getattr(np.random, distribution_data["distribution"])(
+                size=number_of_trials, **parameters
+            )
+        else:
+            if distribution_data["distribution"] == "normal":
+                self.distribution = (
+                    standard_distribution * parameters["scale"] + parameters["loc"]
+                )
+            elif distribution_data["distribution"] == "uniform":
+                self.distribution = (
+                    standard_distribution * (parameters["high"] - parameters["low"])
+                    + parameters["low"]
+                )
 
     def __getitem__(self, n):
         return MonteCarloTrial(self, n)
@@ -168,6 +186,7 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
     run_uuid = str(uuid.uuid4())
     metadata = mc_dict.get("metadata")
     distributions = mc_dict.get("distributions")
+    linked_distributions = mc_dict.get("linked_distributions")
 
     # instantiate metadata
     base_input_dir = base_dir / metadata.get("base_input_dir", "inputs")
@@ -208,6 +227,34 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
         for row, column_data in adjust_row_data(row_data, file).items()
         for column, distribution_data in column_data.items()
     ]
+
+    for linked_distribution_data in linked_distributions:
+        # can't use list comp here since we need `linked_standard_distributions` to
+        # not be in the comprehension
+        linked_distribution_name = linked_distribution_data.get("distribution")
+        linked_standard_distribution = create_distribution(
+            linked_distribution_name, number_of_trials
+        )
+
+        mc_distributions.extend(
+            [
+                MonteCarloParameter(
+                    file=file,
+                    column=column,
+                    row=row,
+                    distribution_data={
+                        "distribution": linked_distribution_name,
+                        "parameters": parameters,
+                    },
+                    standard_distribution=linked_standard_distribution,
+                    files=files,
+                )
+                for file, row_data in linked_distribution_data["values"].items()
+                # if file != "settings"
+                for row, column_data in adjust_row_data(row_data, file).items()
+                for column, parameters in column_data.items()
+            ]
+        )
 
     # put distributions into files
     # TODO put this stuff into the function that is run in parallel to save memory?
