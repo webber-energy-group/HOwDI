@@ -4,11 +4,13 @@
 
 ## Installation
 
-1. Create a conda environment from the `env.yml` file and activate it:
+1. Create a conda environment from the `env.yml` file and activate it. This may be faster with [mamba](https://mamba.readthedocs.io/en/latest/).
 
     ```bash
     conda env create -f env.yml
     ```
+
+    Note: M1 Mac users should change the Python version to 3.9 in `env.yml`
 
 2. Activate the conda environment
 
@@ -21,6 +23,12 @@
     ```bash
     pip install -e .
     ```
+
+If you have already installed HOwDI but would like to update the dependencies:
+
+```bash
+conda env update --file env.yml --prune
+```
 
 ## Usage
 
@@ -47,3 +55,7 @@ Traceforward:           HOwDI traceforward
 ## Contributing
 
 HOwDI uses the Black code style. Please format your code accordingly before making a pull request.
+
+## TEMP
+
+Create a file called `HOwDI/config_local.yml`. Add key `db` and follow with db path.

@@ -1,6 +1,5 @@
 metadata:
   base_input_dir: "inputs"
-  sql_engine: "sqlite:////Users/ebeagle/Documents/WEG/Hydrogen/HOwDI/HOwDI/scenarios/base/test_sql.sql" # "sqlite:// for mac"
   number_of_trials: 5
   number_of_jobs: -1 #-1 for max
 
@@ -19,53 +18,77 @@ distributions:
         parameters:
           loc: ~
           scale: 10_000
-  production_electric:
-    electrolyzer:
-      capEx_$_per_kW:
-        distribution: "uniform"
-        parameters:
-          low: 200
-          high: ~
-  settings:
-    carbon_capture_credit_dollars_per_ton:
-      distribution: "normal"
-      parameters:
-        loc: ~
-        scale: 5
-    price_tracking_array/step: # use slashes for "nested" settings, this isn't the best example of a use case.
-      distribution: "normal"
-      parameters:
-        loc: ~
-        scale: 0.01
+  # production_electric:
+  #   electrolyzer:
+  #     capEx_$_per_kW:
+  #       distribution: "uniform"
+  #       parameters:
+  #         low: 200
+  #         high: ~
+
+  # settings:
+  #   carbon_capture_credit_dollars_per_ton:
+  #     distribution: "normal"
+  #     parameters:
+  #       loc: ~
+  #       scale: 5
+  #   price_tracking_array/step: # use slashes for "nested" settings, this isn't the best example of a use case.
+  #     distribution: "normal"
+  #     parameters:
+  #       loc: ~
+  #       scale: 0.01
   distribution:
     pipeline:
       capital_usdPerUnit:
-           distribution: "normal"
-           parameters:
-             loc: ~
-             scale: 50_000
+        distribution: "normal"
+        parameters:
+          loc: ~
+          scale: 50_000
     truckCompressed:
       capital_usdPerUnit:
-           distribution: "normal"
-           parameters:
-             loc: ~
-             scale: 50_000
+        distribution: "normal"
+        parameters:
+          loc: ~
+          scale: 50_000
     truckLiquefied:
       capital_usdPerUnit:
-           distribution: "normal"
-           parameters:
-             loc: ~
-             scale: 50_000
+        distribution: "normal"
+        parameters:
+          loc: ~
+          scale: 50_000
   conversion:
     liquefaction:
       capital_usdPerTonPerDay:
-           distribution: "normal"
-           parameters:
-             loc: ~
-             scale: 100_000
+        distribution: "normal"
+        parameters:
+          loc: ~
+          scale: 100_000
     fuelDispenserGas:
       capital_usdPerTonPerDay:
-           distribution: "normal"
-           parameters:
-             loc: ~
-             scale: 100_000
+        distribution: "normal"
+        parameters:
+          loc: ~
+          scale: 100_000
+
+linked_distributions:
+  [
+    {
+      distribution: "uniform",
+      values:
+        {
+          production_electric:
+            { ALL: { capEx_$_per_kW: { low: ["add", -520], high: ~ } } },
+        },
+    },
+    {
+      distribution: "normal",
+      values:
+        {
+          production_thermal:
+            {
+              smr: { capital_usdPerTonPerDay: { loc: ~, scale: 10_000 } },
+              smr-ptc: { capital_usdPerTonPerDay: { loc: ~, scale: 15_000 } },
+            },
+        },
+    },
+  ]

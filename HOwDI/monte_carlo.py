@@ -1,18 +1,19 @@
 import copy
 import json
+import operator
+from symbol import parameters
 import uuid
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import yaml
 from joblib import Parallel, delayed
-from sqlalchemy import create_engine
 
 from HOwDI.model.create_model import build_h2_model
 from HOwDI.model.create_network import build_hydrogen_network
 from HOwDI.model.HydrogenData import HydrogenData
 from HOwDI.postprocessing.generate_outputs import create_outputs_dfs
+from HOwDI.util import create_db_engine, read_yaml
 
 
 class NpEncoder(json.JSONEncoder):
@@ -26,25 +27,42 @@ class NpEncoder(json.JSONEncoder):
         return super(NpEncoder, self).default(obj)
 
 
+def create_distribution(distribution_name, number_of_trials, **kwargs):
+    return getattr(np.random, distribution_name)(size=number_of_trials, **kwargs)
+
+
 class MonteCarloParameter:
     def __init__(
         self,
         file: str,
         column: str,
         row: str,
-        distribution_data,
-        number_of_trials,
         files,
+        number_of_trials=None,
+        distribution_data=None,
+        standard_distribution=None,
     ):
         self.file = file
         self.column = column
         self.row = row
-        self.distribution = getattr(np.random, distribution_data["distribution"])(
-            size=number_of_trials,
-            **adjust_parameters(
-                files, file, row, column, distribution_data["parameters"]
-            )
+
+        parameters = adjust_parameters(
+            files, file, row, column, distribution_data["parameters"]
         )
+        if standard_distribution is None:
+            self.distribution = getattr(np.random, distribution_data["distribution"])(
+                size=number_of_trials, **parameters
+            )
+        else:
+            if distribution_data["distribution"] == "normal":
+                self.distribution = (
+                    standard_distribution * parameters["scale"] + parameters["loc"]
+                )
+            elif distribution_data["distribution"] == "uniform":
+                self.distribution = (
+                    standard_distribution * (parameters["high"] - parameters["low"])
+                    + parameters["low"]
+                )
 
     def __getitem__(self, n):
         return MonteCarloTrial(self, n)
@@ -94,11 +112,6 @@ def run_model(settings, trial, uuid, trial_number):
     return H
 
 
-def read_yaml(fn):
-    with open(fn) as f:
-        return yaml.load(f, Loader=yaml.FullLoader)
-
-
 def nested_dict_with_slash(d: dict, dict_path: str):
     moving_list = MovingList([p for p in dict_path.split("/")])
 
@@ -126,14 +139,27 @@ def update_nested_dict_with_slash(d: dict, dict_path: str, new_value):
     recurse_through_dict(d)
 
 
+def new_value(existing_value, operator_str, operator_value):
+    f = operator.attrgetter(operator_str)
+    new_value = f(operator)(existing_value, operator_value)
+    return new_value
+
+
 def adjust_parameters(files, file_name, row, column, parameters):
     none_keys = [k for k, v in parameters.items() if v is None]
-    if none_keys != []:
+    adjust_dict = {k: v for k, v in parameters.items() if isinstance(v, list)}
+    if none_keys != [] or adjust_dict != {}:
         if file_name == "settings":
             default_value = nested_dict_with_slash(files, row)
         else:
             default_value = files[file_name].loc[row, column]
         parameters.update({k: default_value for k in none_keys})
+        parameters.update(
+            {
+                k: new_value(default_value, *adjust_list)
+                for k, adjust_list in adjust_dict.items()
+            }
+        )
     return parameters
 
 
@@ -160,10 +186,11 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
     run_uuid = str(uuid.uuid4())
     metadata = mc_dict.get("metadata")
     distributions = mc_dict.get("distributions")
+    linked_distributions = mc_dict.get("linked_distributions")
 
     # instantiate metadata
     base_input_dir = base_dir / metadata.get("base_input_dir", "inputs")
-    engine = create_engine(metadata.get("sql_engine"))
+    engine = create_db_engine()
     number_of_trials = metadata.get("number_of_trials", 1)
 
     # read base data
@@ -172,6 +199,18 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
         for file in base_input_dir.glob("*.csv")
     }
     settings = read_yaml(base_input_dir / "settings.yml")
+
+    def adjust_row_data(row_data, file):
+        """Add all columns if row data has "ALL" as a key"""
+        all_rows_name = "ALL"
+        if all_rows_name in row_data.keys():
+            column_data = row_data[all_rows_name]
+            f = files[file]
+            rows = list(f.index)
+            new_rows_data = {row: column_data for row in rows}
+            row_data.update(new_rows_data)
+            row_data.pop(all_rows_name)
+        return row_data
 
     # generate distributions
     mc_distributions = [
@@ -185,11 +224,40 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
         )
         for file, row_data in distributions.items()
         if file != "settings"
-        for row, column_data in row_data.items()
+        for row, column_data in adjust_row_data(row_data, file).items()
         for column, distribution_data in column_data.items()
     ]
 
+    for linked_distribution_data in linked_distributions:
+        # can't use list comp here since we need `linked_standard_distributions` to
+        # not be in the comprehension
+        linked_distribution_name = linked_distribution_data.get("distribution")
+        linked_standard_distribution = create_distribution(
+            linked_distribution_name, number_of_trials
+        )
+
+        mc_distributions.extend(
+            [
+                MonteCarloParameter(
+                    file=file,
+                    column=column,
+                    row=row,
+                    distribution_data={
+                        "distribution": linked_distribution_name,
+                        "parameters": parameters,
+                    },
+                    standard_distribution=linked_standard_distribution,
+                    files=files,
+                )
+                for file, row_data in linked_distribution_data["values"].items()
+                # if file != "settings"
+                for row, column_data in adjust_row_data(row_data, file).items()
+                for column, parameters in column_data.items()
+            ]
+        )
+
     # put distributions into files
+    # TODO put this stuff into the function that is run in parallel to save memory?
     trials = [
         generate_monte_carlo_trial(files, mc_distributions, n)
         for n in range(number_of_trials)
@@ -257,7 +325,7 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
 
 
 def main():
-    monte_carlo(Path("../scenarios/base"), "monte_carlo")
+    monte_carlo(Path("scenarios/base"), "monte_carlo")
 
 
 if __name__ == "__main__":

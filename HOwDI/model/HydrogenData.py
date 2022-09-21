@@ -1,7 +1,8 @@
 # TODO docstrings, but maybe not needed as most functions are a few lines
 
-import uuid
+import copy
 import json
+import uuid
 from inspect import getsourcefile
 from pathlib import Path
 
@@ -9,6 +10,13 @@ import numpy as np
 import pandas as pd
 import sqlalchemy as db
 import yaml
+from HOwDI.util import (
+    dict_keys_to_list,
+    flatten_dict,
+    get_number_of_trials,
+    read_config,
+    set_index,
+)
 
 
 class HydrogenData:
@@ -49,6 +57,7 @@ class HydrogenData:
         read_output_dir=False,
         # if read_type == "dataframe"
         dfs=None,
+        outputs=None,
         # if read_type == "sql"
         trial_number=None,
         sql_database=None,
@@ -63,6 +72,7 @@ class HydrogenData:
         """
         self.uuid = uuid
         self.raiseFileNotFoundError_bool = raiseFileNotFoundError
+        self.trial_number = trial_number
 
         if read_type == "csv":
             self.init_from_csvs(
@@ -70,8 +80,8 @@ class HydrogenData:
             )
         elif read_type == "dataframe" or read_type == "DataFrame" or read_type == "df":
             self.init_from_dfs(dfs, settings)
+
         elif read_type == "sql":
-            self.trial_number = trial_number
             self.init_from_sql(sql_database)
         else:
             raise ValueError
@@ -79,20 +89,23 @@ class HydrogenData:
         if read_output_dir:
             self.create_outputs_dfs()
 
+        if outputs is not None:
+            self.output_dfs = outputs
+
     def init_files(self, how):
-        self.prod_therm = how("production_thermal")
-        self.prod_elec = how("production_electric")
+        self.prod_therm = set_index(how("production_thermal"), "type")
+        self.prod_elec = set_index(how("production_electric"), "type")
         # self.storage = how("storage")
-        self.distributors = how("distribution")
-        self.converters = how("conversion")
-        self.demand = how("demand")
-        self.hubs = how("hubs")
-        self.arcs = how("arcs")
-        self.producers_existing = how("production_existing")
+        self.distributors = set_index(how("distribution"), "distributor")
+        self.converters = set_index(how("conversion"), "converter")
+        self.demand = set_index(how("demand"), "sector")
+        self.hubs = set_index(how("hubs"), "hub")
+        self.arcs = set_index(how("arcs"), "startHub")
+        self.producers_existing = set_index(how("production_existing"), "type")
 
         ## (Retrofitted) CCS data
         # in the future change to nested dictionaries please!
-        ccs_data = how("ccs")
+        ccs_data = set_index(how("ccs"), "type")
         self.initialize_ccs(ccs_data)
 
     def create_output_dict(self):
@@ -128,7 +141,14 @@ class HydrogenData:
 
     def init_from_dfs(self, dfs, settings):
         # get_df = lambda key: read_df_from_dict(dfs=dfs, key=key)
-        self.init_files(dfs.get)
+        def init_dfs_method(name):
+            try:
+                return first_column_as_index(dfs[name])
+            except KeyError:
+                self.raiseFileNotFoundError(name)
+                return None
+
+        self.init_files(init_dfs_method)
 
         ## (Retrofitted) CCS data
         # in the future change to nested dictionaries please!
@@ -184,6 +204,8 @@ class HydrogenData:
         WIP: Else, print FNF to logger."""
         if self.raiseFileNotFoundError_bool:
             raise FileNotFoundError("The file {} was not found.".format(fn))
+        else:
+            return None
         # TODO
         # else:
         #   logger.warning("The file {} was not found.".format(fn))
@@ -275,6 +297,8 @@ class HydrogenData:
         ## Price tracking settings
         self.price_tracking_array = np.arange(**settings.get("price_tracking_array"))
         self.price_hubs = settings.get("price_hubs")
+        if self.price_hubs == "all" and self.hubs is not None:
+            self.price_hubs = self.get_hubs_list()
         self.price_demand = settings.get("price_demand")
         self.find_prices = settings.get("find_prices")
 
@@ -318,13 +342,20 @@ class HydrogenData:
         return settings
 
     def initialize_ccs(self, ccs_data):
-        self.ccs_data = ccs_data
-        self.ccs1_percent_co2_captured = ccs_data.loc["ccs1", "percent_CO2_captured"]
-        self.ccs2_percent_co2_captured = ccs_data.loc["ccs2", "percent_CO2_captured"]
-        self.ccs1_h2_tax_credit = ccs_data.loc["ccs1", "h2_tax_credit"]
-        self.ccs2_h2_tax_credit = ccs_data.loc["ccs2", "h2_tax_credit"]
-        self.ccs1_variable_usdPerTon = ccs_data.loc["ccs1", "variable_usdPerTonCO2"]
-        self.ccs2_variable_usdPerTon = ccs_data.loc["ccs2", "variable_usdPerTonCO2"]
+        if ccs_data is not None:
+            self.ccs_data = ccs_data
+            self.ccs1_percent_co2_captured = ccs_data.loc[
+                "ccs1", "percent_CO2_captured"
+            ]
+            self.ccs2_percent_co2_captured = ccs_data.loc[
+                "ccs2", "percent_CO2_captured"
+            ]
+            self.ccs1_h2_tax_credit = ccs_data.loc["ccs1", "h2_tax_credit"]
+            self.ccs2_h2_tax_credit = ccs_data.loc["ccs2", "h2_tax_credit"]
+            self.ccs1_variable_usdPerTon = ccs_data.loc["ccs1", "variable_usdPerTonCO2"]
+            self.ccs2_variable_usdPerTon = ccs_data.loc["ccs2", "variable_usdPerTonCO2"]
+        else:
+            self.ccs_data = self.raiseFileNotFoundError("ccs")
 
     def get_other_data(self, settings):
         self.data_dir = self.find_data_dir()
@@ -370,13 +401,44 @@ class HydrogenData:
         self.add_value_to_all_dfs(**{"uuid": self.uuid})
 
     def upload_to_sql(self, engine):
+        def _upload_indiv_table(table, table_name, chunksize=499):
+            try:
+                table.to_sql(
+                    name=table_name,
+                    con=engine,
+                    if_exists="append",
+                    method="multi",
+                    chunksize=chunksize,
+                )
+            except db.exc.OperationalError:
+                # if a column is missing in database, update schema
+                # NOTE allows for sql injection by changing name of producer
+                print("Updating schema of {}".format(table_name))
+                import sqlite3
+
+                db2 = sqlite3.connect(engine.url.database)
+                cursor = db2.execute(f"""SELECT * from '{table_name}'""")
+                columns_in_sql = set(
+                    [description[0] for description in cursor.description]
+                )
+
+                columns_in_table = set(table.columns)
+                new_columns_for_sql = columns_in_table - columns_in_sql
+
+                for c in new_columns_for_sql:
+                    db2.execute(f"""ALTER TABLE '{table_name}' ADD COLUMN '{c}'""")
+                db2.close()
+
+                table.to_sql(
+                    name=table_name,
+                    con=engine,
+                    if_exists="append",
+                    method="multi",
+                    chunksize=chunksize,
+                )
+
         [
-            table.to_sql(
-                name=table_name,
-                con=engine,
-                if_exists="append",
-                method="multi",
-            )
+            _upload_indiv_table(table, table_name)
             for table_name, table in self.all_dfs().items()
         ]
 
@@ -406,6 +468,33 @@ class HydrogenData:
             self.create_output_dict()
         return create_plot(self)
 
+    def get_prices_dict(self):
+        consumption_df = self.output_dfs.get("consumption")
+        if consumption_df is None:
+            raise ValueError
+        ph_dict = {ph: get_prices_at_hub(consumption_df, ph) for ph in self.price_hubs}
+        self.prices = ph_dict
+        return ph_dict
+
+    def get_trial_info(self):
+        prices = self.get_prices_dict()
+        prices = flatten_dict(prices)
+        prices = pd.DataFrame(prices, index=[self.trial_number])
+        prices.index.name = "trial"
+
+        all_dfs = self.all_dfs()
+        trial_vector = pd.concat(
+            [
+                transform_df_to_trial(df, name, self.trial_number)
+                for name, df in all_dfs.items()
+                if name.startswith("input")
+            ]
+            + [prices],
+            axis=1,
+        )
+
+        return trial_vector
+
 
 def first_column_as_index(df):
     df = df.reset_index().set_index(df.columns[0])
@@ -433,3 +522,157 @@ def create_dataframe_vector(name, df):
     df = df.set_index(index)
 
     return df.stack()
+
+
+def init_multiple(uuid, engine, data_filter: dict = None):
+    """Returns a list of all HydrogenData objects from the database {engine} that have uuid {uuid}"""
+    sql = lambda table_name: f"""SELECT * FROM '{table_name}' WHERE uuid = '{uuid}'"""
+    read_table = lambda table_name: pd.read_sql(sql=sql(table_name), con=engine)
+
+    if data_filter:
+        # remove "settings" from data_filter, if it exists
+        data_filter.pop("settings", None)
+
+        input_tables_names = dict_keys_to_list(data_filter)
+        input_tables = ["input-" + x for x in input_tables_names]
+        tables_map = {
+            name_with_prefix: name
+            for name, name_with_prefix in zip(input_tables_names, input_tables)
+        }
+
+        index_columns = read_config().get("database_index_columns")
+        tables2columns_dict = {
+            table: index_columns.get(table) for table in input_tables
+        }
+
+        sql_statements = [
+            "SELECT "
+            + ", ".join(
+                [index]
+                + list(data_filter[tables_map[table_name]].values())[0]
+                + ["trial"]
+            )
+            + f" FROM '{table_name}' WHERE uuid = '{uuid}' AND "
+            + "("
+            + " OR ".join(
+                [
+                    f"{index} = '{row}'"
+                    for row in data_filter[tables_map[table_name]].keys()
+                ]
+            )
+            + ")"
+            for table_name, index in tables2columns_dict.items()
+            # for row, columns in data_filter[tables_map[table_name]].items()
+        ]
+
+        input_dfs = {
+            table: pd.read_sql(sql=sql_statement, con=engine)
+            for table, sql_statement in zip(input_tables, sql_statements)
+        }
+    else:
+        input_tables = [
+            "input-production_thermal",
+            "input-production_electric",
+            "input-distribution",
+            "input-conversion",
+            "input-demand",
+            "input-hubs",
+            "input-arcs",
+            "input-ccs",
+            "input-production_existing",
+        ]
+        input_dfs = {table: read_table(table) for table in input_tables}
+
+    output_tables = [
+        "output-production",
+        "output-consumption",
+        "output-conversion",
+        "output-distribution",
+    ]
+
+    output_dfs = {table: read_table(table) for table in output_tables}
+
+    settings_table = read_table("input-settings")
+
+    number_of_trials = get_number_of_trials(uuid, engine)
+
+    inputs = [
+        {
+            table_name.replace("input-", ""): first_column_as_index(
+                table[table["trial"] == trial]
+            )
+            for table_name, table in input_dfs.items()
+        }
+        for trial in range(number_of_trials)
+    ]
+    outputs = [
+        {
+            table_name.replace("output-", ""): first_column_as_index(
+                table[table["trial"] == trial]
+            )
+            for table_name, table in output_dfs.items()
+            if table_name.startswith("output-")
+        }
+        for trial in range(number_of_trials)
+    ]
+    settings = [
+        json.loads(
+            settings_table[settings_table["trial"] == trial]["settings"].values[0]
+        )
+        for trial in range(number_of_trials)
+    ]
+
+    raise_fnf = not bool(data_filter)
+
+    h_objs = [
+        HydrogenData(
+            uuid=uuid,
+            read_type="dataframe",
+            dfs=input_dfs,
+            outputs=output_dfs,
+            settings=settings_instance,
+            raiseFileNotFoundError=raise_fnf,
+            trial_number=trial_number,
+        )
+        for input_dfs, output_dfs, settings_instance, trial_number in zip(
+            inputs, outputs, settings, range(number_of_trials)
+        )
+    ]
+
+    return h_objs
+
+
+def get_prices_at_hub(df, hub):
+    price_str = f"{hub}_price"
+    prices_df = df[df.index.str.startswith(price_str)]
+    prices_list = list(prices_df.index.str.replace(price_str, ""))
+    price_list_separate = [x.split("_") for x in prices_list]
+    price_dict = {sector: amount for sector, amount in price_list_separate}
+    return price_dict
+
+
+def transform_df_to_trial(df, file_name, trial_number):
+    if df is None:
+        return None
+
+    df = df.drop(columns=["trial"])
+
+    df = pd.concat(
+        [
+            add_index_to_row(row, index_name, trial_number)
+            for index_name, row in df.iterrows()
+        ],
+        axis=1,
+    )
+
+    df.columns = file_name + "/" + df.columns
+    return df
+
+
+def add_index_to_row(row, index, trial_number):
+    row = copy.deepcopy(row)
+    row.index = index + "/" + row.index
+    row = row.to_frame().T
+    row.index = [trial_number]
+    row.index.name = "trial"
+    return row

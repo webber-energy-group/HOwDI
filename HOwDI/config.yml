@@ -1,0 +1,16 @@
+database_index_columns:
+  input-arcs: startHub
+  input-ccs: type
+  input-conversion: converter
+  input-demand: sector
+  input-distribution: distributor
+  input-hubs: hub
+  input-production_electric: type
+  input-production_existing: type
+  input-production_thermal: type
+  input-settings: index
+  metadata: index
+  output-consumption: consumer
+  output-conversion: convertor
+  output-distribution: arc_start
+  output-production: producer
