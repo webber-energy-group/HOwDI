@@ -348,16 +348,14 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenData):
     # The fixed cost of production per ton is the sum of
     # (the capacity of a producer) * (the fixed regional cost of a producer)
     # for each producer
-    P_fixed = sum(m.prod_capacity[p] * m.prod_cost_fixed[p] for p in m.producer_set)
+    # P_fixed = sum(m.prod_capacity[p] * m.prod_cost_capital[p] for p in m.producer_set) * H.fixedcost_percent # add this 2% as term in settings file
 
     # The daily capital costs of production per ton are
     # (the production capacity of a node) * (the regional capital cost coefficient of a node)
     # / amortization factor for each producer
-    P_capital = (
-        sum(m.prod_capacity[p] * m.prod_cost_capital[p] for p in m.producer_set)
-        / H.A
-        / H.time_slices
-    )
+    P_capital = sum(
+        m.prod_capacity[p] * m.prod_cost_capital[p] for p in m.producer_set
+    ) * (1 + H.fixedcost_percent)
 
     # Cost of producing carbon is
     # [
@@ -399,16 +397,16 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenData):
     # The daily fixed cost of distribution is the sum of
     # (distribution capacity) * (regional fixed cost)
     # for each distribution arc
-    D_fixed = sum(
-        m.dist_capacity[d] * m.dist_cost_fixed[d] for d in m.distribution_arcs
-    )
+    # D_fixed = sum(
+    #     m.dist_capacity[d] * m.dist_cost_fixed[d] for d in m.distribution_arcs
+    # )
 
     # The daily capital cost of distribution is the sum of
     # (distribution capacity) * (regional capital cost) / amortization factor
     D_capital = sum(
         (m.dist_capacity[d] * m.dist_cost_capital[d]) / H.A / H.time_slices
         for d in m.distribution_arcs
-    )
+    ) * (1 + H.fixedcost_percent)
 
     ## Converters
 
@@ -429,9 +427,9 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenData):
     # The daily fixed cost of conversion is the sum of
     # (convertor capacity) * (regional fixed cost)
     # for each convertor
-    CV_fixed = sum(
-        m.conv_capacity[cv] * m.conv_cost_fixed[cv] for cv in m.converter_set
-    )
+    # CV_fixed = sum(
+    #    m.conv_capacity[cv] * m.conv_cost_fixed[cv] for cv in m.converter_set
+    # )
 
     # The daily fixed cost of conversion is the sum of
     # (convertor capacity) * (regional capital cost) / (amortization factor)
@@ -439,7 +437,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenData):
     CV_capital = sum(
         (m.conv_capacity[cv] * m.conv_cost_capital[cv]) / H.A / H.time_slices
         for cv in m.converter_set
-    )
+    ) * (1 + H.fixedcost_percent)
 
     # TODO fuel station subsidy
     CV_fuelStation_subsidy = sum(
@@ -457,16 +455,13 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenData):
         - P_variable
         - P_electricity
         - P_naturalGas
-        - P_fixed
         - P_capital
         - P_carbon
         - CCS_variable
         - D_variable
-        - D_fixed
         - D_capital
         - CV_variable
         - CV_electricity
-        - CV_fixed
         - CV_capital
         + CV_fuelStation_subsidy
     )
@@ -675,7 +670,9 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenData, g: DiGraph):
         """
         # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
         # this gives the model the option to not build the producer
-        constraint = m.prod_h[node] >= g.nodes[node]["min_h2"] * m.prod_exists[node]
+        constraint = (
+            m.prod_capacity[node] >= g.nodes[node]["min_h2"] * m.prod_exists[node]
+        )
         return constraint
 
     m.constr_minProductionCapacity = pe.Constraint(
@@ -700,7 +697,9 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenData, g: DiGraph):
         # multiply by "prod_exists" (a binary) so that constraint is only enforced
         # if the producer exists with the prior constraint, forces 0 production
         # if producer DNE
-        constraint = m.prod_h[node] <= g.nodes[node]["max_h2"] * m.prod_exists[node]
+        constraint = (
+            m.prod_capacity[node] <= g.nodes[node]["max_h2"] * m.prod_exists[node]
+        )
         return constraint
 
     m.constr_maxProductionCapacity = pe.Constraint(

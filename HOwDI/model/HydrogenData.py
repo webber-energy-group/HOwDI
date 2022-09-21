@@ -313,6 +313,8 @@ class HydrogenData:
         # other options
         self.fractional_chec = settings.get("fractional_chec", True)
 
+        self.fixedcost_percent = settings.get("fixedcost_percent", 0.02)
+
         return settings
 
     def initialize_ccs(self, ccs_data):
