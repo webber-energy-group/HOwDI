@@ -353,9 +353,12 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenData):
     # The daily capital costs of production per ton are
     # (the production capacity of a node) * (the regional capital cost coefficient of a node)
     # / amortization factor for each producer
-    P_capital = sum(
-        m.prod_capacity[p] * m.prod_cost_capital[p] for p in m.producer_set
-    ) * (1 + H.fixedcost_percent)
+    P_capital = (
+        sum(m.prod_capacity[p] * m.prod_cost_capital[p] for p in m.producer_set)
+        / H.A
+        / H.time_slices
+        * (1 + H.fixedcost_percent)
+    )
 
     # Cost of producing carbon is
     # [
