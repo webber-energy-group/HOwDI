@@ -11,13 +11,6 @@ distributions:
   #       parameters:
   #         distr_param1: 10
   #         distr_param2: 20
-  production_thermal:
-    smr:
-      capital_usdPerTonPerDay:
-        distribution: "normal"
-        parameters:
-          loc: ~
-          scale: 10_000
   # production_electric:
   #   electrolyzer:
   #     capEx_$_per_kW:
@@ -43,32 +36,44 @@ distributions:
         distribution: "normal"
         parameters:
           loc: ~
-          scale: 50_000
+          scale: ["mul", 0.4]
     truckCompressed:
       capital_usdPerUnit:
         distribution: "normal"
         parameters:
           loc: ~
-          scale: 50_000
+          scale: ["mul", 0.4]
     truckLiquefied:
       capital_usdPerUnit:
         distribution: "normal"
         parameters:
           loc: ~
-          scale: 50_000
+          scale: ["mul", 0.4]
   conversion:
     liquefaction:
       capital_usdPerTonPerDay:
         distribution: "normal"
         parameters:
           loc: ~
-          scale: 100_000
+          scale: ["mul", 0.4]
     fuelDispenserGas:
       capital_usdPerTonPerDay:
         distribution: "normal"
         parameters:
           loc: ~
-          scale: 100_000
+          scale: ["mul", 0.4]
+    fuelDispenserLiquid:
+      capital_usdPerTonPerDay:
+        distribution: "normal"
+        parameters:
+          loc: ~
+          scale: ["mul", 0.4]
+    fuelDispenserPipeline:
+      capital_usdPerTonPerDay:
+        distribution: "normal"
+        parameters:
+          loc: ~
+          scale: ["mul", 0.4]
 
 linked_distributions:
   [
@@ -81,14 +86,24 @@ linked_distributions:
         },
     },
     {
-      distribution: "normal",
+      distribution: "uniform",
       values:
         {
           production_thermal:
             {
-              smr: { capital_usdPerTonPerDay: { loc: ~, scale: 10_000 } },
-              smr-ptc: { capital_usdPerTonPerDay: { loc: ~, scale: 15_000 } },
+              ALL: { capital_usdPerTonPerDay: { low: ["add", -750000], high: ~} },
             },
         },
     },
+    {
+      distribution: "normal",
+      values:
+        {
+          hubs:
+            {
+              ALL: { e_usd_per_kwh: { loc: ~, scale: ["mul", 0.4] } },
+              ALL: {ng_usd_per_mmbtu: {loc: ~, scale: ["mul", 0.4] } },
+            },
+        },
+    }
   ]
