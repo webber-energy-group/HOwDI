@@ -63,7 +63,7 @@ def get_monte_carlo_info(uuid, engine):
     # plot_info = monte_carlo_info.T.astype(float)
 
 
-def plot_monet_carlo_info(
+def cluster_monet_carlo_info(
     mc_info, value_column="average/FuelStation", n_bins=5, n_clusters=3
 ):
     keep_columns = [col for col in mc_info.columns if "input" in col]
@@ -92,8 +92,11 @@ def plot_monet_carlo_info(
     bin_model.fit(prices)
     mc_info["bin"] = bin_model.predict(prices)
 
+    bins = mc_info[["bin", value_column]].groupby("bin").mean()[value_column]
+
     clustered_data = []
-    for bin_number, value in zip(range(n_bins), bin_model.cluster_centers_):
+    distortions = []
+    for bin_number, value in bins.items():
         bin_data = mc_info[mc_info["bin"] == bin_number]
         cluster_model = KMeans(n_clusters=n_clusters)
         cluster_model.fit(bin_data[rename_columns.values()])
@@ -102,31 +105,36 @@ def plot_monet_carlo_info(
             cluster_model.cluster_centers_, columns=in_columns
         )
         clustered_data_for_bin["bin"] = bin_number
-        clustered_data_for_bin[value_column] = value[0]
+        clustered_data_for_bin[value_column] = value
         clustered_data.append(clustered_data_for_bin)
+
+        distortions.append({"bin": bin_number, "Inertia": cluster_model.inertia_})
 
     clustered_data = pd.concat(clustered_data)
     clustered_data = clustered_data.reset_index()
     clustered_data = clustered_data.rename(columns={"index": "cluster"})
 
-    melt = pd.melt(
-        clustered_data[clustered_data["bin"] == 1],
-        id_vars=[value_column, "bin", "cluster"],
-    )
+    distortions = pd.DataFrame(distortions).set_index("bin")
+    # melt = pd.melt(
+    #     clustered_data[clustered_data["bin"] == 1],
+    #     id_vars=[value_column, "bin", "cluster"],
+    # )
 
-    fix, ax = plt.subplots()
-    g = sns.lineplot(
-        x="variable",
-        y="value",
-        data=melt,
-        hue=value_column,
-        units="cluster",
-        style="cluster",
-        estimator=None,
-        lw=1,
-    )
-    plt.xticks(rotation=45)
-    ax.legend().remove()
+    # fix, ax = plt.subplots()
+    # g = sns.lineplot(
+    #     x="variable",
+    #     y="value",
+    #     data=melt,
+    #     hue=value_column,
+    #     units="cluster",
+    #     style="cluster",
+    #     estimator=None,
+    #     lw=1,
+    # )
+    # plt.xticks(rotation=45)
+    # ax.legend().remove()
+
+    return clustered_data, distortions
 
 
 def main():
@@ -137,6 +145,7 @@ def main():
         uuid="401ee3ee-e235-41dc-a399-5adaa7e58cd7",
         engine=engine,
     )
+    cluster_monet_carlo_info(mc_info)
 
 
 if __name__ == "__main__":
