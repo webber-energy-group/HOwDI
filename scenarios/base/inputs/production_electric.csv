@@ -1,3 +1,3 @@
 type,fixed_usdPerTon,capEx_$_per_kW,kWh_perTon,variable_usdPerTon,utilization,purity,min_h2,max_h2,h2_tax_credit,grid_intensity_tonsCO2_per_h2
-electrolyzer,50,720,50000,0,0.975,high,0.3,100,600,3.6
-electrolyzer-RE,50,720,50000,0,0.4,high,0.3,100,3000,0
+electrolyzer,50,720,50000,0,0.975,high,1,1000,600,3.6
+electrolyzer-RE,50,720,50000,0,0.4,high,1,1000,3000,0
