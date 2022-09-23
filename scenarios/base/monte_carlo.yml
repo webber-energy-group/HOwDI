@@ -91,7 +91,8 @@ linked_distributions:
         {
           production_thermal:
             {
-              ALL: { capital_usdPerTonPerDay: { low: ["add", -750000], high: ~} },
+              ALL:
+                { capital_usdPerTonPerDay: { low: ["add", -750000], high: ~ } },
             },
         },
     },
@@ -101,9 +102,12 @@ linked_distributions:
         {
           hubs:
             {
-              ALL: { e_usd_per_kwh: { loc: ~, scale: ["mul", 0.4] } },
-              ALL: {ng_usd_per_mmbtu: {loc: ~, scale: ["mul", 0.4] } },
+              ALL:
+                {
+                  e_usd_per_kwh: { loc: ~, scale: ["mul", 0.4] },
+                  ng_usd_per_mmbtu: { loc: ~, scale: ["mul", 0.4] },
+                },
             },
         },
-    }
+    },
   ]

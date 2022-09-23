@@ -76,7 +76,7 @@ def _all_possible_combos(items: list, existing=False) -> list:
 def _find_max_length_set_from_list(a: list):
     """From a list of sublists (or similar sub-object),
     returns the longest sublist (or sub-object as a list)"""
-    return list(max(x) for x in a)
+    return list(max(a))
 
 
 def _diff_of_list(a: list, b: list) -> list:
