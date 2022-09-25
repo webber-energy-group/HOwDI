@@ -32,6 +32,8 @@ def create_distribution(distribution_name, number_of_trials, **kwargs):
 
 
 class MonteCarloParameter:
+    lower_limit = 0.1
+
     def __init__(
         self,
         file: str,
@@ -63,6 +65,10 @@ class MonteCarloParameter:
                     standard_distribution * (parameters["high"] - parameters["low"])
                     + parameters["low"]
                 )
+
+        self.distribution = [
+            i if i > self.lower_limit else self.lower_limit for i in self.distribution
+        ]
 
     def __getitem__(self, n):
         return MonteCarloTrial(self, n)

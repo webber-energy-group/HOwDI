@@ -347,10 +347,10 @@ def create_plot(H):
                 "geometry",
             ] = row.geometry
 
-        connections[connections["dist_type"] == "dist_pipelineLowPurity"].plot(
+        roads_connections[connections["dist_type"] == "dist_pipelineLowPurity"].plot(
             ax=ax, color=dist_pipelineLowPurity_col, zorder=1
         )
-        connections[connections["dist_type"] == "dist_pipelineHighPurity"].plot(
+        roads_connections[connections["dist_type"] == "dist_pipelineHighPurity"].plot(
             ax=ax, color=dist_pipelineHighPurity_col, zorder=1
         )
 
@@ -423,7 +423,7 @@ def create_plot(H):
         ]
     )
 
-    ax.legend(handles=legend_elements, loc="upper left")
+    ax.legend(handles=legend_elements, loc="lower left")
 
     return fig
 
