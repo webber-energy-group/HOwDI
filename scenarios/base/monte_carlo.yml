@@ -36,63 +36,63 @@ distributions:
         distribution: "normal"
         parameters:
           loc: ~
-          scale: ["mul", 0.4]
+          scale: ["mul", 0.25]
     truckCompressed:
       capital_usdPerUnit:
         distribution: "normal"
         parameters:
           loc: ~
-          scale: ["mul", 0.4]
+          scale: ["mul", 0.2]
     truckLiquefied:
       capital_usdPerUnit:
         distribution: "normal"
         parameters:
           loc: ~
-          scale: ["mul", 0.4]
+          scale: ["mul", 0.2]
   conversion:
     liquefaction:
       capital_usdPerTonPerDay:
         distribution: "normal"
         parameters:
           loc: ~
-          scale: ["mul", 0.4]
+          scale: ["mul", 0.2]
     fuelDispenserGas:
       capital_usdPerTonPerDay:
         distribution: "normal"
         parameters:
           loc: ~
-          scale: ["mul", 0.4]
+          scale: ["mul", 0.25]
     fuelDispenserLiquid:
       capital_usdPerTonPerDay:
         distribution: "normal"
         parameters:
           loc: ~
-          scale: ["mul", 0.4]
+          scale: ["mul", 0.25]
     fuelDispenserPipeline:
       capital_usdPerTonPerDay:
         distribution: "normal"
         parameters:
           loc: ~
-          scale: ["mul", 0.4]
+          scale: ["mul", 0.25]
 
 linked_distributions:
   [
     {
-      distribution: "uniform",
+      distribution: "normal",
       values:
         {
           production_electric:
-            { ALL: { capEx_$_per_kW: { low: ["add", -520], high: ~ } } },
+            { ALL: { capEx_$_per_kW: { loc: ~, scale: ["mul", 0.3] } } },
         },
     },
     {
-      distribution: "uniform",
+      distribution: "normal",
       values:
         {
           production_thermal:
             {
               ALL:
-                { capital_usdPerTonPerDay: { low: ["add", -750000], high: ~ } },
+                { capital_usdPerTonPerDay: { loc: ~ , scale: ["mul", 0.25] } },
             },
         },
     },
@@ -104,8 +104,8 @@ linked_distributions:
             {
               ALL:
                 {
-                  e_usd_per_kwh: { loc: ~, scale: ["mul", 0.4] },
-                  ng_usd_per_mmbtu: { loc: ~, scale: ["mul", 0.4] },
+                  e_usd_per_kwh: { loc: ~, scale: ["mul", 0.25] },
+                  ng_usd_per_mmbtu: { loc: ~, scale: ["mul", 0.3] },
                 },
             },
         },
