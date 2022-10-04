@@ -32,7 +32,9 @@ def add_average(data, column_filter):
     return data
 
 
-def get_monte_carlo_info(uuid, engine):
+def get_monte_carlo_info(uuid, engine=None):
+    if engine is None:
+        engine = create_db_engine()
 
     # keys for selecting options
     keys = monte_carlo_keys(uuid, engine)
