@@ -139,10 +139,10 @@ def cluster_monet_carlo_info(
 
 def main():
     engine = create_db_engine(
-        "sqlite:///C:/Users/bpeco/Box/h2@scale/h2_model/trial0.sqlite"
+        "sqlite:///C:/Users/bpeco/Box/h2@scale/h2_model/test.sqlite"
     )
     mc_info = get_monte_carlo_info(
-        uuid="401ee3ee-e235-41dc-a399-5adaa7e58cd7",
+        uuid="f646d589-043f-4937-bbef-5f0aa3b00027",
         engine=engine,
     )
     cluster_monet_carlo_info(mc_info)

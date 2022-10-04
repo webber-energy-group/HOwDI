@@ -1,9 +1,11 @@
 import copy
 import json
 from pathlib import Path
+from importlib_metadata import distributions
 
 import pandas as pd
 import yaml
+from pydantic.utils import deep_update
 from sqlalchemy import create_engine
 
 
@@ -113,14 +115,49 @@ def truncate_dict(d, filter=_continue_flattening):
     return d2
 
 
+def nested_get(d, keys):
+    """Returns value of nested dictionary based on keys"""
+    if len(keys) == 1:
+        return d[keys[0]]
+    else:
+        return nested_get(d[keys[0]], keys[1:])
+
+
+def _recurse_find_params(d, update_function):
+    for k, v in d.items():
+        if all([not isinstance(v1, dict) for _, v1 in v.items()]):
+            d[k] = update_function(v)
+        else:
+            _recurse_find_params(d[k], update_function)
+
+
+def get_monte_carlo_distributions(uuid, engine=None):
+    metadata = get_metadata(uuid=uuid, engine=engine)
+    distributions = metadata.get("distributions", {})
+
+    linked_distributions = metadata.get("linked_distributions")
+    if linked_distributions is not None:
+        for ld in linked_distributions:
+            update_function = lambda v: {
+                "distribution": ld["distribution"],
+                "parameters": v,
+            }
+            _recurse_find_params(ld["values"], update_function)
+            distributions = deep_update(distributions, ld["values"])
+            # distributions_keys.update(
+            #     flatten_dict(dd=ld["values"], flattener=_continue_flattening)
+            # )
+    return distributions
+
+
 def get_flat_monte_carlo_options_dict(uuid, engine=None):
     """flattens dict:
     keys are key/key/key/key
     values are the remaining values based on filter (distribution/parameters dicts)
     """
-    metadata = get_metadata(uuid=uuid, engine=engine)
-    distributions = metadata["distributions"]
+    distributions = get_monte_carlo_distributions(uuid=uuid, engine=engine)
     distributions_keys = flatten_dict(dd=distributions, flattener=_continue_flattening)
+
     return distributions_keys
 
 
@@ -129,8 +166,8 @@ def get_truncated_monte_carlo_options_dict(uuid, engine=None):
     keys are key/key/key/key
     values are a list of the remaining keys based on the filter
     (removes distribution/parameter dicts)"""
-    metadata = get_metadata(uuid=uuid, engine=engine)
-    distributions = metadata["distributions"]
+
+    distributions = get_monte_carlo_distributions(uuid=uuid, engine=engine)
     return truncate_dict(distributions)
 
 
