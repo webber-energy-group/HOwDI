@@ -32,7 +32,20 @@ def add_average(data, column_filter):
     return data
 
 
-def get_monte_carlo_info(uuid, engine=None):
+def get_monte_carlo_info(
+    uuid, engine=None, normalize=True, price_types=["FuelStation"]
+):
+    """_summary_
+
+    Args:
+        uuid (str): uuid of dataset
+        engine (sqlite connection, optional): Connection to sqlite db. Defaults to engine in config_local.yml.
+        normalize (bool, optional): Normalize data. Defaults to True.
+        price_types (list, optional): Prices to average. Defaults to ["FuelStation"].
+
+    Returns:
+        DataFrame: Contains montecarlo info
+    """
     if engine is None:
         engine = create_db_engine()
 
@@ -52,16 +65,18 @@ def get_monte_carlo_info(uuid, engine=None):
     monte_carlo_info = monte_carlo_info.astype(float)
 
     # normalize
-    monte_carlo_normalized = monte_carlo_info
-    input_keys = ["input-" + key for key in keys if not ("settings" in key)]
-    monte_carlo_normalized[input_keys] = scale_by_distance_from_mean(
-        monte_carlo_normalized[input_keys]
-    )
+    if normalize == True:
+        monte_carlo_normalized = monte_carlo_info
+        input_keys = ["input-" + key for key in keys if not ("settings" in key)]
+        monte_carlo_normalized[input_keys] = scale_by_distance_from_mean(
+            monte_carlo_normalized[input_keys]
+        )
+        monte_carlo_info = monte_carlo_normalized
 
-    for price_type in ["FuelStation"]:
-        monte_carlo_normalized = add_average(monte_carlo_normalized, price_type)
+    for price_type in price_types:
+        monte_carlo_info = add_average(monte_carlo_info, price_type)
 
-    return monte_carlo_normalized
+    return monte_carlo_info
     # plot_info = monte_carlo_info.T.astype(float)
 
 
