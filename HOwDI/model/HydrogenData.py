@@ -483,13 +483,21 @@ class HydrogenData:
         prices.index.name = "trial"
 
         all_dfs = self.all_dfs()
+
+        ### quick and dirty to get consumption
+        consumption = all_dfs["output-consumption"]["cons_h"]
+        consumption = pd.DataFrame(consumption).T
+        consumption.columns = "/cons_h" + consumption.columns
+        consumption.index = [self.trial_number]
+        consumption.index.name = "trial"
+
         trial_vector = pd.concat(
             [
                 transform_df_to_trial(df, name, self.trial_number)
                 for name, df in all_dfs.items()
                 if name.startswith("input")
             ]
-            + [prices],
+            + [prices, consumption],
             axis=1,
         )
 
