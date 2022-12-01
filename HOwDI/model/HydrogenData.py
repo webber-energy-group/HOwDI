@@ -487,7 +487,7 @@ class HydrogenData:
         ### quick and dirty to get consumption
         consumption = all_dfs["output-consumption"]["cons_h"]
         consumption = pd.DataFrame(consumption).T
-        consumption.columns = "/cons_h" + consumption.columns
+        consumption.columns = "cons_h/" + consumption.columns
         consumption.index = [self.trial_number]
         consumption.index.name = "trial"
 
