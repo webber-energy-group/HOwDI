@@ -443,10 +443,10 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenData):
     ) * (1 + H.fixedcost_percent)
 
     # TODO fuel station subsidy
-   # CV_fuelStation_subsidy = sum(
-   #     m.fuelStation_cost_capital_subsidy[fs] / H.A / H.time_slices
+    # CV_fuelStation_subsidy = sum(
+    #     m.fuelStation_cost_capital_subsidy[fs] / H.A / H.time_slices
     #    for fs in m.fuelStation_set
-    #)
+    # )
 
     totalSurplus = (
         U_hydrogen
@@ -454,7 +454,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenData):
         + U_carbon_capture_credit_retrofit
         + U_h2_tax_credit
         + U_h2_tax_credit_retrofit_ccs
-       # + U_carbon
+        # + U_carbon
         - P_variable
         - P_electricity
         - P_naturalGas
@@ -466,7 +466,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenData):
         - CV_variable
         - CV_electricity
         - CV_capital
-       # + CV_fuelStation_subsidy
+        # + CV_fuelStation_subsidy
     )
     return totalSurplus
 
