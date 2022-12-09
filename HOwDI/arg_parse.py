@@ -7,10 +7,24 @@ def parse_command_line(module=Path(sys.argv[1]).name, argv=sys.argv):
     def name(*args):
         return any([arg == module for arg in args])
 
+
+def parse_command_line(module=Path(sys.argv[1]).name, argv=sys.argv):
+    def name(*args):
+        return any([arg == module for arg in args])
+
     # TODO filenames for fig, outputs.json
 
     parser = argparse.ArgumentParser()
 
+    if name("run", "create_fig", "traceback", "traceforward"):
+        parser.add_argument(
+            "-sd",
+            "--scenario_dir",
+            dest="scenario_dir",
+            type=str,
+            default="./",
+            help="Specify the scenario directory. Defaults to CWD.",
+        )
     if name("run", "create_fig", "traceback", "traceforward"):
         parser.add_argument(
             "-sd",
@@ -115,14 +129,6 @@ Location where necessary hub files are required. (hubs.csv, arcs_blacklist.csv, 
             dest="model_inputs_dir",
             default=None,
             help="Location of model inputs where files we be adjusted with new hubs.",
-        )
-    if name("monte_carlo"):
-        parser.add_argument(
-            "-f",
-            "--file",
-            dest="monte_carlo_file",
-            default="monte_carlo",
-            help="Location of monte carlo file",
         )
 
     return parser.parse_args(argv[2:])
