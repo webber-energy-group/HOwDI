@@ -213,7 +213,7 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
             column_data = row_data[all_rows_name]
             f = files[file]
             rows = list(f.index)
-            new_rows_data = {row: column_data for row in rows}
+            new_rows_data = {row: copy.deepcopy(column_data) for row in rows}
             row_data.update(new_rows_data)
             row_data.pop(all_rows_name)
         return row_data
