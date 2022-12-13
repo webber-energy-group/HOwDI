@@ -27,7 +27,9 @@ def recover_full_data(h, engine):
 
 def add_average(data, column_filter):
     data["average/" + column_filter] = (
-        data[[c for c in data.columns if column_filter in c]].astype(float).mean(axis=1)
+        data[[c for c in data.columns if "/" + column_filter in c]]
+        .astype(float)
+        .mean(axis=1)
     )
     return data
 
