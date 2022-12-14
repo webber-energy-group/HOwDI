@@ -7,24 +7,10 @@ def parse_command_line(module=Path(sys.argv[1]).name, argv=sys.argv):
     def name(*args):
         return any([arg == module for arg in args])
 
-
-def parse_command_line(module=Path(sys.argv[1]).name, argv=sys.argv):
-    def name(*args):
-        return any([arg == module for arg in args])
-
     # TODO filenames for fig, outputs.json
 
     parser = argparse.ArgumentParser()
 
-    if name("run", "create_fig", "traceback", "traceforward"):
-        parser.add_argument(
-            "-sd",
-            "--scenario_dir",
-            dest="scenario_dir",
-            type=str,
-            default="./",
-            help="Specify the scenario directory. Defaults to CWD.",
-        )
     if name("run", "create_fig", "traceback", "traceforward"):
         parser.add_argument(
             "-sd",
