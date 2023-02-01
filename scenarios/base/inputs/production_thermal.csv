@@ -1,4 +1,5 @@
 type,ccs_capture_rate,fixed_usdPerTon,capital_usdPerTonPerDay,kWh_perTon,ng_mmbtu_per_tonH2,variable_usdPerTon,utilization,purity,min_h2,max_h2,h2_tax_credit
+smr-noCCS,0,70,2000000,640,144,90,0.9,low,300,10000,0
 smr-low,0.6,70,2900000,1488,150,90,0.9,low,300,50000,459
 smr-high,0.9,70,3500000,1912,153,90,0.9,low,300,50000,689
 smr-high-ptc,0.9,70,3500000,1912,153,90,0.9,low,300,50000,600

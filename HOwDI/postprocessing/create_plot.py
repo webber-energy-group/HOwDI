@@ -117,6 +117,7 @@ def create_plot(H):
     Returns:
     fig: a matplotlib.plt object which is a figure of the results.
     """
+    plt.rc("font", family="Franklin Gothic Medium")
 
     hub_data = json.load(open(H.hubs_dir / "hubs.geojson"))["features"]
     locations = {d["properties"]["hub"]: d["geometry"]["coordinates"] for d in hub_data}
@@ -172,7 +173,7 @@ def create_plot(H):
         for hub, hub_data in H.output_dict.items()
     }
 
-    marker_size_default = 20
+    marker_size_default = 310
     prod_capacity_values = list(prod_capacity.values())
     number_of_producers = sum(
         [1 for prod_capacity_value in prod_capacity_values if prod_capacity_value > 0]
@@ -188,7 +189,7 @@ def create_plot(H):
         else:
             # prod capacity is zero for non-producers, which would correspond to a size of zero.
             # Thus, we use the default size for non-producers
-            size = marker_size_default
+            size = 75
         return size
 
     prod_capacity_marker_size = {
@@ -240,13 +241,25 @@ def create_plot(H):
     # Plot
 
     # initialize figure
+    # plt.style.use("dark_background")
+
+    # plt.legend(facecolor="white", framealpha=1)
     fig, ax = plt.subplots(figsize=(10, 10), dpi=300)
+    ax.set_facecolor("black")
+    # ax.legend(facecolor="white", framealpha=1, fontsize="xx-large")
+    # ax.spines["top"].set_visible(False)
+    # ax.spines["right"].set_visible(False)
+    # ax.spines["bottom"].set_visible(False)
+    # ax.spines["left"].set_visible(False)
+    # ax.get_xaxis().set_ticks([])
+    # ax.get_yaxis().set_ticks([])
+    ax.axis("off")
     # get Texas plot
     us_county = gpd.read_file(H.shpfile)
     # us_county = gpd.read_file('US_COUNTY_SHPFILE/US_county_cont.shp')
     tx_county = us_county[us_county["STATE_NAME"] == "Texas"]
     tx = tx_county.dissolve()
-    tx.plot(ax=ax, color="white", edgecolor="black")
+    tx.plot(ax=ax, color="white")
 
     # Plot hubs
     hubs = distribution[distribution.type == "Point"]
@@ -258,8 +271,8 @@ def create_plot(H):
     # Options for hub by technology
     hub_plot_tech = {
         "default": {
-            "name": "No Production (Color)",
-            "color": "#219ebc",
+            "name": "Only Consumption",
+            "color": "white",
             "marker": ".",
             "set": None,
             "b": lambda df: df["production"].isnull(),
@@ -271,7 +284,7 @@ def create_plot(H):
         },
         "electric": {
             "name": "Electric Production",
-            "color": "blue",
+            "color": "#219ebc",
             "b": lambda df: df["production"].isin(electric_prod_combos),
         },
         "both": {
@@ -280,23 +293,24 @@ def create_plot(H):
             "b": lambda df: df["production"].isin(both_prod_combos),
         },
     }
+    # if hub_plot_tech["both"]["b"](hubs):
 
     # Options for hub by Production, Consumption, or both
     hub_plot_type = {
         "production": {
-            "name": "Production (Shape)",
+            "name": "Production",
             "b": lambda df: df["production"].notnull() & df["consumption"].isnull(),
-            "marker": "^",
+            "edgecolors": None,
         },
         "consumption": {
             "name": "Consumption (Shape)",
             "b": lambda df: df["production"].isnull() & df["consumption"].notnull(),
-            "marker": "v",
+            "edgecolors": "black",
         },
         "both": {
             "name": "Production and Consumption (Shape)",
             "b": lambda df: df["production"].notnull() & df["consumption"].notnull(),
-            "marker": "D",
+            "edgecolors": "black",
         },
     }
 
@@ -308,7 +322,8 @@ def create_plot(H):
         hubs[type_plot["b"](hubs) & tech_plot["b"](hubs)].plot(
             ax=ax,
             color=tech_plot["color"],
-            marker=type_plot["marker"],
+            marker=".",
+            edgecolors=type_plot["edgecolors"],
             zorder=5,
             markersize=hubs[type_plot["b"](hubs) & tech_plot["b"](hubs)][
                 "production_marker_size"
@@ -319,10 +334,12 @@ def create_plot(H):
     ]
 
     # Plot connections:
-    dist_pipelineLowPurity_col = "#9b2226"
-    dist_pipelineHighPurity_col = "#6A6262"
-    dist_truckLiquefied_color = "#fb8500"
-    dist_truckCompressed_color = "#bb3e03"
+    # dist_pipelineLowPurity_col = "#9b2226"
+    # dist_pipelineHighPurity_col = "#6A6262"
+    # dist_truckLiquefied_color = "#fb8500"
+    # dist_truckCompressed_color = "#bb3e03"
+    dist_pipelineColor = "#6A6262"
+    dist_truckColor = "#fb8500"
 
     connections = distribution[distribution.type == "LineString"]
     roads_connections = connections.copy()
@@ -347,54 +364,21 @@ def create_plot(H):
                 "geometry",
             ] = row.geometry
 
-        roads_connections[connections["dist_type"] == "dist_pipelineLowPurity"].plot(
-            ax=ax, color=dist_pipelineLowPurity_col, zorder=1
-        )
-        roads_connections[connections["dist_type"] == "dist_pipelineHighPurity"].plot(
-            ax=ax, color=dist_pipelineHighPurity_col, zorder=1
-        )
+        roads_connections[
+            (connections["dist_type"] == "dist_pipelineLowPurity")
+            | (connections["dist_type"] == "dist_pipelineHighPurity")
+        ].plot(ax=ax, color=dist_pipelineColor, zorder=1)
+        # roads_connections[connections["dist_type"] == "dist_pipelineHighPurity"].plot(
+        #     ax=ax, color=dist_pipelineHighPurity_col, zorder=1
+        # )
 
         # change 'road_connections' to 'connections' to plot straight lines
-        roads_connections[connections["dist_type"] == "dist_truckLiquefied"].plot(
-            ax=ax, color=dist_truckLiquefied_color, zorder=1
-        )
-        roads_connections[connections["dist_type"] == "dist_truckCompressed"].plot(
-            ax=ax, color=dist_truckCompressed_color, legend=True, zorder=1
-        )
+        roads_connections[
+            (connections["dist_type"] == "dist_truckLiquefied")
+            | (connections["dist_type"] == "dist_truckCompressed")
+        ].plot(ax=ax, color=dist_truckColor, zorder=1)
 
     legend_elements = []
-    legend_elements.extend(
-        [
-            Line2D(
-                [0],
-                [0],
-                color=dist_pipelineLowPurity_col,
-                lw=2,
-                label="Gas Pipeline (Low Purity)",
-            ),
-            Line2D(
-                [0],
-                [0],
-                color=dist_pipelineHighPurity_col,
-                lw=2,
-                label="Gas Pipeline (High Purity)",
-            ),
-            Line2D(
-                [0],
-                [0],
-                color=dist_truckLiquefied_color,
-                lw=2,
-                label="Liquid Truck Route",
-            ),
-            Line2D(
-                [0],
-                [0],
-                color=dist_truckCompressed_color,
-                lw=2,
-                label="Gas Truck Route",
-            ),
-        ]
-    )
 
     legend_elements.extend(
         [
@@ -403,10 +387,13 @@ def create_plot(H):
                 [0],
                 color=tech_plot["color"],
                 label=tech_plot["name"],
-                marker="o",
+                marker=".",
                 lw=0,
+                markersize=18,
             )
             for tech, tech_plot in hub_plot_tech.items()
+            if (tech_plot["name"] != "Only Consumption")
+            and (tech_plot["name"] != "Therm. and Elec. Production")
         ]
     )
     legend_elements.extend(
@@ -414,16 +401,59 @@ def create_plot(H):
             Line2D(
                 [0],
                 [0],
-                color="black",
-                label=type_plot["name"],
-                marker=type_plot["marker"],
+                color="white",
+                markeredgecolor="black",
+                label="Consumption",
+                marker=".",
+                # marker=type_plot["marker"],
                 lw=0,
+                markersize=18,
+                markeredgewidth=2,
             )
-            for type_name, type_plot in hub_plot_type.items()
+            # for type_name, type_plot in hub_plot_type.items()
+        ]
+    )
+    legend_elements.extend(
+        [
+            Line2D(
+                [0],
+                [0],
+                color=dist_pipelineColor,
+                lw=2,
+                label="Pipeline",
+            ),
+            # Line2D(
+            #     [0],
+            #     [0],
+            #     color=dist_pipelineHighPurity_col,
+            #     lw=2,
+            #     label="Gas Pipeline (High Purity)",
+            # ),
+            Line2D(
+                [0],
+                [0],
+                color=dist_truckColor,
+                lw=2,
+                label="Truck",
+            ),
+            # Line2D(
+            #     [0],
+            #     [0],
+            #     color=dist_truckCompressed_color,
+            #     lw=2,
+            #     label="Gas Truck Route",
+            # ),
         ]
     )
 
-    ax.legend(handles=legend_elements, loc="lower left")
+    ax.legend(
+        handles=legend_elements,
+        loc="lower left",
+        facecolor="white",
+        edgecolor="#212121",
+        framealpha=1,
+        fontsize="large",
+    )
 
     return fig
 
