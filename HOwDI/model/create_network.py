@@ -127,7 +127,6 @@ def initialize_graph(H):
         # Flow from truck distribution and flow from highPurity
         # pipelines can satisfy all types of demand
         for flow_type, flow_limit in flow_limit_series.iteritems():
-
             flow_char = free_flow_dict("flow_to_demand_node")
             flow_char["flowLimit_tonsPerDay"] = flow_limit
 
@@ -268,7 +267,6 @@ def add_consumers(g: DiGraph, H):
     # loop through the hub names, add a network node for each type of demand, and add a network arc
     # connecting that demand to the appropriate demand hub
     for hub_name, hub_data in H.hubs.iterrows():
-
         for demand_sector, demand_data in H.demand.iterrows():
             demand_value = hub_data["{}_tonnesperday".format(demand_sector)]
             demand_type = demand_data["demandType"]

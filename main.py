@@ -8,7 +8,6 @@ from HOwDI.postprocessing.generate_outputs import create_outputs_dfs, create_out
 
 
 def main():
-
     scenario_dir = Path("scenarios") / "base"
 
     # read inputs

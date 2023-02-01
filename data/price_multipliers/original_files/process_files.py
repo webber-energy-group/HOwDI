@@ -1,7 +1,7 @@
 import pandas as pd
 import yaml
 
-#%%
+# %%
 # capex and ng
 capex = pd.read_excel(
     "regional_CAPEX_multipliers.xlsx",
@@ -14,7 +14,7 @@ ng = pd.read_excel(
     index_col="County",
 )
 
-#%%
+# %%
 # elec_prices
 
 elec_prices_by_month = pd.read_excel(

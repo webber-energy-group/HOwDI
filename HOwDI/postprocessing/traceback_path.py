@@ -68,7 +68,6 @@ class MetaNode(Node):
 def find_children_dist(
     full_data, parent: MetaNode, current_node: MetaNode, scope="local", past_node=None
 ):
-
     dist_data = full_data[current_node]["distribution"]
     destination_class = parent.name
     if scope == "outgoing":
@@ -127,7 +126,6 @@ def print_tree(parent: MetaNode):
 
 
 def trace_back(hub, full_data):
-
     # #debug
     # node = 'channelview'
     # full_data = json.load(open('base/outputs/outputs.json'))
