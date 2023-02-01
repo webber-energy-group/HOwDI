@@ -92,7 +92,7 @@ linked_distributions:
           production_thermal:
             {
               ALL:
-                { capital_usdPerTonPerDay: { loc: ~ , scale: ["mul", 0.25] } },
+                { capital_usdPerTonPerDay: { loc: ~, scale: ["mul", 0.25] } },
             },
         },
     },

@@ -247,7 +247,7 @@ def create_outputs_dfs(m, H):
     # if price hubs are used (find_prices binary), then data utilizing an amount of hydrogen <= price_demand will be removed
     price_hub_demand = H.find_prices * H.price_demand
 
-    tol = 1e-6
+    tol = 1e-3
 
     dfs["production"] = dfs["production"][dfs["production"]["prod_capacity"] > tol]
     dfs["consumption"] = dfs["consumption"][
