@@ -64,7 +64,6 @@ def make_route(row):
 
 
 def create_arcs(geohubs, hubs_dir, create_fig=False, shpfile=None):
-
     plt.style.use("dark_background")
     # read files and establish parameters
 

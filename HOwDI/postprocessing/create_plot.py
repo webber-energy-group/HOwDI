@@ -214,7 +214,6 @@ def create_plot(H):
         features.append(hub_geodata)
 
         for hub_connection in hub_connections:
-
             dest = hub_connection["destination"]
             dist_type = hub_connection["source_class"]
             dest_latlng = locations[dest]
@@ -345,7 +344,6 @@ def create_plot(H):
     roads_connections = connections.copy()
 
     if not roads_connections.empty:
-
         # get data from roads csv, which draws out the road path along a connection
         roads = roads_to_gdf(H.hubs_dir)
 
