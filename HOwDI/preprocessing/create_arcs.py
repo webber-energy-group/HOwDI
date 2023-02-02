@@ -64,6 +64,7 @@ def make_route(row):
 
 
 def create_arcs(geohubs, hubs_dir, create_fig=False, shpfile=None):
+    plt.style.use("dark_background")
     # read files and establish parameters
 
     hubs_df = pd.read_csv(hubs_dir / "hubs.csv").set_index("hub")
@@ -307,9 +308,27 @@ def create_arcs(geohubs, hubs_dir, create_fig=False, shpfile=None):
     # roads_df.to_csv(hubs_dir / "roads.csv")
 
     if create_fig:
-        gdf_trimmed.plot(ax=ax, color="grey")
-        gdf_roads.plot(ax=ax)
-        # fig.savefig(hubs_dir / "fig.png")
+        gdf_roads.plot(ax=ax, color="grey", zorder=1)
+        geohubs.plot(
+            ax=ax,
+            color="white",
+            marker=".",
+            markersize=200,
+            edgecolors="black",
+            zorder=10,
+        )
+
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.spines["bottom"].set_visible(False)
+        ax.spines["left"].set_visible(False)
+        ax.get_xaxis().set_ticks([])
+        ax.get_yaxis().set_ticks([])
+
+        # gdf_trimmed.plot(ax=ax, color="grey", marker="*")
+
+        fig.savefig(hubs_dir / "fig.png", transparent=True)
+
     else:
         fig = None
 

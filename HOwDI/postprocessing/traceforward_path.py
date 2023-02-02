@@ -137,7 +137,6 @@ def find_children_prod(full_data, parent_node, current_hub=None, title=None):
     for scope_of_child in ["local", "outgoing"]:
         for dist_name, dist_params in dist_data[scope_of_child].items():
             if dist_params["source_class"] == title:
-
                 destination_class = dist_params["destination_class"]
 
                 if scope_of_child == "outgoing":

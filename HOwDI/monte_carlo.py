@@ -196,7 +196,7 @@ def monte_carlo(base_dir=Path("."), monte_carlo_file=None):
 
     # instantiate metadata
     base_input_dir = base_dir / metadata.get("base_input_dir", "inputs")
-    engine = create_db_engine()
+    engine = create_db_engine(metadata.get("db"))
     number_of_trials = metadata.get("number_of_trials", 1)
 
     # read base data

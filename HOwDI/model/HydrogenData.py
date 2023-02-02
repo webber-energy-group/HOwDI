@@ -128,7 +128,6 @@ class HydrogenData:
     def init_from_csvs(
         self, scenario_dir, inputs_dir, outputs_dir, store_outputs, settings
     ):
-
         self.scenario_dir = Path(scenario_dir)
         self.inputs_dir = self.scenario_dir / inputs_dir
         self.make_output_dir(outputs_dir, store_outputs)

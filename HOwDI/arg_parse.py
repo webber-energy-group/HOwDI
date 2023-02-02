@@ -104,7 +104,8 @@ Location where necessary hub files are required. (hubs.csv, arcs_blacklist.csv, 
             help="Column to merge price multipliers on. ONLY SUPPORT COUNTY (which is the default).",
         )
         parser.add_argument(
-            "-r" "--replace_model_inputs",
+            "-r",
+            "--replace_model_inputs",
             dest="replace_model_inputs",
             action="store_true",
             help="Replace the hubs.csv and arcs.csv to use the new generated hubs and price multipliers. Other columns are preserved.",
@@ -116,7 +117,15 @@ Location where necessary hub files are required. (hubs.csv, arcs_blacklist.csv, 
             default=None,
             help="Location of model inputs where files we be adjusted with new hubs.",
         )
-
+    if name("monte_carlo"):
+        parser.add_argument(
+            "-f",
+            "--file",
+            dest="monte_carlo_file",
+            type=str,
+            default="monte_carlo.yml",
+            help="Specify the scenario directory. Defaults to CWD.",
+        )
     return parser.parse_args(argv[2:])
 
 

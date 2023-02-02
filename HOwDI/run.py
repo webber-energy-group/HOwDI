@@ -35,7 +35,13 @@ def main():
     if args.output_fig:
         if not args.output_json:
             H.output_dict = create_output_dict(H)
-        create_plot(H).savefig(H.outputs_dir / "fig.png")
+        create_plot(H).savefig(
+            H.outputs_dir / "fig.png",
+            bbox_inches="tight",
+            pad_inches=0,
+            # facecolor="black",
+            transparent=True,
+        )
 
 
 if __name__ == "__main__":

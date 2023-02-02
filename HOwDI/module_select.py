@@ -2,7 +2,6 @@ import sys
 
 
 def main():
-
     try:
         choice = sys.argv[1]
     except IndexError:

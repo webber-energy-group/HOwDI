@@ -2,6 +2,8 @@
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+* This README is under development. For temporary reference, please consult [Modeling Hydrogen Infrastructure with the HOwDI Model](http://dx.doi.org/10.26153/tsw/43878)
+
 ## Installation
 
 1. Create a conda environment from the `env.yml` file and activate it. This may be faster with [mamba](https://mamba.readthedocs.io/en/latest/).
@@ -56,6 +58,6 @@ Traceforward:           HOwDI traceforward
 
 HOwDI uses the Black code style. Please format your code accordingly before making a pull request.
 
-## TEMP
+## : Local Config
 
-Create a file called `HOwDI/config_local.yml`. Add key `db` and follow with db path.
+Adjust the config without worrying about git tracking by creating a file called `HOwDI/config_local.yml`. Add key `db` and follow with db path.
