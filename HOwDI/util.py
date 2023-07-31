@@ -5,7 +5,7 @@ from importlib_metadata import distributions
 
 import pandas as pd
 import yaml
-from pydantic.utils import deep_update
+from pydantic.v1.utils import deep_update
 from sqlalchemy import create_engine
 
 

@@ -613,7 +613,7 @@ def apply_constraints(m: pe.ConcreteModel, H: HydrogenData, g: DiGraph):
         Set:
             Existing producers
         """
-        constraint = m.prod_exists[node] == True
+        constraint = m.prod_exists[node] == 1
         return constraint
 
     m.const_forceExistingProduction = pe.Constraint(

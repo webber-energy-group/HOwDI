@@ -126,7 +126,7 @@ def initialize_graph(H):
         # add an edge:
         # Flow from truck distribution and flow from highPurity
         # pipelines can satisfy all types of demand
-        for flow_type, flow_limit in flow_limit_series.iteritems():
+        for flow_type, flow_limit in flow_limit_series.items():
             flow_char = free_flow_dict("flow_to_demand_node")
             flow_char["flowLimit_tonsPerDay"] = flow_limit
 
