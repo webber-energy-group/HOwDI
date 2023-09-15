@@ -1,0 +1,5 @@
+convertor,conv_capacity,conv_cost_capital,conv_cost_fixed,conv_cost_variable,conv_e_price,conv_utilization,fuelStation_cost_capital_subsidy
+austin_converter_fuelDispenserPipeline,590.0026333333334,3498375.598079648,1452.1391388,0,85.28213922,0.6,206405081.5256067
+dallas_converter_fuelDispenserPipeline,981.6693,3538871.8751151483,1468.94872005,0,85.95507349,0.6,347400187.64339745
+houston_converter_fuelDispenserPipeline,598.3359333333333,3469372.538401198,1440.100271925,0,91.08494167,0.6,207585025.58453164
+waco_converter_fuelDispenserPipeline,35.002633333333335,3515728.941940358,1459.342330425,0,85.95507349,0.6,12305977.105412629

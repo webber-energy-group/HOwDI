@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Running HOwDI example &mdash; HOwDI 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Utility functions and other things." href="../utility/utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            HOwDI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../model/header.html">Model Conception</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs_outputs/header.html">Input and output files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utility/header.html">Utility</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Running HOwDI example</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#step-1-preprocessing">Step 1: Preprocessing</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">HOwDI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Running HOwDI example</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/examples/example.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="running-howdi-example">
+<h1>Running HOwDI example<a class="headerlink" href="#running-howdi-example" title="Permalink to this heading"></a></h1>
+<p>This page walks through a simple example of using HOwDI to determine the optimal infrastructure in a reduced version of Texas.</p>
+<p>In this scenario, Dallas, Waco, Austin, Houston, and Freeport are the cities of interest.
+Freeport has an existing Steam Methane Reformer (SMR) and a pipeline to Houston.
+We would like to determine the optimal way to build hydrogen infrastructure given a potential demand.</p>
+<section id="step-1-preprocessing">
+<h2>Step 1: Preprocessing<a class="headerlink" href="#step-1-preprocessing" title="Permalink to this heading"></a></h2>
+<p>As a first step, the initial data must be preprocessed to generate necessary input files.
+The preprocessing steps involve finding the geographic location of cities and determining the distance between them.
+These steps can be skipped if the necessary input files are already available.</p>
+<ol class="arabic">
+<li><p>Create a <code class="code docutils literal notranslate"><span class="pre">hubs.csv</span></code> file with the following columns:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">hub</span></code>: The name of the hub. This will be used to geocode the hub, so it should correspond to an actual city.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">status</span></code>: The “reach” of the hub. 1 corresponds to a major hub, -1 corresponds to a minor hub, and 0 corresponds to a regular hub. A major hub will be more likely to connect to other hubs than a regular hub will (an regular &gt; minor).</p></li>
+</ul>
+<p>For this example, the <code class="code docutils literal notranslate"><span class="pre">hubs.csv</span></code> file should look like:</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">hubs.csv</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>hub</p></th>
+<th class="head"><p>status</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>austin</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>houston</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>freeport</p></td>
+<td><p>-1</p></td>
+</tr>
+<tr class="row-even"><td><p>waco</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p>Create <code class="code docutils literal notranslate"><span class="pre">arcs_whitelist.csv</span></code> and <code class="code docutils literal notranslate"><span class="pre">arcs_blacklist.csv</span></code> in the same directory.
+Both have columns <code class="code docutils literal notranslate"><span class="pre">startHub</span></code> and <code class="code docutils literal notranslate"><span class="pre">endHub</span></code> corresponding to the hubs that should or should not be forced to connect.
+<code class="code docutils literal notranslate"><span class="pre">arcs_whitelist.csv</span></code> also contains a third column, <code class="code docutils literal notranslate"><span class="pre">exist_pipeline</span></code>, which is <code class="code docutils literal notranslate"><span class="pre">True</span></code> if there is an existing hydrogen pipeline that connects the hubs.</p>
+<p>For this example, the preprocessing code should connect Houston and Freeport, but we would like to specify that a pipeline exists.
+The preprocessing code may also connect Dallas and Austin, which is unnecessary since any route from Dallas to Austin must go through Waco.</p>
+<blockquote>
+<div><table class="docutils align-default" id="id2">
+<caption><span class="caption-text">arcs_whitelist.csv</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>startHub</p></th>
+<th class="head"><p>endHub</p></th>
+<th class="head"><p>exist_pipeline</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>houston</p></td>
+<td><p>freeport</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">arcs_blacklist.csv</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>startHub</p></th>
+<th class="head"><p>endHub</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>austin</p></td>
+<td><p>dallas</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p>The preprocessing code can be run from the directory containing the three generated files. We’ll add other parameters to create a figure.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>HOwDI<span class="w"> </span>create_hub_data<span class="w"> </span>-f<span class="w"> </span>-shp<span class="w"> </span>US_COUNTY_SHPFILE/US_county_cont.shp
+</pre></div>
+</div>
+</li>
+</ol>
+<p>The following file is generated:</p>
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">arcs.csv</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
+<tbody>
+<tr class="row-odd"><td><p>startHub</p></td>
+<td><p>endHub</p></td>
+<td><p>kmLength_euclid</p></td>
+<td><p>kmLength_road</p></td>
+<td><p>exist_pipeline</p></td>
+</tr>
+<tr class="row-even"><td><p>austin</p></td>
+<td><p>waco</p></td>
+<td><p>152.40950173410138</p></td>
+<td><p>163.5097</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas</p></td>
+<td><p>houston</p></td>
+<td><p>360.431235113376</p></td>
+<td><p>384.3372</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>freeport</p></td>
+<td><p>houston</p></td>
+<td><p>89.06892475844474</p></td>
+<td><p>99.1198</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>waco</p></td>
+<td><p>houston</p></td>
+<td><p>261.16592973831126</p></td>
+<td><p>289.0303</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>waco</p></td>
+<td><p>dallas</p></td>
+<td><p>139.75266300122152</p></td>
+<td><p>152.1352</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>austin</p></td>
+<td><p>houston</p></td>
+<td><p>235.69261123650796</p></td>
+<td><p>261.8612</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+<p>Additionally, for generating output figures, <code class="code docutils literal notranslate"><span class="pre">fig.png</span></code>, <code class="code docutils literal notranslate"><span class="pre">hubs.geojson</span></code>, and <code class="code docutils literal notranslate"><span class="pre">roads.csv</span></code> are generated.</p>
+<figure class="align-center" id="id5">
+<img alt="../_images/fig.png" src="../_images/fig.png" />
+<figcaption>
+<p><span class="caption-text">fig.png</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">hubs.geojson</span><a class="headerlink" href="#id6" title="Permalink to this code"></a></div>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;crs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:ogc:def:crs:OGC:1.3:CRS84&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;hub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;austin&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Austin, Travis County, Texas, United States&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;County&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Travis County&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Point&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="mf">-97.7436995</span><span class="p">,</span><span class="w"> </span><span class="mf">30.2711286</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;hub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dallas&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dallas, Dallas County, Texas, United States&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;County&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dallas County&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Point&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="mf">-96.7968559</span><span class="p">,</span><span class="w"> </span><span class="mf">32.7762719</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;hub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;houston&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Houston, Harris County, Texas, United States&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;County&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Harris County&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Point&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="mf">-95.3676974</span><span class="p">,</span><span class="w"> </span><span class="mf">29.7589382</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;hub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;freeport&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Freeport, Brazoria County, Texas, 77541, United States&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;County&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Brazoria County&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Point&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="mf">-95.3596617</span><span class="p">,</span><span class="w"> </span><span class="mf">28.9541368</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;hub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;waco&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Waco, McLennan County, Texas, United States&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;County&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;McLennan County&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Point&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="mf">-97.1474628</span><span class="p">,</span><span class="w"> </span><span class="mf">31.5491899</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<table class="docutils align-default" id="id7">
+<caption><span class="caption-text">roads.csv</span><a class="headerlink" href="#id7" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>startHub</p></th>
+<th class="head"><p>endHub</p></th>
+<th class="head"><p>road_geometry</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>austin</p></td>
+<td><p>waco</p></td>
+<td><p>LINESTRING (-97.743783 30.270907999999977, -97.733854 30.26658799999998, -97.673723 30.382728000000004, -97.666147 30.454658999999996, -97.691924 30.534654999999994, -97.691649 30.63126500000001, -97.659261 30.68278300000001, -97.614865 30.80689600000002, -97.577517 30.88178800000001, -97.545482 30.920103999999988, -97.535617 30.955724000000004, -97.498828 30.991477999999987, -97.466502 31.046531000000005, -97.407167 31.084183999999986, -97.363712 31.098055000000024, -97.351779 31.121295000000003, -97.333901 31.129025000000002, -97.30054900000002 31.212805000000003, -97.223822 31.335548000000028, -97.205481 31.402076000000015, -97.131062 31.530791000000022, -97.147339 31.54909000000001)</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas</p></td>
+<td><p>houston</p></td>
+<td><p>LINESTRING (-96.796749 32.775945, -96.665371 32.562380000000005, -96.646323 32.37626400000001, -96.474319 32.20015300000002, -96.424542 31.932164999999998, -96.181614 31.729890999999995, -96.147664 31.57790300000001, -96.020984 31.377658999999994, -95.94341 31.04177800000001, -95.511999 30.662122999999987, -95.36786300000001 29.758731)</p></td>
+</tr>
+<tr class="row-even"><td><p>freeport</p></td>
+<td><p>houston</p></td>
+<td><p>LINESTRING (-95.359698 28.954035999999974, -95.373713 28.957954000000033, -95.386073 29.000937, -95.430422 29.014515, -95.45567 29.052825000000006, -95.453143 29.252676, -95.424952 29.304636999999985, -95.426328 29.446377000000012, -95.388144 29.504065999999995, -95.387306 29.656840999999996, -95.37814 29.71828000000003, -95.363735 29.743345999999995, -95.372097 29.76359800000001, -95.36786300000001 29.758731)</p></td>
+</tr>
+<tr class="row-odd"><td><p>waco</p></td>
+<td><p>houston</p></td>
+<td><p>LINESTRING (-97.147339 31.54909000000001, -97.10652 31.566756999999985, -96.932639 31.49521300000001, -96.873784 31.275735999999984, -96.7404 31.163317000000006, -96.712267 31.120467000000005, -96.703133 31.010866999999998, -96.579828 30.86095500000002, -96.48073600000001 30.763594999999984, -96.35283200000002 30.691217999999992, -96.279096 30.57630000000002, -96.074742 30.401654999999977, -96.067871 30.376226999999986, -95.965673 30.35555199999999, -95.927947 30.309015999999993, -95.824685 30.293994999999995, -95.779799 30.250813000000004, -95.743302 30.246873999999988, -95.679212 30.18003399999998, -95.561211 29.970518000000006, -95.410127 29.87344199999999, -95.36786300000001 29.758731)</p></td>
+</tr>
+<tr class="row-even"><td><p>waco</p></td>
+<td><p>dallas</p></td>
+<td><p>LINESTRING (-97.147339 31.54909000000001, -97.10913 31.584787000000013, -97.095472 31.629062000000012, -97.102669 31.791805, -97.081265 31.877232999999997, -97.11901 31.96884499999999, -97.095697 32.00415200000002, -97.091649 32.056627000000006, -96.93771200000002 32.14477599999999, -96.910499 32.17432099999999, -96.876698 32.242174000000006, -96.85443 32.34845899999999, -96.872207 32.412110999999996, -96.822087 32.50098499999998, -96.829718 32.71218099999999, -96.796749 32.775945)</p></td>
+</tr>
+<tr class="row-odd"><td><p>austin</p></td>
+<td><p>houston</p></td>
+<td><p>LINESTRING (-97.743783 30.270907999999977, -97.692187 30.25033799999999, -97.682127 30.224430000000012, -97.614763 30.186304000000014, -97.545024 30.18438999999999, -97.41301900000002 30.11131899999999, -97.294382 30.104860000000002, -97.253224 30.08937099999998, -97.175756 30.04346099999999, -97.068669 29.943622000000016, -96.986819 29.936258000000002, -96.913184 29.906002, -96.868753 29.923280000000013, -96.817603 29.90005900000002, -96.778176 29.89874800000001, -96.586015 29.736518999999998, -96.57123 29.692510999999996, -96.54146 29.691986999999994, -96.493809 29.712039000000004, -96.285437 29.75045600000001, -96.16799 29.759950000000007, -96.12336 29.77546999999998, -96.043157 29.769696999999997, -95.989873 29.781573999999996, -95.46257 29.783930000000012, -95.374306 29.778604999999978, -95.36786300000001 29.758731)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../utility/utils.html" class="btn btn-neutral float-left" title="Utility functions and other things." accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Braden Pecora.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,3 @@
+Header,converter,variable_usdPerTon,capital_usdPerTonPerDay,kWh_perTon,arc_start_class,arc_end_class,utilization
+Description,Name of convertor,Variable costs of conversion,Capital cost of conversion,Electricity used by a convertor,node to insert convertor after,node to insert converter after,Perctange/100 of H2 processed compared to capacity
+Units,compression,$/ton H2,$/ton H2,kWh /ton H2,type of node,type of node,(0.00-1.00)

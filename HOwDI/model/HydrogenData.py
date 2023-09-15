@@ -1,15 +1,20 @@
-# TODO docstrings, but maybe not needed as most functions are a few lines
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""
+This module defines the `HydrogenData` class, which is used to store and manipulate data for the HOwDI model.
+"""
 
 import copy
 import json
 import uuid
 from inspect import getsourcefile
 from pathlib import Path
+from typing import Any, Callable, Dict, Optional, Union
 
 import numpy as np
 import pandas as pd
 import sqlalchemy as db
 import yaml
+
 from HOwDI.util import (
     dict_keys_to_list,
     flatten_dict,
@@ -21,54 +26,167 @@ from HOwDI.util import (
 
 class HydrogenData:
     """
-    A class used primarily to store data in one central location
+    A class used primarily to store data in one central location.
 
     Parameters
-    -----
+    ----------
+    uuid : Union[uuid.UUID, str], optional
+        A unique identifier for the instance. If not provided, a new UUID4 will be generated.
     read_type : str
-        Either "csv" or "dataframe", determines whether or not to read from
-        csvs in a prescribed directory or to read inputs from a dictionary of dataframes.
-    scenario_dir : str, Path
-        Inputs and outputs dir are relative to this dir
-    inputs_dir : str, Path
-    outputs_dir : str, Path
-    store_outputs : Boolean
-        If true, saves outputs to file
-    raiseFileNotFoundError : Boolean
-        Raise error if an expected file does not exist.
-        Set to false only when using this class for pre and postprocessing
-    read_output_dir : Boolean
-        If set to True, will load data from the outputs dir. Useful if the model has already
-        been run and postprocessing with this class is desired
+        Either "csv" or "dataframe", determines whether or not to read from csvs in a
+        prescribed directory or to read inputs from a dictionary of `pd.DataFrame`. Defaults to "csv".
+    settings : Dict[str, Any], optional
+        A dictionary of settings to use when initializing the instance. If not specified,
+        reads from the `settings.yaml` file in the `scenario_dir`.
+    scenario_dir : Union[str, Path]
+        Inputs and outputs dir are relative to this dir. Defaults to ".".
+    inputs_dir : Union[str, Path]
+        The directory containing the input data for the model. Defaults to "inputs".
+    outputs_dir : Union[str, Path]
+        The directory where output data will be written. Defaults to "outputs".
+    store_outputs : bool
+        If true, saves outputs to file. Defaults to True.
+    raiseFileNotFoundError : bool
+        Raise error if an expected file does not exist. Set to false only when using this class
+        for pre and postprocessing. Defaults to True.
+    read_output_dir : bool
+        If set to True, will load data from the outputs dir. Useful if the model has already been
+        run and postprocessing with this class is desired. Defaults to False.
+    dfs : Dict[str, pd.DataFrame], optional
+        A dictionary of `pd.DataFrame` to use when initializing the instance. Only used if
+        `read_type` is "dataframe". Defaults to None.
+    outputs : Dict[str, Any], optional
+        A dictionary of output data to use when initializing the instance. Only used if `read_type`
+        is "dataframe". Defaults to None.
+    trial_number : int, optional
+        The trial number to use when initializing the instance. Only used if `read_type` is "sql".
+        Defaults to None.
+    sql_database : str, optional
+        The SQL database to use when initializing the instance. Only used if `read_type` is "sql".
+        Defaults to None.
+    sql_table : str, optional
+        The SQL table to use when initializing the instance. Only used if `read_type` is "sql".
+        Defaults to None.
 
+    Attributes
+    ----------
+    uuid : uuid.UUID
+        A unique identifier for the instance.
+    raiseFileNotFoundError_bool : bool
+        If true, raises error if an expected file does not exist.
+    trial_number : int
+        The trial number to use when initializing the instance for Monte Carlo runs
+    scenario_dir : Path
+        Inputs and outputs dir are relative to this dir.
+    inputs_dir : Path
+        The directory containing the input data for the model, relative to scenario_dir
+    outputs_dir : Path
+        The directory where output data will be written, relative to scenario_dir
+    prod_therm : pd.DataFrame
+        A `pd.DataFrame` containing thermal production data, corresponding to the `production_thermal.csv` input file.
+    prod_elec : pd.DataFrame
+        A `pd.DataFrame` containing electric production data, corresponding to the `production_electric.csv` input file.
+    distributors : pd.DataFrame
+        A `pd.DataFrame` containing distributor data, corresponding to the `distribution.csv` input file.
+    converters : pd.DataFrame
+        A `pd.DataFrame` containing converter data, corresponding to the `conversion.csv` input file.
+    demand : pd.DataFrame
+        A `pd.DataFrame` containing demand data, corresponding to the `demand.csv` input file.
+    hubs : pd.DataFrame
+        A `pd.DataFrame` containing hub data, corresponding to the `hubs.csv` input file.
+    arcs : pd.DataFrame
+        A `pd.DataFrame` containing arc data, corresponding to the `arcs.csv` input file.
+    producers_existing : pd.DataFrame
+        A `pd.DataFrame` containing existing producer data, corresponding to the `producers_existing.csv` input file.
+    ccs_data : pd.DataFrame
+        A `pd.DataFrame` containing carbon capture and storage data, corresponding to the `ccs.csv` input file.
+    ccs1_percent_co2_captured : float
+        The percentage of CO2 captured by the first CCS unit. Read from the `ccs.csv` file.
+    ccs2_percent_co2_captured : float
+        The percentage of CO2 captured by the second CCS unit. Read from the `ccs.csv` file.
+    ccs1_h2_tax_credit : float
+        The tax credit for hydrogen "cleaned" by CCS1 ($/ton H2). Read from the `ccs.csv` file.
+    ccs2_h2_tax_credit : float
+        The tax credit for hydrogen "cleaned" by CCS2 ($/ton H2). Read from the `ccs.csv` file.
+    ccs1_variable_usdPerTon : float
+        The variable cost of CCS1 ($/ton CO2). Read from the `ccs.csv` file.
+    ccs2_variable_usdPerTon : float
+        The variable cost of CCS2 ($/ton CO2). Read from the `ccs.csv` file.
+    price_tracking_array : numpy.ndarray
+       Used in the approximation for finding delivered prices at hubs. Has a start, stop, and step
+       based on the settings file. Model will test if hydrogen can be delivered at each price.
+       More steps will result in a more accurate approximation, but will take longer to run.
+    price_hubs : Union[str, List[str]]
+        The hubs for which to track prices. Specified in settings.yml. More hubs will result in a
+        longer runtime.
+    price_demand : float
+        The price at "price hubs" pay for a unit of hydrogen. Specified in settings.yml.
+        For the "price hubs" option to work, this value must be non-zero. However, the value
+        should also be close to zero as to not interfere with the model's results.
+    find_prices : bool
+        A flag indicating whether to find prices using the price tracking/price hubs feature.
+    carbon_price : float
+        Dollars per ton penalty on CO2 emissions
+    carbon_capture_credit : float
+        The credit for carbon capture in dollars per ton.
+    baseSMR_CO2_per_H2_tons : float
+        The carbon rate that produces 0 CHECs.
+    carbon_g_MJ_to_t_tH2 : float
+        The unit conversion factor for carbon.
+    time_slices : int
+        used to get from investment_period units to the simulation
+        timestep units. Default is 365 because the investment period units are in
+        years (20 years default) and the simulation units are in days.
+    A : float
+        The yearly amortized payment.
+    subsidy_dollar_billion : float
+        The amount of billions of dollars available to subsidize infrastructure
+        (for scenarios where hydrogen infrastructure is subsidized).
+        e.g., if = 0.6, then for a $10Billion facility, industry must spend $6Billion
+         (which counts toward the objective function) and the subsidy will cover $4Billion
+         (which is excluded from the objective function).
+    subsidy_cost_share_fraction : float
+        The fraction of dollars that industry must spend on new infrastructure.
+    solver_settings : Dict[str, Any]
+        A dictionary of solver settings to pass to pyomo. Currently supports:
+        - solver: The solver to use. Defaults to "glpk" but "gurobi" is recommended.
+        - mipgap: The mipgap to use. Defaults to 0.01.
+        - debug: A flag indicating whether to print debug information for the solver. Defaults to False.
+    fractional_chec : bool
+        A flag indicating whether to use fractional CHECs or whole CHECs.
+        Fractional CHEC: 1 CHEC per 1 ton of clean hydrogen produced, 0.5 CHECs if
+        the hydrogen produced has 50% of the associated carbon emissions of an unabated SMR.
+    fixedcost_percent : float
+        The percentage of capital costs used to estimate fixed costs.
+    dat_dir : Path
+        The directory containing geographic and other base data for the model, independent of the scenario.
+    hubs_dir : Path
+        The directory containing hub data for the model, independent of the scenario. Within the data_dir
+    shpfile_dir : Path
+        The shapefile used to create the background map for the model.
+    outputs_dfs : Dict[str, pd.DataFrame]
+        A dictionary of dataframes containing the outputs from the model. Keys are
+        "production", "conversion", "consumption", and "distribution".
     """
 
     def __init__(
         self,
-        uuid=uuid.uuid4(),
-        read_type="csv",
-        settings=None,
-        # if read_type == "csv"
-        scenario_dir=".",
-        inputs_dir="inputs",
-        outputs_dir="outputs",
-        store_outputs=True,
-        raiseFileNotFoundError=True,
-        read_output_dir=False,
-        # if read_type == "dataframe"
-        dfs=None,
-        outputs=None,
-        # if read_type == "sql"
-        trial_number=None,
-        sql_database=None,
-    ):
+        uuid: Optional[Union[uuid.UUID, str]] = None,
+        read_type: str = "csv",
+        settings: Optional[Dict[str, Any]] = None,
+        scenario_dir: Union[str, Path] = ".",
+        inputs_dir: Union[str, Path] = "inputs",
+        outputs_dir: Union[str, Path] = "outputs",
+        store_outputs: bool = True,
+        raiseFileNotFoundError: bool = True,
+        read_output_dir: bool = False,
+        dfs: Optional[Dict[str, pd.DataFrame]] = None,
+        outputs: Optional[Dict[str, Any]] = None,
+        trial_number: Optional[int] = None,
+        sql_database: Optional[str] = None,
+    ) -> None:
         """
-        carbon_price_dollars_per_ton: dollars per ton penalty on CO2 emissions
-        investment_interest: interest rate for financing capital investments
-        investment_period: number of years over which capital is financed
-        time_slices: used to get from investment_period units to the simulation
-            timestep units. Default is 365 because the investment period units are in
-            years (20 years default) and the simulation units are in days.
+        Initialize a `HydrogenData` instance.
         """
         self.uuid = uuid
         self.raiseFileNotFoundError_bool = raiseFileNotFoundError
@@ -87,12 +205,30 @@ class HydrogenData:
             raise ValueError
 
         if read_output_dir:
-            self.create_outputs_dfs()
+            self.create_output_dfs()
 
         if outputs is not None:
             self.output_dfs = outputs
 
-    def init_files(self, how):
+    def init_files(self, how: Callable[[str], pd.DataFrame]) -> None:
+        """
+        Initialize the `HydrogenData` instance, reading files or data based on the passed function `how`.
+
+        Parameters
+        ----------
+        how : Callable[[str], pd.DataFrame]
+            A function that takes a filename and returns a pandas DataFrame.
+
+        Returns
+        -------
+        None
+            This method does not return anything.
+
+        Raises
+        ------
+        FileNotFoundError
+            If a required file is not found and `raiseFileNotFoundError` is `True`.
+        """
         self.prod_therm = set_index(how("production_thermal"), "type")
         self.prod_elec = set_index(how("production_electric"), "type")
         # self.storage = how("storage")
@@ -109,12 +245,36 @@ class HydrogenData:
         self.initialize_ccs(ccs_data)
 
     def create_output_dict(self):
+        """
+        Create a dictionary of output DataFrames for the `HydrogenData` instance.
+        """
         from HOwDI.postprocessing.generate_outputs import create_output_dict
 
         self.output_dict = create_output_dict(self)
 
-    def init_outputs(self, how):
-        # temp:
+    def init_outputs(self, how: Callable[[str], pd.DataFrame]) -> None:
+        """
+        Initialize the output DataFrames for the `HydrogenData` instance.
+
+        TODO Currently only used for SQL data, and always set to true. Should be refactored
+
+        Parameters
+        ----------
+        how : Callable[[str], pd.DataFrame]
+            A function that takes a string argument (the name of an output DataFrame) and returns a pandas DataFrame.
+
+        Returns
+        -------
+        None
+            This method does not return anything.
+
+        Notes
+        -----
+        The `self.output_dfs` attribute is a dictionary containing the output DataFrames for the `HydrogenData` instance.
+        The keys of the dictionary are the names of the output DataFrames ("production", "consumption", "conversion", and "distribution").
+        The values of the dictionary are pandas DataFrames containing the output data.
+        """
+        # FIXME temp:
         self.initialize_outputs = True
 
         if self.initialize_outputs:
@@ -126,38 +286,109 @@ class HydrogenData:
             self.create_output_dict()
 
     def init_from_csvs(
-        self, scenario_dir, inputs_dir, outputs_dir, store_outputs, settings
-    ):
+        self,
+        scenario_dir: Union[str, Path],
+        inputs_dir: Union[str, Path],
+        outputs_dir: Union[str, Path],
+        store_outputs: bool,
+        settings: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """
+        Initialize the `HydrogenData` instance from CSV files.
+
+        Parameters
+        ----------
+        scenario_dir : Union[str, Path]
+            The directory containing the scenario data.
+        inputs_dir : Union[str, Path]
+            The directory containing the input data for the model.
+        outputs_dir : Union[str, Path]
+            The directory where output data will be written.
+        store_outputs : bool
+            If true, saves outputs to file.
+        settings : Optional[Dict[str, Any]], optional
+            A dictionary of settings to use when initializing the instance (default is None).
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        FileNotFoundError
+            If a required file is not found and raiseFileNotFoundError is True.
+        """
         self.scenario_dir = Path(scenario_dir)
         self.inputs_dir = self.scenario_dir / inputs_dir
         self.make_output_dir(outputs_dir, store_outputs)
 
-        self.init_files(how=self.read_file)
+        try:
+            self.init_files(how=self.read_file)
+        except FileNotFoundError as e:
+            raise FileNotFoundError(
+                f"Could not find required file: {e.filename}"
+            ) from e
 
         ## settings
         settings = self.get_settings(settings)
         self.get_other_data(settings)
 
-    def init_from_dfs(self, dfs, settings):
-        # get_df = lambda key: read_df_from_dict(dfs=dfs, key=key)
-        def init_dfs_method(name):
+    def init_from_dfs(
+        self, dfs: Dict[str, pd.DataFrame], settings: Dict[str, Any]
+    ) -> None:
+        """
+        Initialize the `HydrogenData` instance from a dictionary of pandas DataFrames.
+
+        Parameters
+        ----------
+        dfs : Dict[str, pd.DataFrame]
+            A dictionary of pandas DataFrames containing input data. Keys are file names.
+        settings : Dict[str, Any]
+            A dictionary of settings for the `HydrogenData` instance (see settings.yml in scenario dict).
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        FileNotFoundError
+            If a required file is not found and `raiseFileNotFoundError` is `True`.
+        """
+
+        def init_dfs_method(name: str) -> Optional[pd.DataFrame]:
+            """
+            Gets a DataFrame from the dictionary of DataFrames `dfs` by name,
+            and sets the index to the first column. Used in the `how` argument of `init_files`.
+            """
             try:
                 return first_column_as_index(dfs[name])
             except KeyError:
                 self.raiseFileNotFoundError(name)
                 return None
 
-        self.init_files(init_dfs_method)
-
-        ## (Retrofitted) CCS data
-        # in the future change to nested dictionaries please!
-        # self.initialize_ccs(dfs.get("ccs"))
+        self.init_files(how=init_dfs_method)
 
         # settings
         settings = self.get_settings(settings)
         self.get_other_data(settings)
 
-    def read_sql(self, table_name, engine):
+    def read_sql(self, table_name: str, engine: db.engine.base.Engine) -> pd.DataFrame:
+        """
+        Read data from a SQL table for the `HydrogenData` instance.
+
+        Parameters
+        ----------
+        table_name : str
+            The name of the SQL table to read data from.
+        engine : db.engine.base.Engine
+            The SQLAlchemy engine to use for connecting to the database.
+
+        Returns
+        -------
+        pd.DataFrame
+            A pandas DataFrame containing the data from the specified SQL table.
+        """
         sql = f"""SELECT * FROM '{table_name}'
                   WHERE uuid = '{self.uuid}'
                   AND trial = {self.trial_number}"""
@@ -168,7 +399,26 @@ class HydrogenData:
 
         return df
 
-    def init_from_sql(self, engine):
+    def init_from_sql(self, engine: Union[str, db.engine.base.Engine]) -> None:
+        """
+        Initialize the `HydrogenData` instance from data stored in a SQL database.
+
+        Parameters
+        ----------
+        engine : Union[str, db.engine.base.Engine]
+            The SQLAlchemy engine to use for connecting to the database.
+        trial_number : Optional[int], optional
+            The trial number to use (default is None), by default None.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        ValueError
+            If a trial number is not specified.
+        """
         if self.trial_number is None:
             return ValueError(
                 "Tried to pull data from SQL but a run number was not specified"
@@ -187,8 +437,10 @@ class HydrogenData:
         read_inputs = lambda file_name: read_table("input-" + file_name)
         read_outputs = lambda file_name: read_table("output-" + file_name)
 
-        self.init_files(read_inputs)
+        # read inputs from SQL
+        self.init_files(how=read_inputs)
 
+        # read settings from SQL, which is stored as a JSON string
         settings_df = read_inputs("settings")
         settings_json_str = settings_df.iloc[0]["settings"]
         settings = json.loads(settings_json_str)
@@ -198,9 +450,20 @@ class HydrogenData:
 
         self.init_outputs(read_outputs)
 
-    def raiseFileNotFoundError(self, fn):
-        """Raises FileNotFoundError if self.raiseFileNotFoundError_bool is True,
-        WIP: Else, print FNF to logger."""
+    def raiseFileNotFoundError(self, fn: str) -> None:
+        """
+        Raise a `FileNotFoundError` exception if `self.raiseFileNotFoundError_bool` is True.
+
+        Parameters
+        ----------
+        fn : str
+            The path to the file that was not found.
+
+        Returns
+        -------
+        None
+        """
+        # WIP: Else, print FNF to logger
         if self.raiseFileNotFoundError_bool:
             raise FileNotFoundError("The file {} was not found.".format(fn))
         else:
@@ -209,10 +472,25 @@ class HydrogenData:
         # else:
         #   logger.warning("The file {} was not found.".format(fn))
 
-    def read_file(self, fn) -> pd.DataFrame:
-        """reads file in input directory,
-        fn is filename w/o .csv"""
+    def read_file(self, fn: str) -> pd.DataFrame:
+        """
+        Read a CSV file from the input directory. Used as callable for `init_files`.
 
+        Parameters
+        ----------
+        fn : str
+            The name of the file to read, without the ".csv" extension.
+
+        Returns
+        -------
+        pd.DataFrame
+            A pandas DataFrame containing the data from the file.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the specified file does not exist and `raiseFileNotFoundError` is `True`.
+        """
         file_name = self.inputs_dir / "{}.csv".format(fn)
         try:
             return pd.read_csv(file_name, index_col=0)
@@ -220,9 +498,25 @@ class HydrogenData:
             self.raiseFileNotFoundError(file_name)
 
     def get_hubs_list(self) -> list:
+        """
+        Get a list of the hub names in the `HydrogenData` instance.
+
+        Returns
+        -------
+        List[str]
+            A list of the hub names.
+        """
         return list(self.hubs.index)
 
     def get_price_hub_params(self) -> dict:
+        """
+        Get a dictionary of price hub parameters.
+
+        Returns
+        -------
+        dict
+            A dictionary containing the `find_prices`, `price_hubs`, and `price_demand` parameters.
+        """
         return {
             "find_prices": self.find_prices,
             "price_hubs": self.price_hubs,
@@ -230,37 +524,81 @@ class HydrogenData:
         }
 
     def get_prod_types(self) -> dict:
+        """
+        Get a dictionary of production types.
+
+        Returns
+        -------
+        dict
+            A dictionary containing the `thermal` and `electric` production types.
+        """
         return {
             "thermal": list(self.prod_therm.index),
             "electric": list(self.prod_elec.index),
         }
 
-    def write_output_dataframes(self):
+    def write_output_dataframes(self) -> None:
+        """Write the output DataFrames to CSV files in the `outputs` directory."""
+
         [
             df.to_csv(self.outputs_dir / "{}.csv".format(key))
             for key, df in self.output_dfs.items()
         ]
 
-    def write_output_dict(self):
+    def write_output_dict(self) -> None:
+        """Write the output dictionary to a JSON file in the `outputs` directory."""
         from json import dump
 
         with (self.outputs_dir / "outputs.json").open("w", encoding="utf-8") as f:
             dump(self.output_dict, f, ensure_ascii=False, indent=4)
 
-    def create_output_dfs(self):
+    def create_output_dfs(self) -> None:
+        """Create pandas DataFrames from CSV files in the `outputs` directory."""
         self.output_dfs = {
             x: pd.read_csv(self.outputs_dir / (x + ".csv"), index_col=0).fillna(0)
             for x in ["production", "conversion", "consumption", "distribution"]
         }
 
-    def find_data_mapping_setting(self, settings, setting_name, data_mapping=None):
+    def find_data_mapping_setting(
+        self,
+        settings: Dict[str, Any],
+        setting_name: str,
+        data_mapping: Optional[Dict[str, str]] = None,
+    ) -> Path:
+        """
+        Find the path to a setting. Settings dictionary is searched first,
+        then data mapping dictionary, which should be read from data/data_mapping.yml
+        (This order is hopefully intuitive since it should allow easier flexibility between
+        runs or Monte Carlo trials).
+
+        Parameters
+        ----------
+        settings : Dict[str, Any]
+            A dictionary of settings.
+        setting_name : str
+            The name of the setting to find.
+        data_mapping : Optional[Dict[str, str]], optional
+            A dictionary of data mappings (default is None), by default None.
+
+        Returns
+        -------
+        Path
+            The path to the data mapping setting.
+
+        Raises
+        ------
+        KeyError
+            If the specified `setting_name` is not found in the `settings` dictionary and `data_mapping` is not provided.
+        """
         # see if setting_name is in settings
         setting_name_value = settings.get(setting_name)
 
         if setting_name_value is None:
             # otherwise, get from "data" dir.
             if data_mapping is None:
-                raise  # TODO
+                raise Exception(
+                    f"Setting '{setting_name}' not found in settings or data mapping."
+                )
             setting_name_value = data_mapping.get(setting_name)
 
             data_mapping_path = self.data_dir / setting_name_value
@@ -269,7 +607,29 @@ class HydrogenData:
 
         return data_mapping_path
 
-    def read_yaml(self, fn, force_no_error=False):
+    def read_yaml(
+        self, fn: str, force_no_error: bool = False
+    ) -> Union[Dict[str, Any], None]:
+        """
+        Read a YAML file and return its contents as a dictionary.
+
+        Parameters
+        ----------
+        fn : str
+            The path to the YAML file.
+        force_no_error : bool, optional
+            Whether to suppress the `FileNotFoundError` exception (default is False).
+
+        Returns
+        -------
+        Union[Dict[str, Any], None]
+            A dictionary containing the contents of the YAML file, or None if the file was not found and `force_no_error` is True.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the YAML file is not found and `force_no_error` is False.
+        """
         try:
             with open(fn) as file:
                 return yaml.load(file, Loader=yaml.FullLoader)
@@ -277,17 +637,58 @@ class HydrogenData:
             if not force_no_error:
                 self.raiseFileNotFoundError(fn)
 
-    def make_output_dir(self, outputs_dir, store_outputs):
+    def make_output_dir(self, outputs_dir: Path, store_outputs: bool) -> None:
+        """
+        Create the output directory for the `HydrogenData` instance.
+
+        Parameters
+        ----------
+        outputs_dir : Path
+            The directory where output data will be written.
+        store_outputs : bool
+            If true, saves outputs to file.
+
+        Returns
+        -------
+        None
+            This method does not return anything.
+        """
         self.outputs_dir = self.scenario_dir / outputs_dir
 
         # If outputs are to be stored to file, make the dir if it DNE
         if store_outputs:
             self.outputs_dir.mkdir(exist_ok=True)
 
-    def find_data_dir(self):
+    def find_data_dir(self) -> Path:
+        """
+        Find the path to the `data` directory, containing geographic data.
+
+        TODO Refactor in __init__, doesn't need to be a method
+        """
+        # HydrogenData.py/../../../data
         return Path(getsourcefile(lambda: 0)).absolute().parent.parent.parent / "data"
 
-    def get_settings(self, settings=None):
+    def get_settings(
+        self, settings: Optional[Union[Path, Dict[str, Any]]] = None
+    ) -> Dict[str, Any]:
+        """
+        Get the settings for the `HydrogenData` instance.
+
+        Parameters
+        ----------
+        settings : Optional[Union[Path, Dict[str, Any]]]
+            The settings for the `HydrogenData` instance, either as a dictionary or a file path.
+
+        Returns
+        -------
+        Dict[str, Any]
+            A dictionary of settings for the `HydrogenData` instance.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the specified settings file is not found and `raiseFileNotFoundError` is `True`.
+        """
         if settings is None:
             settings = self.inputs_dir / "settings.yml"
         if isinstance(settings, Path):
@@ -302,7 +703,9 @@ class HydrogenData:
         self.find_prices = settings.get("find_prices")
 
         ## Carbon settings
-        self.carbon_price = settings.get("carbon_price_dollars_per_ton")
+        self.carbon_price = settings.get(
+            "carbon_price_dollars_per_ton"
+        )  # dollars per ton penalty on CO2 emissions
         self.carbon_capture_credit = settings.get(
             "carbon_capture_credit_dollars_per_ton"
         )
@@ -314,6 +717,13 @@ class HydrogenData:
         )  # unit conversion 120,000 MJ/tonH2, 1,000,000 g/tonCO2
 
         ## Investment Settings
+        """
+        investment_interest: interest rate for financing capital investments
+        investment_period: number of years over which capital is financed
+        time_slices: used to get from investment_period units to the simulation
+            timestep units. Default is 365 because the investment period units are in
+            years (20 years default) and the simulation units are in days.
+        """
         self.time_slices = settings.get("time_slices")
         investment_interest = settings.get("investment_interest")
         investment_period = settings.get("investment_period")
@@ -340,7 +750,28 @@ class HydrogenData:
 
         return settings
 
-    def initialize_ccs(self, ccs_data):
+    def initialize_ccs(self, ccs_data: Optional[pd.DataFrame]) -> None:
+        """
+        Initialize the CCS data for the `HydrogenData` instance.
+
+        Parameters
+        ----------
+        ccs_data : Optional[pd.DataFrame]
+            A pandas DataFrame containing the CCS data.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        FileNotFoundError
+            If the CCS data file is not found and `raiseFileNotFoundError` is `True`.
+
+        TODO
+        ----
+        The way this is currently implemented is limiting and should be refactored.
+        """
         if ccs_data is not None:
             self.ccs_data = ccs_data
             self.ccs1_percent_co2_captured = ccs_data.loc[
@@ -356,24 +787,43 @@ class HydrogenData:
         else:
             self.ccs_data = self.raiseFileNotFoundError("ccs")
 
-    def get_other_data(self, settings):
+    def get_other_data(self, settings: Dict[str, Any]) -> None:
+        """
+        Get other data for the `HydrogenData` instance. This includes:
+
+        * The "data" directory, which is relative to this file and contains a yaml file describing the location of the hubs directory within `/data`, the hubs directory, and a shapefile for the geography.
+
+        * The "hubs" directory, which contains the hubs data (hubs.geojson and roads.csv). Only used for generating output images
+
+        * The shapefile, which is the background for generated images
+
+        Parameters
+        ----------
+        settings : Dict[str, Any]
+            A dictionary of settings for the `HydrogenData` instance.
+
+        Returns
+        -------
+        None
+        """
         self.data_dir = self.find_data_dir()
         data_mapping = self.read_yaml(
             self.data_dir / "data_mapping.yml", force_no_error=True
         )
+        # TODO this should be optional
         self.hubs_dir = self.find_data_mapping_setting(
             setting_name="hubs_dir", data_mapping=data_mapping, settings=settings
         )
 
-        self.shpfile = (
-            self.data_dir / "US_COUNTY_SHPFILE" / "US_county_cont.shp"
-        )  # TODO make generic
+        # TODO make generic (i.e., a passed parameter)
+        self.shpfile = self.data_dir / "US_COUNTY_SHPFILE" / "US_county_cont.shp"
 
-        # initialize
+        # initialize output attributes so they can be used later
         self.output_dfs = None
         self.output_dict = None
 
     def all_dfs(self):
+        """Return a dictionary of all the dataframes in the `HydrogenData` instance."""
         return {
             "input-production_thermal": self.prod_therm,
             "input-production_electric": self.prod_elec,
@@ -390,14 +840,28 @@ class HydrogenData:
             "output-distribution": self.output_dfs["distribution"],
         }
 
-    def add_value_to_all_dfs(self, **kwargs):
+    def append_value_to_all_dfs(self, **kwargs):
+        """
+         Append value to all columns in all DataFrames in the `HydrogenData` instance.
+
+        Parameters
+        ----------
+        **kwargs : Any
+            Keyword arguments representing the values to add to the DataFrames.
+
+        Examples
+        --------
+        >>> self.append_value_to_all_dfs(**{"a": 1})
+        For all tables returned by `self.all_dfs()`, add a column "a" with value 1.
+        """
         all_dfs = self.all_dfs()
         for k, v in kwargs.items():
             for table in all_dfs.values():
                 table[k] = v
 
     def add_uuid_to_all_dfs(self):
-        self.add_value_to_all_dfs(**{"uuid": self.uuid})
+        """Add uuid to all DataFrames in the `HydrogenData` instance."""
+        self.append_value_to_all_dfs(**{"uuid": self.uuid})
 
     def upload_to_sql(self, engine):
         def _upload_indiv_table(table, table_name, chunksize=499):
@@ -503,7 +967,8 @@ class HydrogenData:
         return trial_vector
 
 
-def first_column_as_index(df):
+def first_column_as_index(df: pd.DataFrame) -> pd.DataFrame:
+    """Set the first column of a pandas DataFrame as the index."""
     df = df.reset_index().set_index(df.columns[0])
     df = df.drop(columns="index", errors="ignore")
     return df

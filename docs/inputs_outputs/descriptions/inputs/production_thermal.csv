@@ -1,0 +1,3 @@
+﻿Header,type,ccs_capture_rate,capital_usdPerTonPerDay,kWh_perTon,ng_mmbtu_per_tonH2,variable_usdPerTon,utilization,purity,min_h2,max_h2,h2_tax_credit
+Description,Name used to describe thermal technology,Perctange of CO2 captured/100,Capital costs,Electricity use,Natural gas use,Variable costs,Perctange of time utilized per time period/100,Purity of H2 produced,Minimum capacity size,Maximum capacity size,Tax credit for a new producer
+Units,smr-low,0.00-1.00 exclusive,$/tonH2/day,kWh/ton H2,MMBtu/ tonH2,$/ton H2,(0.00-1.00) per (day),“low” or “high”,tons H2/day,tons H2/day,$ / ton H2 produced

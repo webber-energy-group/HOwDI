@@ -1,0 +1,530 @@
+{
+    "austin": {
+        "production": {},
+        "conversion": {
+            "fuelDispenserPipeline": {
+                "conv_capacity": 590.0026333333334,
+                "conv_cost_capital": 3498375.598079648,
+                "conv_cost_fixed": 1452.1391388,
+                "conv_cost_variable": 0,
+                "conv_e_price": 85.28213922,
+                "conv_utilization": 0.6,
+                "fuelStation_cost_capital_subsidy": 206405081.5256067
+            }
+        },
+        "consumption": {
+            "demandSector_transportationFuel_carbonSensitive": {
+                "cons_carbonSensitive": 1,
+                "cons_h": 354.0,
+                "cons_checs": 354.0,
+                "cons_price": 5000.0,
+                "cons_size": 354.0
+            },
+            "priceFuelStation_2.10": {
+                "cons_carbonSensitive": 0,
+                "cons_h": 1e-05,
+                "cons_checs": 0.0,
+                "cons_price": 2100.0,
+                "cons_size": 1e-05
+            }
+        },
+        "distribution": {
+            "local": {
+                "converter_fuelDispenserPipeline_TO_demand_fuelStation": {
+                    "source_class": "converter_fuelDispenserPipeline",
+                    "destination_class": "demand_fuelStation",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 354.00158
+                },
+                "demand_fuelStation_TO_demandSector_transportationFuel_carbonSensitive": {
+                    "source_class": "demand_fuelStation",
+                    "destination_class": "demandSector_transportationFuel_carbonSensitive",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 354.0
+                },
+                "dist_pipelineHighPurity_TO_converter_fuelDispenserPipeline": {
+                    "source_class": "dist_pipelineHighPurity",
+                    "destination_class": "converter_fuelDispenserPipeline",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 354.00158
+                }
+            },
+            "outgoing": {},
+            "incoming": {
+                "waco_dist_pipelineHighPurity_TO_austin_dist_pipelineHighPurity": {
+                    "source_class": "waco_dist_pipelineHighPurity",
+                    "arc_end": "austin_dist_pipelineHighPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 168813196.025963,
+                    "dist_cost_fixed": 24845.5612333828,
+                    "dist_cost_variable": 16.35097,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 354.00158,
+                    "source": "waco",
+                    "destination": "austin",
+                    "destination_class": "dist_pipelineHighPurity"
+                }
+            }
+        }
+    },
+    "dallas": {
+        "production": {},
+        "conversion": {
+            "fuelDispenserPipeline": {
+                "conv_capacity": 981.6693,
+                "conv_cost_capital": 3538871.8751151483,
+                "conv_cost_fixed": 1468.94872005,
+                "conv_cost_variable": 0,
+                "conv_e_price": 85.95507349,
+                "conv_utilization": 0.6,
+                "fuelStation_cost_capital_subsidy": 347400187.64339745
+            }
+        },
+        "consumption": {
+            "demandSector_transportationFuel_carbonSensitive": {
+                "cons_carbonSensitive": 1,
+                "cons_h": 589.0,
+                "cons_checs": 589.0,
+                "cons_price": 5000.0,
+                "cons_size": 589.0
+            },
+            "priceFuelStation_2.10": {
+                "cons_carbonSensitive": 0,
+                "cons_h": 1e-05,
+                "cons_checs": 0.0,
+                "cons_price": 2100.0,
+                "cons_size": 1e-05
+            }
+        },
+        "distribution": {
+            "local": {
+                "converter_fuelDispenserPipeline_TO_demand_fuelStation": {
+                    "source_class": "converter_fuelDispenserPipeline",
+                    "destination_class": "demand_fuelStation",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 589.00158
+                },
+                "demand_fuelStation_TO_demandSector_transportationFuel_carbonSensitive": {
+                    "source_class": "demand_fuelStation",
+                    "destination_class": "demandSector_transportationFuel_carbonSensitive",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 589.0
+                },
+                "dist_pipelineHighPurity_TO_converter_fuelDispenserPipeline": {
+                    "source_class": "dist_pipelineHighPurity",
+                    "destination_class": "converter_fuelDispenserPipeline",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 589.00158
+                }
+            },
+            "outgoing": {},
+            "incoming": {
+                "waco_dist_pipelineHighPurity_TO_dallas_dist_pipelineHighPurity": {
+                    "source_class": "waco_dist_pipelineHighPurity",
+                    "arc_end": "dallas_dist_pipelineHighPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 157976609.9940757,
+                    "dist_cost_fixed": 23250.655928855133,
+                    "dist_cost_variable": 15.21352,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 589.00158,
+                    "source": "waco",
+                    "destination": "dallas",
+                    "destination_class": "dist_pipelineHighPurity"
+                }
+            }
+        }
+    },
+    "houston": {
+        "production": {},
+        "conversion": {
+            "fuelDispenserPipeline": {
+                "conv_capacity": 598.3359333333333,
+                "conv_cost_capital": 3469372.538401198,
+                "conv_cost_fixed": 1440.100271925,
+                "conv_cost_variable": 0,
+                "conv_e_price": 91.08494167,
+                "conv_utilization": 0.6,
+                "fuelStation_cost_capital_subsidy": 207585025.58453164
+            }
+        },
+        "consumption": {
+            "demandSector_transportationFuel_carbonSensitive": {
+                "cons_carbonSensitive": 1,
+                "cons_h": 359.0,
+                "cons_checs": 359.0,
+                "cons_price": 5000.0,
+                "cons_size": 359.0
+            },
+            "priceFuelStation_2.20": {
+                "cons_carbonSensitive": 0,
+                "cons_h": 1e-05,
+                "cons_checs": 0.0,
+                "cons_price": 2200.0,
+                "cons_size": 1e-05
+            }
+        },
+        "distribution": {
+            "local": {
+                "converter_fuelDispenserPipeline_TO_demand_fuelStation": {
+                    "source_class": "converter_fuelDispenserPipeline",
+                    "destination_class": "demand_fuelStation",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 359.00156
+                },
+                "demand_fuelStation_TO_demandSector_transportationFuel_carbonSensitive": {
+                    "source_class": "demand_fuelStation",
+                    "destination_class": "demandSector_transportationFuel_carbonSensitive",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 359.0
+                },
+                "dist_pipelineHighPurity_TO_converter_fuelDispenserPipeline": {
+                    "source_class": "dist_pipelineHighPurity",
+                    "destination_class": "converter_fuelDispenserPipeline",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 359.00156
+                }
+            },
+            "outgoing": {},
+            "incoming": {
+                "freeport_dist_pipelineHighPurity_TO_houston_dist_pipelineHighPurity": {
+                    "source_class": "freeport_dist_pipelineHighPurity",
+                    "arc_end": "houston_dist_pipelineHighPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 101225012.41677822,
+                    "dist_cost_fixed": 14898.07848886528,
+                    "dist_cost_variable": 9.91198,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 359.00156,
+                    "source": "freeport",
+                    "destination": "houston",
+                    "destination_class": "dist_pipelineHighPurity"
+                }
+            }
+        }
+    },
+    "freeport": {
+        "production": {
+            "electrolyzer-RE": {
+                "prod_capacity": 1158.0083999999886,
+                "prod_utilization": 0.4,
+                "prod_h": 463.2033599999954,
+                "prod_cost_capital": 379291.8806286653,
+                "prod_cost_fixed": 21172.180216307625,
+                "prod_cost_variable": 0.0,
+                "prod_e_price": 1070833.7824098375,
+                "prod_ng_price": 0.0,
+                "h2_tax_credit": 1737012.5999999829,
+                "co2_emissions_rate": 0.0,
+                "ccs_capture_rate": 0.0,
+                "chec_per_ton": 1.0,
+                "prod_checs": 463.2033599999954,
+                "ccs_retrofit_variable_costs": 0.0,
+                "co2_emitted": 0.0,
+                "carbon_tax": 0.0,
+                "co2_captured": 0.0,
+                "carbon_capture_tax_credit": 0.0,
+                "total_cost": -265714.75674517243
+            },
+            "smr-noCCSExisting": {
+                "prod_capacity": 482.0,
+                "prod_utilization": 0.9,
+                "prod_h": 433.8,
+                "prod_cost_capital": 0.0,
+                "prod_cost_fixed": 0.0,
+                "prod_cost_variable": 43380.0,
+                "prod_e_price": 12836.596205952,
+                "prod_ng_price": 259570.1918487456,
+                "h2_tax_credit": 298888.2,
+                "co2_emissions_rate": 0.8999999999999998,
+                "ccs_capture_rate": 0.9,
+                "chec_per_ton": 0.9,
+                "prod_checs": 390.42,
+                "ccs_retrofit_variable_costs": 245964.6,
+                "co2_emitted": 390.4199999999999,
+                "carbon_tax": 0.0,
+                "co2_captured": 3513.78,
+                "carbon_capture_tax_credit": 175689.0,
+                "total_cost": 87174.18805469753
+            }
+        },
+        "conversion": {},
+        "consumption": {
+            "demandSector_existing": {
+                "cons_carbonSensitive": 0,
+                "cons_h": 538.0,
+                "cons_checs": 0.0,
+                "cons_price": 5000.0,
+                "cons_size": 538.0
+            },
+            "priceLowPurity_1.00": {
+                "cons_carbonSensitive": 0,
+                "cons_h": 1e-05,
+                "cons_checs": 0.0,
+                "cons_price": 1000.0,
+                "cons_size": 1e-05
+            }
+        },
+        "distribution": {
+            "local": {
+                "center_highPurity_TO_dist_pipelineHighPurity": {
+                    "source_class": "center_highPurity",
+                    "destination_class": "dist_pipelineHighPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 463.2033599999954
+                },
+                "center_lowPurity_TO_dist_pipelineLowPurity": {
+                    "source_class": "center_lowPurity",
+                    "destination_class": "dist_pipelineLowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 433.8
+                },
+                "demand_lowPurity_TO_demandSector_existing": {
+                    "source_class": "demand_lowPurity",
+                    "destination_class": "demandSector_existing",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 538.0
+                },
+                "dist_pipelineHighPurity_TO_demand_lowPurity": {
+                    "source_class": "dist_pipelineHighPurity",
+                    "destination_class": "demand_lowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 104.20179999999544
+                },
+                "dist_pipelineLowPurity_TO_demand_lowPurity": {
+                    "source_class": "dist_pipelineLowPurity",
+                    "destination_class": "demand_lowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 433.8
+                },
+                "production_electrolyzer-RE_TO_center_highPurity": {
+                    "source_class": "production_electrolyzer-RE",
+                    "destination_class": "center_highPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 463.2033599999954
+                },
+                "production_smr-noCCSExisting_TO_center_lowPurity": {
+                    "source_class": "production_smr-noCCSExisting",
+                    "destination_class": "center_lowPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 433.8
+                }
+            },
+            "outgoing": {
+                "dist_pipelineHighPurity_TO_houston_dist_pipelineHighPurity": {
+                    "source_class": "dist_pipelineHighPurity",
+                    "arc_end": "houston_dist_pipelineHighPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 101225012.41677822,
+                    "dist_cost_fixed": 14898.07848886528,
+                    "dist_cost_variable": 9.91198,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 359.00156,
+                    "source": "freeport",
+                    "destination": "houston",
+                    "destination_class": "dist_pipelineHighPurity"
+                }
+            },
+            "incoming": {}
+        }
+    },
+    "waco": {
+        "production": {
+            "electrolyzer-RE": {
+                "prod_capacity": 2410.01185,
+                "prod_utilization": 0.4,
+                "prod_h": 964.00474,
+                "prod_cost_capital": 800080.6360853777,
+                "prod_cost_fixed": 44660.72774007448,
+                "prod_cost_variable": 0.0,
+                "prod_e_price": 2103073.560188029,
+                "prod_ng_price": 0.0,
+                "h2_tax_credit": 3615017.775,
+                "co2_emissions_rate": 0.0,
+                "ccs_capture_rate": 0.0,
+                "chec_per_ton": 1.0,
+                "prod_checs": 964.00474,
+                "ccs_retrofit_variable_costs": 0.0,
+                "co2_emitted": 0.0,
+                "carbon_tax": 0.0,
+                "co2_captured": 0.0,
+                "carbon_capture_tax_credit": 0.0,
+                "total_cost": -667202.8509865189
+            }
+        },
+        "conversion": {
+            "fuelDispenserPipeline": {
+                "conv_capacity": 35.002633333333335,
+                "conv_cost_capital": 3515728.941940358,
+                "conv_cost_fixed": 1459.342330425,
+                "conv_cost_variable": 0,
+                "conv_e_price": 85.95507349,
+                "conv_utilization": 0.6,
+                "fuelStation_cost_capital_subsidy": 12305977.105412629
+            }
+        },
+        "consumption": {
+            "demandSector_transportationFuel_carbonSensitive": {
+                "cons_carbonSensitive": 1,
+                "cons_h": 21.0,
+                "cons_checs": 21.0,
+                "cons_price": 5000.0,
+                "cons_size": 21.0
+            },
+            "priceFuelStation_2.10": {
+                "cons_carbonSensitive": 0,
+                "cons_h": 1e-05,
+                "cons_checs": 0.0,
+                "cons_price": 2100.0,
+                "cons_size": 1e-05
+            }
+        },
+        "distribution": {
+            "local": {
+                "center_highPurity_TO_dist_pipelineHighPurity": {
+                    "source_class": "center_highPurity",
+                    "destination_class": "dist_pipelineHighPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 964.00474
+                },
+                "converter_fuelDispenserPipeline_TO_demand_fuelStation": {
+                    "source_class": "converter_fuelDispenserPipeline",
+                    "destination_class": "demand_fuelStation",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 21.00158
+                },
+                "demand_fuelStation_TO_demandSector_transportationFuel_carbonSensitive": {
+                    "source_class": "demand_fuelStation",
+                    "destination_class": "demandSector_transportationFuel_carbonSensitive",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 21.0
+                },
+                "dist_pipelineHighPurity_TO_converter_fuelDispenserPipeline": {
+                    "source_class": "dist_pipelineHighPurity",
+                    "destination_class": "converter_fuelDispenserPipeline",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 21.00158
+                },
+                "production_electrolyzer-RE_TO_center_highPurity": {
+                    "source_class": "production_electrolyzer-RE",
+                    "destination_class": "center_highPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 0.0,
+                    "dist_cost_fixed": 0.0,
+                    "dist_cost_variable": 0.0,
+                    "dist_flowLimit": 99999999.9,
+                    "dist_h": 964.00474
+                }
+            },
+            "outgoing": {
+                "dist_pipelineHighPurity_TO_austin_dist_pipelineHighPurity": {
+                    "source_class": "dist_pipelineHighPurity",
+                    "arc_end": "austin_dist_pipelineHighPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 168813196.025963,
+                    "dist_cost_fixed": 24845.5612333828,
+                    "dist_cost_variable": 16.35097,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 354.00158,
+                    "source": "waco",
+                    "destination": "austin",
+                    "destination_class": "dist_pipelineHighPurity"
+                },
+                "dist_pipelineHighPurity_TO_dallas_dist_pipelineHighPurity": {
+                    "source_class": "dist_pipelineHighPurity",
+                    "arc_end": "dallas_dist_pipelineHighPurity",
+                    "dist_capacity": 1.0,
+                    "dist_cost_capital": 157976609.9940757,
+                    "dist_cost_fixed": 23250.655928855133,
+                    "dist_cost_variable": 15.21352,
+                    "dist_flowLimit": 999999.0,
+                    "dist_h": 589.00158,
+                    "source": "waco",
+                    "destination": "dallas",
+                    "destination_class": "dist_pipelineHighPurity"
+                }
+            },
+            "incoming": {}
+        }
+    }
+}

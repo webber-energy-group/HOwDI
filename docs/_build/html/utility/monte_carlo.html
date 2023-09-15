@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monte Carlo Simulation &mdash; HOwDI 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Utility functions and other things." href="utils.html" />
+    <link rel="prev" title="Utility" href="header.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            HOwDI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../model/header.html">Model Conception</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs_outputs/header.html">Input and output files</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="header.html">Utility</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Monte Carlo Simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.MonteCarloParameter"><code class="docutils literal notranslate"><span class="pre">MonteCarloParameter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.MonteCarloTrial"><code class="docutils literal notranslate"><span class="pre">MonteCarloTrial</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.monte_carlo.MonteCarloTrial.update_file"><code class="docutils literal notranslate"><span class="pre">MonteCarloTrial.update_file()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.MovingList"><code class="docutils literal notranslate"><span class="pre">MovingList</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.monte_carlo.MovingList.get"><code class="docutils literal notranslate"><span class="pre">MovingList.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.monte_carlo.MovingList.update_index"><code class="docutils literal notranslate"><span class="pre">MovingList.update_index()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.NpEncoder"><code class="docutils literal notranslate"><span class="pre">NpEncoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.monte_carlo.NpEncoder.default"><code class="docutils literal notranslate"><span class="pre">NpEncoder.default()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.monte_carlo.NpEncoder.encode"><code class="docutils literal notranslate"><span class="pre">NpEncoder.encode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.monte_carlo.NpEncoder.item_separator"><code class="docutils literal notranslate"><span class="pre">NpEncoder.item_separator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.monte_carlo.NpEncoder.iterencode"><code class="docutils literal notranslate"><span class="pre">NpEncoder.iterencode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.monte_carlo.NpEncoder.key_separator"><code class="docutils literal notranslate"><span class="pre">NpEncoder.key_separator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.adjust_parameters"><code class="docutils literal notranslate"><span class="pre">adjust_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.create_distribution"><code class="docutils literal notranslate"><span class="pre">create_distribution()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.generate_monte_carlo_trial"><code class="docutils literal notranslate"><span class="pre">generate_monte_carlo_trial()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.generate_monte_carlo_trial_settings"><code class="docutils literal notranslate"><span class="pre">generate_monte_carlo_trial_settings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.monte_carlo"><code class="docutils literal notranslate"><span class="pre">monte_carlo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.nested_dict_with_slash"><code class="docutils literal notranslate"><span class="pre">nested_dict_with_slash()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.new_value"><code class="docutils literal notranslate"><span class="pre">new_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.run_model"><code class="docutils literal notranslate"><span class="pre">run_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.monte_carlo.update_nested_dict_with_slash"><code class="docutils literal notranslate"><span class="pre">update_nested_dict_with_slash()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utility functions and other things.</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial.html">Running HOwDI Example/Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">HOwDI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="header.html">Utility</a></li>
+      <li class="breadcrumb-item active">Monte Carlo Simulation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/utility/monte_carlo.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="monte-carlo-simulation">
+<h1>Monte Carlo Simulation<a class="headerlink" href="#monte-carlo-simulation" title="Permalink to this heading"></a></h1>
+<p>Test</p>
+<span class="target" id="module-HOwDI.monte_carlo"></span><dl class="py class">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.MonteCarloParameter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">MonteCarloParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_trials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distribution_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard_distribution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.MonteCarloParameter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.MonteCarloTrial">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">MonteCarloTrial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mcp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#HOwDI.monte_carlo.MonteCarloParameter" title="HOwDI.monte_carlo.MonteCarloParameter"><span class="pre">MonteCarloParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.MonteCarloTrial" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.MonteCarloTrial.update_file">
+<span class="sig-name descname"><span class="pre">update_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.MonteCarloTrial.update_file" title="Permalink to this definition"></a></dt>
+<dd><p>updates file with Monte Carlo’d value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.MovingList">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">MovingList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.MovingList" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.MovingList.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.MovingList.get" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.MovingList.update_index">
+<span class="sig-name descname"><span class="pre">update_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.MovingList.update_index" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.NpEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">NpEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipkeys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_ascii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_circular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.NpEncoder" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONEncoder</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.NpEncoder.default">
+<span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.NpEncoder.default" title="Permalink to this definition"></a></dt>
+<dd><p>Implement this method in a subclass such that it returns
+a serializable object for <code class="docutils literal notranslate"><span class="pre">o</span></code>, or calls the base implementation
+(to raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>).</p>
+<p>For example, to support arbitrary iterators, you could
+implement default like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">iterable</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="c1"># Let the base class default method raise the TypeError</span>
+    <span class="k">return</span> <span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.NpEncoder.encode">
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.NpEncoder.encode" title="Permalink to this definition"></a></dt>
+<dd><p>Return a JSON string representation of a Python data structure.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">json.encoder</span> <span class="kn">import</span> <span class="n">JSONEncoder</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">JSONEncoder</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">({</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span> <span class="s2">&quot;baz&quot;</span><span class="p">]})</span>
+<span class="go">&#39;{&quot;foo&quot;: [&quot;bar&quot;, &quot;baz&quot;]}&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.NpEncoder.item_separator">
+<span class="sig-name descname"><span class="pre">item_separator</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">',</span> <span class="pre">'</span></em><a class="headerlink" href="#HOwDI.monte_carlo.NpEncoder.item_separator" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.NpEncoder.iterencode">
+<span class="sig-name descname"><span class="pre">iterencode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_one_shot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.NpEncoder.iterencode" title="Permalink to this definition"></a></dt>
+<dd><p>Encode the given object and yield each string
+representation as available.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">JSONEncoder</span><span class="p">()</span><span class="o">.</span><span class="n">iterencode</span><span class="p">(</span><span class="n">bigobject</span><span class="p">):</span>
+    <span class="n">mysocket</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.NpEncoder.key_separator">
+<span class="sig-name descname"><span class="pre">key_separator</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">':</span> <span class="pre">'</span></em><a class="headerlink" href="#HOwDI.monte_carlo.NpEncoder.key_separator" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.adjust_parameters">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">adjust_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.adjust_parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.create_distribution">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">create_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distribution_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_trials</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.create_distribution" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.generate_monte_carlo_trial">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">generate_monte_carlo_trial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mc_distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.generate_monte_carlo_trial" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.generate_monte_carlo_trial_settings">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">generate_monte_carlo_trial_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distrs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.generate_monte_carlo_trial_settings" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.main">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.main" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.monte_carlo">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">monte_carlo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">WindowsPath('.')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monte_carlo_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.monte_carlo" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.nested_dict_with_slash">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">nested_dict_with_slash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.nested_dict_with_slash" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.new_value">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">new_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">existing_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.new_value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.run_model">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">run_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.run_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.monte_carlo.update_nested_dict_with_slash">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.monte_carlo.</span></span><span class="sig-name descname"><span class="pre">update_nested_dict_with_slash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.monte_carlo.update_nested_dict_with_slash" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>“””</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="header.html" class="btn btn-neutral float-left" title="Utility" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="utils.html" class="btn btn-neutral float-right" title="Utility functions and other things." accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Braden Pecora.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

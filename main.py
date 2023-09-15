@@ -1,3 +1,12 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""Runs the HOwDI model.
+
+This file is useful for debugging purposes. It can be run from the command
+line, however, it is not recommended to do so. Instead, use the `HOwDI`
+command. See the README for more information, or use `setup.py` to follow
+the code.
+"""
 from pathlib import Path
 
 from HOwDI.model.create_model import build_h2_model

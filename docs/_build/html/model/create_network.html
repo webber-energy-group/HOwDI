@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Network Formulation &mdash; HOwDI 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Model Formulation" href="create_model.html" />
+    <link rel="prev" title="HydrogenData Class" href="HydrogenData.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            HOwDI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="header.html">Model Conception</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="HydrogenData.html">HydrogenData Class</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Network Formulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#price-nodes">Price nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-HOwDI.model.create_network">HOwDI.model.create_network</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_network.add_consumers"><code class="docutils literal notranslate"><span class="pre">add_consumers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_network.add_converters"><code class="docutils literal notranslate"><span class="pre">add_converters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_network.add_price_nodes"><code class="docutils literal notranslate"><span class="pre">add_price_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_network.add_producers"><code class="docutils literal notranslate"><span class="pre">add_producers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_network.build_hydrogen_network"><code class="docutils literal notranslate"><span class="pre">build_hydrogen_network()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_network.cap_first"><code class="docutils literal notranslate"><span class="pre">cap_first()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_network.free_flow_dict"><code class="docutils literal notranslate"><span class="pre">free_flow_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_network.initialize_graph"><code class="docutils literal notranslate"><span class="pre">initialize_graph()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="create_model.html">Model Formulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs_outputs/header.html">Input and output files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utility/header.html">Utility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial.html">Running HOwDI Example/Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">HOwDI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="header.html">Model Conception</a></li>
+      <li class="breadcrumb-item active">Network Formulation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/model/create_network.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="network-formulation">
+<h1>Network Formulation<a class="headerlink" href="#network-formulation" title="Permalink to this heading"></a></h1>
+<p>HOwDI represents all potential pieces of hydrogen infrastructure as a network in an initial pre-processing step.
+The network is composed of nodes and edges that contain data pertaining to the piece
+of infrastructure being represented.
+A node may be a specific producer at a specific location, and it would contain data regarding
+the expenses associated with building the producer, the quality of hydrogen produced by the producer,
+the carbon emissions of the producer, et cetera.</p>
+<p>A node may either be a producer node, consumer/demand node, or an intermediate node.
+Producer nodes may add hydrogen to the system, demand nodes may consume the system’s hydrogen,
+and all other nodes act as intermediate steps for transporting hydrogen around the system.
+These intermediate nodes may gather and distribute hydrogen from multiple other nodes while enforcing
+hydrogen mass balance.
+Edges transfer hydrogen between nodes, and some edges have costs associated when hydrogen is transferred.</p>
+<p>A hub is a collection of nodes and edges that represents hydrogen infrastructure at a specific geographic location.
+A hub is not a model component; instead, it is a way of describing the connection a node has to the system
+being simulated.
+Hubs are selected by the user, and the model formulates the associated nodes and edges with that hub.</p>
+<table class="docutils align-default" id="node-vs-hub-terms">
+<thead>
+<tr class="row-odd"><th class="head"><p>Term</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Model notation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Node</p></td>
+<td><p>Model component used to define any piece of hydrogen infrastructure
+(e.g., a producer, point of distribution, or abstraction tool).</p></td>
+<td><p><span class="math notranslate nohighlight">\(n \in N\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>Edge</p></td>
+<td><p>Connection between nodes that can transfer hydrogen.</p></td>
+<td><p><span class="math notranslate nohighlight">\(e \in E\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>Center</p></td>
+<td><p>Non-physical node that gathers and distributes hydrogen.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Hub</p></td>
+<td><p>Real-world location represented by many nodes.</p></td>
+<td><p><span class="math notranslate nohighlight">\(\omega \in \Omega\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<img alt="../_images/howdi_network.svg" id="howdi-network" src="../_images/howdi_network.svg" /><p>A demonstration of the network generated for each hub is shown <a class="reference internal" href="#howdi-network"><span class="std std-ref">above</span></a>.
+Low purity and high purity hydrogen and produced at low purity and high purity production nodes, respectively.
+A example of a low purity production node is a steam methane reformer, and an example of
+a high purity production node is an electrolyzer.
+These production nodes are shown in green.</p>
+<p>The hydrogen produced at these nodes is transported without cost to low purity and high purity centers.
+These white nodes (centers) serve as a way to gather and distribute hydrogen from multiple local producer nodes.
+Hydrogen can be transported from the low purity center to the high purity center, but has to incur the costs
+associated with purification (the pink conversion node labeled “purification” actually sits between the low and
+high purity centers.
+High purity hydrogen can be transported to the low purity center at no cost.</p>
+<p>Hydrogen at the low purity center can be transported to the white local low purity pipeline center,
+which again serves as a way to gather and distribute hydrogen from multiple related nodes.
+Low purity hydrogen can be sent or received through incoming or outgoing pipelines
+(at a dollar-per-distance cost) to and from (potentially multiple) other hubs at this center.
+Alternatively, the low purity hydrogen can be transported freely to the low purity demand center.</p>
+<p>High purity hydrogen at high purity centers has similar options.
+The hydrogen can be transported to the local high purity pipeline center.
+At this center, hydrogen can be sent or received through incoming or outgoing pipelines to and from other hubs.
+High purity hydrogen can be transported to the low and high purity demand centers at no cost.
+It can be transported to the fuel station demand center by means of the pipeline fuel dispenser converter,
+which incurs a cost.</p>
+<p>The hydrogen at the high purity center can also be distributed via truck.
+First the hydrogen is either liquefied and sent through a liquid terminal to the local liquid truck distribution center,
+or it is compressed and sent through a gaseous terminal to the local gaseous truck distribution center.
+The hydrogen can be sent to or received from other hubs by means of truck at these centers.
+Hydrogen at these centers can be sent to low purity demand, high purity demand, or fuel station demand centers.
+It does so at the cost of using a liquid or gas fuel dispenser.</p>
+<p>At each demand center, hydrogen can be sent to a <a class="reference internal" href="#price-nodes"><span class="std std-ref">price node</span></a> to determine the cheapest cost
+at which it can be delivered.
+Hydrogen at the demand center can also be sent to a blue demand sector node, where it is consumed.
+Multiple demand sector nodes may exist in a hub for a single demand center.
+For example, there may be two separate demand sectors for fuel station hydrogen.
+One sector may represent potential hydrogen consumers that are willing to pay a premium for low-carbon hydrogen,
+while another sector does not demand low-carbon hydrogen and will only pay a lower price.</p>
+<section id="price-nodes">
+<span id="id1"></span><h2>Price nodes<a class="headerlink" href="#price-nodes" title="Permalink to this heading"></a></h2>
+<p>In the model formulation, demand nodes are nodes that may choose to consume the system’s hydrogen.
+When these nodes consume hydrogen, they add capital to the system equal to the amount of hydrogen consumed times the maximum price they will buy hydrogen for (which we call “breakeven price”).
+This breakeven price is defined as the maximum price a specific consumer is willing to pay for hydrogen.
+For consumers that are not carbon-sensitive, this can be thought of as the price paid for the currently used fuel (as a hydrogen equivalent).
+For carbon-sensitive consumers, this is the current price plus the additional amount that is willing to be paid for a clean fuel source.</p>
+<p>In the current state of the model, the each sector’s inputted breakeven price is the price they pay for hydrogen.
+However, the cheapest price at which hydrogen can be delivered is a desired output parameter.
+Thus, several price nodes are added to the system to determine the minimum price at which hydrogen can be delivered to a hub.</p>
+<p>A price node is a node that demands an amount of hydrogen small enough such that the capital gained from consumption (price times amount consumed) has little impact on system-wide profit.
+Each price node for each demand sector in a hub has a different breakeven price.
+The lowest price, highest price, and step size between prices is determined by the user, such that the number of price nodes does not dramatically increase model runtime.</p>
+<p>If the true lowest price at which hydrogen can be delivered is between the highest and lowest price node breakeven price, the model will only satisfy demand for price nodes with breakeven prices above the delivered price.
+Satisfying demand for prices lower than the delivered price would reduce system profits and would consequently be not optimal.
+The true cheapest delivered price is between the breakeven price’s of the cheapest price node that consumed hydrogen and the most expensive node that did not have its demand met.</p>
+<img alt="../_images/price_nodes.svg" src="../_images/price_nodes.svg" /><p>The figure above is a demonstration of price nodes. Here, the model only chooses to meet the hydrogen demand greater than or equal to $4.00. It can be assumed that the delivered price of low-purity hydrogen at this hub is between $3.90 and $4.00.</p>
+<p>The price nodes method serves as a step-wise approximation to a nonlinear term.
+Without price nodes, determining the cheapest price at which hydrogen can be delivered would require a bilinear term.
+This bilinear term would be the realized system profit from consumption, which is equal to the delivered price of hydrogen (a variable) times hydrogen consumption (another variable).
+Introducing a bilinear term would make the model nonlinear, and thus harder to solve.</p>
+<p>The price nodes system is accurate if a demand sector consumes either all or none of the hydrogen it demands.
+If all the demand is met, the additional profit gained from the differential between the breakeven price and the lowest delivered price is not used to further develop system infrastructure.
+The inability of the system to consume more hydrogen means that no additional profit can be gained by upgrading system infrastructure.
+System profits may be greater, but the overall network will remain the same as long as the breakeven price is above the lowest delivered price.</p>
+<p>On the other hand, if none of the demand is met, no profit is added to the system regardless of the breakeven price.
+The lowest possible delivery price is not determined by the model.
+It is assumed it is above the maximum price hub price.</p>
+<p>However, if only a portion of the demand is met at a hub, the price node method becomes inaccurate.
+Since demand nodes are consuming hydrogen at a (breakeven) price higher than the lowest possible price hub price, more hydrogen could be consumed if the breakeven price were lowered.
+The consumption of more hydrogen means that more production would be built for the optimal system.
+Thus, the hydrogen network returned by HOwDI would not be accurate.</p>
+<p>Since the model is linear, it is extremely unlikely that only a portion of the demand at a consumer/demand node would be met.
+The only case in which this could happen would be if constraints on maximum and minimum production or distribution capacity used to satisfy this demand prevented all of the demand from being satisfied.
+Even then, the unrealized profits from the difference between delivered price and breakeven price would probably not be realized as the capacity limits would prevent the growth of infrastructure.</p>
+</section>
+<section id="module-HOwDI.model.create_network">
+<span id="howdi-model-create-network"></span><span id="create-network-module"></span><h2>HOwDI.model.create_network<a class="headerlink" href="#module-HOwDI.model.create_network" title="Permalink to this heading"></a></h2>
+<p>This module contains functions for creating a hydrogen network from input CSV files.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_network.add_consumers">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_network.</span></span><span class="sig-name descname"><span class="pre">add_consumers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.create_network.add_consumers" title="Permalink to this definition"></a></dt>
+<dd><p>Adds consumer nodes to the graph.</p>
+<p>For each hub, there are arcs from the nodes that represent demand type
+(e.g., fuelStation, lowPurity, highPurity) to the nodes that represent
+different demand sectors (e.g., industrialFuel, transportationFuel).
+In practice, one could create multiple sectors that connect to the same
+demand type (e.g., long-haul HDV, regional MDV, and LDV all connecting
+to a fuel station)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>g</strong> (<em>networkx.DiGraph</em>) – A <cite>networkx.DiGraph</cite> object representing the hydrogen network.</p></li>
+<li><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – A <cite>HydrogenData</cite> object containing data for the network.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function loops through the hubs and demand sectors in <cite>H.hubs</cite> and <cite>H.demand</cite>,
+respectively, and adds nodes for each demand sector to the graph. It then connects
+each demand sector node to the corresponding demand node using a free flow dictionary.</p>
+<p>If the demand value for a given demand sector is 0, no demand sector node is added to
+the corresponding hub.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_network.add_converters">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_network.</span></span><span class="sig-name descname"><span class="pre">add_converters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.create_network.add_converters" title="Permalink to this definition"></a></dt>
+<dd><p>Routine that adds converter nodes to the graph.</p>
+<p>Each converter is a node and arc that splits an existing arc into two.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>g</strong> (<em>networkx.DiGraph</em>) – A <cite>networkx.DiGraph</cite> object representing the hydrogen network.</p></li>
+<li><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – A <cite>HydrogenData</cite> object containing data for the network.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function adds a new node for the converter at the hub, and inserts the
+converter node between the “arc_start_class” node and the “arc_end_class”
+node. It also updates the flow values and adds the necessary edges to the
+graph.</p>
+<p>The <cite>free_flow_dict</cite> function is used to create a dictionary with free
+(unlimited) flow values.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_network.add_price_nodes">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_network.</span></span><span class="sig-name descname"><span class="pre">add_price_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.create_network.add_price_nodes" title="Permalink to this definition"></a></dt>
+<dd><p>Routine that adds price nodes to the graph.</p>
+<p>Each price is a node that has very little demand and a series of breakeven
+price points to help estimate the price that customers are paying for
+hydrogen at that node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – A <cite>HydrogenData</cite> object containing data for the network.</p></li>
+<li><p><strong>g</strong> (<em>networkx.DiGraph</em>) – A <cite>networkx.DiGraph</cite> object representing the hydrogen network.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>H.price_range is an iterable array of prices. The model will use this array
+of discrete prices as fake consumers. In the solution, the price of
+hydrogen at that node is between the most expensive “price consumer” who
+does not use hydrogen and the least expensive “price consumer” who does.</p>
+<p>H.price_hubs is a list of the hubs where we want to calculate prices for.
+If it equals ‘all’, then all of the hubs will be priced.</p>
+<p>H.price_demand is the total amount of pricing demand at each hub. This can
+be set to a higher value if you are trying to just test sensitivity to
+amount of demand.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_network.add_producers">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_network.</span></span><span class="sig-name descname"><span class="pre">add_producers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.create_network.add_producers" title="Permalink to this definition"></a></dt>
+<dd><p>Routine that adds producer nodes to the graph.</p>
+<p>Each producer is a node that sends hydrogen to a hub_lowPurity or hub_highPurity node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>g</strong> (<em>networkx.DiGraph</em>) – A <cite>networkx.DiGraph</cite> object representing the hydrogen network.</p></li>
+<li><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – A <cite>HydrogenData</cite> object containing data for the network.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function loops through the hubs and producers to add the necessary nodes and arcs.
+For each producer, it creates a node representing the production facility and connects it to the corresponding hub node.
+The <cite>free_flow_dict</cite> function is used to create a dictionary with free (unlimited) flow values.</p>
+<p>The function also adds existing producer nodes to the graph, which are represented by nodes with the suffix “Existing”.
+These nodes are connected to the corresponding hub node using a free flow dictionary.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_network.build_hydrogen_network">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_network.</span></span><span class="sig-name descname"><span class="pre">build_hydrogen_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><span class="pre">HydrogenData</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DiGraph</span></span></span><a class="headerlink" href="#HOwDI.model.create_network.build_hydrogen_network" title="Permalink to this definition"></a></dt>
+<dd><p>Builds a hydrogen network from a <cite>HydrogenData</cite> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – A <cite>HydrogenData</cite> object containing data for the network.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <cite>networkx.DiGraph</cite> object representing the hydrogen network.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>networkx.DiGraph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_network.cap_first">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_network.</span></span><span class="sig-name descname"><span class="pre">cap_first</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.create_network.cap_first" title="Permalink to this definition"></a></dt>
+<dd><p>Capitalizes the first letter of a string
+without putting other letters in lowercase</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_network.free_flow_dict">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_network.</span></span><span class="sig-name descname"><span class="pre">free_flow_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_of_flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.create_network.free_flow_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a dict with free (unlimited) flow values</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_network.initialize_graph">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_network.</span></span><span class="sig-name descname"><span class="pre">initialize_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><span class="pre">HydrogenData</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DiGraph</span></span></span><a class="headerlink" href="#HOwDI.model.create_network.initialize_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Builds an initial hydrogen network from a <cite>HydrogenData</cite> object
+More detail is added in other routines.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – A <cite>HydrogenData</cite> object containing data for the network.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <cite>networkx.DiGraph</cite> object representing the hydrogen network.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>networkx.DiGraph</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="HydrogenData.html" class="btn btn-neutral float-left" title="HydrogenData Class" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="create_model.html" class="btn btn-neutral float-right" title="Model Formulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Braden Pecora.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

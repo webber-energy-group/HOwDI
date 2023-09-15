@@ -1,0 +1,31 @@
+Model Module
+=================
+
+
+
+HydrogenData Class
+------------------
+
+.. automodule:: HOwDI.model.HydrogenData
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Create Model
+------------------
+
+.. automodule:: HOwDI.model.create_model
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Create Network
+------------------
+
+.. automodule:: HOwDI.model.create_network
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+"""

@@ -1,10 +1,54 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""This module defines a function for parsing command line arguments for the HOwDI
+model.
+
+The `parse_command_line` function takes an `module` argument and an
+`argv` argument. It uses the `argparse` module to define and parse
+command line arguments based on the name of the `module` argument.
+
+The function defines command line arguments for the following modules:
+- `run`: runs the HOwDI model
+- `create_fig`: creates a figure from an already run model
+- `traceback`: traces how hydrogen is produced from a given (consumer) node
+- `traceforward`: traces how hydrogen is consumed from a given (producer) node
+
+The function also defines command line arguments for specifying input and output
+directories and formats for the model outputs.
+
+The `parse_command_line` function returns an `argparse.Namespace` object
+containing the parsed command line arguments.
+"""
 import argparse
 import sys
 from pathlib import Path
 
 
 def parse_command_line(module=Path(sys.argv[1]).name, argv=sys.argv):
+    """
+    Parses command line arguments for the HOwDI model.
+
+    :param module: The name of the module to parse command line arguments for.
+    :type module: str
+    :default module: The name of the module that was called from the command line.
+
+    :param argv: The command line arguments to parse.
+    :type argv: list
+    :default argv: The command line arguments passed to the script.
+
+    :return: An `argparse.Namespace` object containing the parsed command line arguments.
+    :rtype: argparse.Namespace
+    """
+
     def name(*args):
+        """
+        Returns True if any of the arguments match the `module` argument passed to `parse_command_line`.
+
+        :param args: The arguments to check for a match.
+        :type args: tuple
+        :return: True if any of the arguments match the `module` argument, False otherwise.
+        :rtype: bool
+        """
         return any([arg == module for arg in args])
 
     # TODO filenames for fig, outputs.json
@@ -18,7 +62,7 @@ def parse_command_line(module=Path(sys.argv[1]).name, argv=sys.argv):
             dest="scenario_dir",
             type=str,
             default="./",
-            help="Specify the scenario directory. Defaults to CWD.",
+            help="Specify the scenario directory (Contains inputs and outputs). Defaults to CWD.",
         )
     if name("run", "create_fig"):
         parser.add_argument(
@@ -58,7 +102,13 @@ def parse_command_line(module=Path(sys.argv[1]).name, argv=sys.argv):
             help="Don't print model outputs as a figure",
         )
     if name("traceback", "traceforward"):
-        parser.add_argument("-hub", "--hub", dest="hub", required=True)
+        parser.add_argument(
+            "-hub",
+            "--hub",
+            dest="hub",
+            required=True,
+            help="Name of hub to trace from or to. Must be in hubs.csv file.",
+        )
     if name("create_hub_data"):
         parser.add_argument(
             "-d",
@@ -126,6 +176,8 @@ Location where necessary hub files are required. (hubs.csv, arcs_blacklist.csv, 
             default="monte_carlo.yml",
             help="Specify the scenario directory. Defaults to CWD.",
         )
+
+    # first two args are "HOwDI" and the module name
     return parser.parse_args(argv[2:])
 
 

@@ -1,0 +1,4 @@
+storer,name,capital_usd_intercept,capital_usd_coefficient
+storage_liquid_tank,na,2875000,38000
+storage_gas_tank,na,0,1702155
+storage_gas_cavern,na,6700000,2300

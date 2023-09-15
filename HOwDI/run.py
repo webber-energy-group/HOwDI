@@ -1,3 +1,24 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+"""This module is used to run the HOwDI model from the command line.
+
+The module defines a `main` function that reads the command line arguments and
+runs the HOwDI model based on the inputs provided.
+
+The `main` function reads input data from the `scenario_dir`, generates a
+network of hydrogen producers and consumers, builds a model of hydrogen
+production and consumption, and generates output data in the form of CSV files,
+JSON files, and a plot.
+
+The following command line arguments can be used:
+- `--scenario-dir`: the directory containing the input data for the model
+- `--inputs-dir`: the directory containing additional input data for the model
+- `--outputs-dir`: the directory where output data will be written
+- `--output-csvs`: whether to output data in CSV format
+- `--output-json`: whether to output data in JSON format
+- `--output-fig`: whether to output a plot of the model results
+"""
+
 from HOwDI.arg_parse import parse_command_line
 from HOwDI.model.create_model import build_h2_model
 from HOwDI.model.create_network import build_hydrogen_network

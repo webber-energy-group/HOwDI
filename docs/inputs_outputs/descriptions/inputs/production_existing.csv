@@ -1,0 +1,3 @@
+Header,type,hub,capacity_tonPerDay,capital_usdPerTonPerDay,kWh_perTon,ng_mmbtu_per_tonH2,variable_usdPerTon,co2_emissions_per_h2_tons,can_ccs1,can_ccs2,utilization
+Description ,Type of SMR used,Name of hub where located,Existing capacity of production,Capital costs,Electricity use,Natural gas use,Variable costs,CO2 emissions relative to H2 production,Ability to build CCS1 tech,Ability to build CCS2 tech,Perctange of time utilized per time period/100
+Units,Coressponds to type in production_thermal.csv,Corresonds to hub in hubs.csv,tons H2/ day,$/tonH2/day,kWh/ton H2,MMBtu / ton H2,$/ton H2,tons CO2/ tons H2,"Binary (0,1=Can build)","Binary (0,1=Can build)",(0.00-1.00) per (day)

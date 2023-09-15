@@ -1,0 +1,71 @@
+Running HOwDI example
+---------------------
+
+This page walks through a simple example of using HOwDI to determine the optimal infrastructure in a reduced version of Texas.
+
+In this scenario, Dallas, Waco, Austin, Houston, and Freeport are the cities of interest.
+Freeport has an existing Steam Methane Reformer (SMR) and a pipeline to Houston.
+We would like to determine the optimal way to build hydrogen infrastructure given a potential demand.
+
+Step 1: Preprocessing
+=====================
+
+As a first step, the initial data must be preprocessed to generate necessary input files.
+The preprocessing steps involve finding the geographic location of cities and determining the distance between them.
+These steps can be skipped if the necessary input files are already available.
+
+1. Create a :code:`hubs.csv` file with the following columns:
+
+    - :code:`hub`: The name of the hub. This will be used to geocode the hub, so it should correspond to an actual city.
+    - :code:`status`: The "reach" of the hub. 1 corresponds to a major hub, -1 corresponds to a minor hub, and 0 corresponds to a regular hub. A major hub will be more likely to connect to other hubs than a regular hub will (an regular > minor).
+
+    For this example, the :code:`hubs.csv` file should look like:
+
+    .. csv-table:: hubs.csv
+        :file: data/texas_example/inputs/hubs.csv
+        :header-rows: 1
+
+2. Create :code:`arcs_whitelist.csv` and :code:`arcs_blacklist.csv` in the same directory.
+   Both have columns :code:`startHub` and :code:`endHub` corresponding to the hubs that should or should not be forced to connect.
+   :code:`arcs_whitelist.csv` also contains a third column, :code:`exist_pipeline`, which is :code:`True` if there is an existing hydrogen pipeline that connects the hubs.
+
+   For this example, the preprocessing code should connect Houston and Freeport, but we would like to specify that a pipeline exists.
+   The preprocessing code may also connect Dallas and Austin, which is unnecessary since any route from Dallas to Austin must go through Waco.
+
+    .. csv-table:: arcs_whitelist.csv
+        :file: data/texas_example/inputs/arcs_whitelist.csv
+        :header-rows: 1
+
+    .. csv-table:: arcs_blacklist.csv
+        :file: data/texas_example/inputs/arcs_blacklist.csv
+        :header-rows: 1
+
+3. The preprocessing code can be run from the directory containing the three generated files. We'll add other parameters to create a figure.
+
+   .. code-block:: bash
+
+        HOwDI create_hub_data -f -shp US_COUNTY_SHPFILE/US_county_cont.shp
+
+The following file is generated:
+
+.. csv-table:: arcs.csv
+    :file: data/texas_example/outputs/arcs.csv
+
+Additionally, for generating output figures, :code:`fig.png`, :code:`hubs.geojson`, and :code:`roads.csv` are generated.
+
+.. figure:: data/texas_example/outputs/fig.png
+    :align: center
+
+    fig.png
+
+.. literalinclude:: data/texas_example/outputs/hubs.geojson
+    :language: JSON
+    :caption: hubs.geojson
+
+.. csv-table:: roads.csv
+    :file: data/texas_example/outputs/roads.csv
+    :header-rows: 1
+
+
+
+

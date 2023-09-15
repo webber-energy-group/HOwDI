@@ -1,4 +1,8 @@
+# intended for mapping data files to keys used by the code
+# this is so the choice of datasets can be easily adjusted.
+# For example, if you want to use a different set of hubs, you can just change the key here.
 hubs_dir: texas_hubs_v2
-# TODO:
+# TODO, support other files:
 # shapefile_dir:
 # shapefile_filter:
+# price_multipliers:

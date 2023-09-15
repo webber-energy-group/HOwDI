@@ -1,0 +1,3 @@
+Header,distributor,unit,capital_usdPerUnit,variable_usdPerKilometer-Ton,flowLimit_tonsPerDay
+Description,name of distribution line,unit to measure capital cost,Capital costs,Variable costs,Flow limit
+Units,"Either ""pipeline"" or contains ""truck""","Either ""km"" or ""truck""","$ / unit in ""unit"" column",$ / km,Metric tons H2/day through 1 unit

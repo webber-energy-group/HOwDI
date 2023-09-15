@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Input files &mdash; HOwDI 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Output files" href="outputs.html" />
+    <link rel="prev" title="Preprocessing" href="preprocessing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            HOwDI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../model/header.html">Model Conception</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="header.html">Input and output files</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Input files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#arcs-csv">arcs.csv</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#relevance-to-model">Relevance to model</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ccs-csv">ccs.csv</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Relevance to model</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#conversion-csv">conversion.csv</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id5">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">Relevance to model</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#demand-csv">demand.csv</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id7">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">Relevance to model</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#distribution-csv">distribution.csv</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id9">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">Relevance to model</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#hubs-csv">hubs.csv</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id13">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id14">Relevance to model</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#production-electric-csv">production_electric.csv</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id15">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id16">Relevance to model</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#production-existing-csv">production_existing.csv</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id21">Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id22">Relevance to model</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#production-thermal-csv">production_thermal.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#settings-yml">settings.yml</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="outputs.html">Output files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postprocessing.html">Postprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../utility/header.html">Utility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial.html">Running HOwDI Example/Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">HOwDI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="header.html">Input and output files</a></li>
+      <li class="breadcrumb-item active">Input files</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/inputs_outputs/inputs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="input-files">
+<span id="inputs"></span><h1>Input files<a class="headerlink" href="#input-files" title="Permalink to this heading"></a></h1>
+<p>An explanation of the provided example input files can be found in <a class="reference internal" href="../tutorial/tutorial.html#tutorial"><span class="std std-ref">Running HOwDI Example/Tutorial</span></a>.</p>
+<section id="arcs-csv">
+<h2>arcs.csv<a class="headerlink" href="#arcs-csv" title="Permalink to this heading"></a></h2>
+<p>Describes the arcs in the network and distance between them.</p>
+<table class="docutils align-default" id="id25">
+<caption><span class="caption-text">arcs.csv</span><a class="headerlink" href="#id25" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>startHub</p></th>
+<th class="head"><p>endHub</p></th>
+<th class="head"><p>kmLength_euclid</p></th>
+<th class="head"><p>kmLength_road</p></th>
+<th class="head"><p>exist_pipeline</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Name of the first hub, as defined in hubs.csv</p></td>
+<td><p>Name of the end hub</p></td>
+<td><p>Distance between hubs in straightline distance</p></td>
+<td><p>Distance that a road vehicle would travel between hubs</p></td>
+<td><p>Is there an existing pipeline between these hubs?</p></td>
+</tr>
+<tr class="row-odd"><td><p>Names should be in camelCase</p></td>
+<td></td>
+<td><p>Km</p></td>
+<td><p>Km</p></td>
+<td><p>Binary (1 or 0)</p></td>
+</tr>
+</tbody>
+</table>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default" id="id26">
+<caption><span class="caption-text">example of arcs.csv</span><a class="headerlink" href="#id26" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>startHub</p></th>
+<th class="head"><p>endHub</p></th>
+<th class="head"><p>kmLength_euclid</p></th>
+<th class="head"><p>kmLength_road</p></th>
+<th class="head"><p>exist_pipeline</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>austin</p></td>
+<td><p>waco</p></td>
+<td><p>152.40950173410138</p></td>
+<td><p>163.5097</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas</p></td>
+<td><p>houston</p></td>
+<td><p>360.431235113376</p></td>
+<td><p>384.3372</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>freeport</p></td>
+<td><p>houston</p></td>
+<td><p>89.06892475844474</p></td>
+<td><p>99.1198</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>waco</p></td>
+<td><p>houston</p></td>
+<td><p>261.16592973831126</p></td>
+<td><p>289.0303</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>waco</p></td>
+<td><p>dallas</p></td>
+<td><p>139.75266300122152</p></td>
+<td><p>152.1352</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>austin</p></td>
+<td><p>houston</p></td>
+<td><p>235.69261123650796</p></td>
+<td><p>261.8612</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="relevance-to-model">
+<h3>Relevance to model<a class="headerlink" href="#relevance-to-model" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>The model index and set <span class="math notranslate nohighlight">\(e \in E\)</span> is the set of all edges/arcs. Regrettably, the model’s terminology is not consistent or established for this.
+The <cite>arcs.csv</cite> file describes all the edges/arcs that connect a hub to another, but, <a class="reference internal" href="../model/create_network.html#node-vs-hub-terms"><span class="std std-ref">since a hub contains many nodes</span></a>,
+there are many model edges connecting nodes within a hub and nodes that are in different hubs.</p></li>
+<li><p>In <a class="reference internal" href="../model/create_network.html#create-network-module"><span class="std std-ref">create_network.py</span></a>, costs associated with transportation are multiplied by
+the road distance between hubs to get costs per unit (pipeline, truck) that will be used as parameters in the model.
+The capital <span class="math notranslate nohighlight">\(D_c(\delta)\)</span> <a class="footnote-reference brackets" href="#ref-fixed" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and variable <span class="math notranslate nohighlight">\(D_v(\delta)\)</span> costs of pipelines
+are functions of road length. Only the variable cost of a truck route is multiplied by road length; capital costs are
+determined only by the number of trucks on the route.</p></li>
+<li><p>Determines existing pipelines when constructing the network, which sets the capital cost of the pipeline to zero.</p></li>
+</ul>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="ref-fixed" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Fixed costs are calculated as a user-inputted fraction <span class="math notranslate nohighlight">\(\kappa\)</span> of the capital costs.</p>
+</aside>
+</aside>
+<hr></section>
+</section>
+<section id="ccs-csv">
+<h2>ccs.csv<a class="headerlink" href="#ccs-csv" title="Permalink to this heading"></a></h2>
+<p>Describes the carbon capture and storage (CCS) technologies that can be used to retrofit existing thermal hydrogen producers.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This feature is not fully implemented yet. The currently supported types are <code class="code docutils literal notranslate"><span class="pre">ccs1</span></code> and <code class="code docutils literal notranslate"><span class="pre">ccs2</span></code>.</p>
+</div>
+<table class="docutils align-default" id="id27">
+<caption><span class="caption-text">ccs.csv</span><a class="headerlink" href="#id27" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Header:</p></th>
+<th class="head"><p>type (actual index)</p></th>
+<th class="head"><p>variable_usdPerTonCO2</p></th>
+<th class="head"><p>percent_CO2_captured</p></th>
+<th class="head"><p>h2_tax_credit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Description:</p></td>
+<td><p>Label of CCS retrofit type</p></td>
+<td><p>Cost to capture a ton of CO2</p></td>
+<td><p>Percentage/100 of CO2 captured by the CCS type</p></td>
+<td><p>Tax credit for hydrogen cleaned by retrofit CCS</p></td>
+</tr>
+<tr class="row-odd"><td><p>Units:</p></td>
+<td><p>ccs1 or ccs2</p></td>
+<td><p>$/ton CO2</p></td>
+<td><p>0.00-1.00</p></td>
+<td><p>$/ton H2</p></td>
+</tr>
+</tbody>
+</table>
+<section id="id2">
+<h3>Example<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default" id="id28">
+<caption><span class="caption-text">example of ccs.csv</span><a class="headerlink" href="#id28" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>type</p></th>
+<th class="head"><p>variable_usdPerTonCO2</p></th>
+<th class="head"><p>percent_CO2_captured</p></th>
+<th class="head"><p>h2_tax_credit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ccs1</p></td>
+<td><p>50</p></td>
+<td><p>0.6</p></td>
+<td><p>459</p></td>
+</tr>
+<tr class="row-odd"><td><p>ccs2</p></td>
+<td><p>70</p></td>
+<td><p>0.9</p></td>
+<td><p>689</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id3">
+<h3>Relevance to model<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">type</span></code> is <span class="math notranslate nohighlight">\(\psi \in \Psi\)</span> in the model formulation.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">variable_usdPerTonCO2</span></code> is <span class="math notranslate nohighlight">\(CCS_v(\psi)\)</span>, used <a class="reference internal" href="../model/create_model.html#variable-costs-of-retrofitted-ccs"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">percent_CO2_captured</span></code> is <span class="math notranslate nohighlight">\(\beta(\psi)\)</span>, used <a class="reference internal" href="../model/create_model.html#rule-ccs1capacityrelationship"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">h2_tax_credit</span></code> is <span class="math notranslate nohighlight">\(\tau_{\text{H}_2}(\psi)\)</span>, used <a class="reference internal" href="../model/create_model.html#utility-gained-through-carbon-capture-tax-credits"><span class="std std-ref">here</span></a>.</p></li>
+</ul>
+<hr></section>
+</section>
+<section id="conversion-csv">
+<h2>conversion.csv<a class="headerlink" href="#conversion-csv" title="Permalink to this heading"></a></h2>
+<p>Parameters associated with conversion technologies and their locations in the supply chain.</p>
+<table class="docutils align-default" id="id29">
+<caption><span class="caption-text">conversion.csv</span><a class="headerlink" href="#id29" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Header</p></th>
+<th class="head"><p>converter</p></th>
+<th class="head"><p>variable_usdPerTon</p></th>
+<th class="head"><p>capital_usdPerTonPerDay</p></th>
+<th class="head"><p>kWh_perTon</p></th>
+<th class="head"><p>arc_start_class</p></th>
+<th class="head"><p>arc_end_class</p></th>
+<th class="head"><p>utilization</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Description</p></td>
+<td><p>Name of convertor</p></td>
+<td><p>Variable costs of conversion</p></td>
+<td><p>Capital cost of conversion</p></td>
+<td><p>Electricity used by a convertor</p></td>
+<td><p>node to insert convertor after</p></td>
+<td><p>node to insert converter after</p></td>
+<td><p>Perctange/100 of H2 processed compared to capacity</p></td>
+</tr>
+<tr class="row-odd"><td><p>Units</p></td>
+<td><p>compression</p></td>
+<td><p>$/ton H2</p></td>
+<td><p>$/ton H2</p></td>
+<td><p>kWh /ton H2</p></td>
+<td><p>type of node</p></td>
+<td><p>type of node</p></td>
+<td><p>(0.00-1.00)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-todo admonition" id="id4">
+<p class="admonition-title">Todo</p>
+<p>Remove <code class="code docutils literal notranslate"><span class="pre">fixed_usdPerTon</span></code> from the model (<code class="code docutils literal notranslate"><span class="pre">create_network.py</span></code>).
+It is technically required at the moment (see how it is included in the example).</p>
+</div>
+<section id="id5">
+<h3>Example<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default" id="id30">
+<caption><span class="caption-text">example of conversion.csv</span><a class="headerlink" href="#id30" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>converter</p></th>
+<th class="head"><p>fixed_usdPerTonPerDay</p></th>
+<th class="head"><p>variable_usdPerTon</p></th>
+<th class="head"><p>capital_usdPerTonPerDay</p></th>
+<th class="head"><p>kWh_perTon</p></th>
+<th class="head"><p>arc_start_class</p></th>
+<th class="head"><p>arc_end_class</p></th>
+<th class="head"><p>utilization</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>liquefaction</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>2008333</p></td>
+<td><p>7200</p></td>
+<td><p>center_highPurity</p></td>
+<td><p>dist_truckLiquefied</p></td>
+<td><p>0.95</p></td>
+</tr>
+<tr class="row-odd"><td><p>compression</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>23618</p></td>
+<td><p>850</p></td>
+<td><p>center_highPurity</p></td>
+<td><p>dist_truckCompressed</p></td>
+<td><p>0.95</p></td>
+</tr>
+<tr class="row-even"><td><p>terminalLiquid</p></td>
+<td><p>290</p></td>
+<td><p>0</p></td>
+<td><p>82183</p></td>
+<td><p>0</p></td>
+<td><p>converter_liquefaction</p></td>
+<td><p>dist_truckLiquefied</p></td>
+<td><p>0.85</p></td>
+</tr>
+<tr class="row-odd"><td><p>terminalGas</p></td>
+<td><p>260</p></td>
+<td><p>0</p></td>
+<td><p>506419</p></td>
+<td><p>0</p></td>
+<td><p>converter_compression</p></td>
+<td><p>dist_truckCompressed</p></td>
+<td><p>0.85</p></td>
+</tr>
+<tr class="row-even"><td><p>fuelDispenserLiquid</p></td>
+<td><p>1500</p></td>
+<td><p>0</p></td>
+<td><p>6800249</p></td>
+<td><p>560</p></td>
+<td><p>dist_truckLiquefied</p></td>
+<td><p>demand_fuelStation</p></td>
+<td><p>0.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>fuelDispenserGas</p></td>
+<td><p>1575</p></td>
+<td><p>0</p></td>
+<td><p>12937579</p></td>
+<td><p>1970</p></td>
+<td><p>dist_truckCompressed</p></td>
+<td><p>demand_fuelStation</p></td>
+<td><p>0.6</p></td>
+</tr>
+<tr class="row-even"><td><p>fuelDispenserPipeline</p></td>
+<td><p>1575</p></td>
+<td><p>0</p></td>
+<td><p>3794362</p></td>
+<td><p>1970</p></td>
+<td><p>dist_pipelineHighPurity</p></td>
+<td><p>demand_fuelStation</p></td>
+<td><p>0.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>purification</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>52000</p></td>
+<td><p>1800</p></td>
+<td><p>center_lowPurity</p></td>
+<td><p>center_highPurity</p></td>
+<td><p>0.95</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id6">
+<h3>Relevance to model<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">converter</span></code> is <span class="math notranslate nohighlight">\(\pi \in \Pi\)</span> in the model framework.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">variable_usdPerTon</span></code> is <span class="math notranslate nohighlight">\(C_v\)</span>, used <a class="reference internal" href="../model/create_model.html#variable-costs-of-conversion"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">capital_usdTonPerDay</span></code> is <span class="math notranslate nohighlight">\(C_c\)</span>, used <a class="reference internal" href="../model/create_model.html#capital-costs-of-conversion"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">kWh_perTon</span></code> is <span class="math notranslate nohighlight">\(C_e\)</span>, used <a class="reference internal" href="../model/create_model.html#electricity-costs-of-conversion"><span class="std std-ref">here</span></a>.</p></li>
+<li><p>In the model, the convertor is placed between <code class="code docutils literal notranslate"><span class="pre">arc_start_class</span></code> and <code class="code docutils literal notranslate"><span class="pre">arc_end_class</span></code>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">utilization</span></code> is <span class="math notranslate nohighlight">\(\mu\)</span>, used <a class="reference internal" href="../model/create_model.html#variable-costs-of-conversion"><span class="std std-ref">here</span></a> and <a class="reference internal" href="../model/create_model.html#capacity-converters"><span class="std std-ref">here</span></a>.</p></li>
+</ul>
+<hr></section>
+</section>
+<section id="demand-csv">
+<h2>demand.csv<a class="headerlink" href="#demand-csv" title="Permalink to this heading"></a></h2>
+<p>Describes demand sectors. The amount of of hydrogen consumed per demand sector at each hub is defined in <a class="reference internal" href="#inputs-hubs-csv"><span class="std std-ref">hubs.csv</span></a>.</p>
+<table class="docutils align-default" id="id31">
+<caption><span class="caption-text">demand.csv</span><a class="headerlink" href="#id31" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Header</p></th>
+<th class="head"><p>sector</p></th>
+<th class="head"><p>breakevenPrice</p></th>
+<th class="head"><p>carbonSensitive</p></th>
+<th class="head"><p>avoided_emissions_tonsCO2_per_H2</p></th>
+<th class="head"><p>demandType</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Description</p></td>
+<td><p>Chosen name given to demand sector</p></td>
+<td><p>Maximum price consumers in this sector are willing to pay</p></td>
+<td><p>Binary if H2 consumed must have equivalent clean H2 generation</p></td>
+<td><p>Carbon emissions sector avoids by switching to H2</p></td>
+<td><p>Type of demand</p></td>
+</tr>
+<tr class="row-odd"><td><p>Units</p></td>
+<td><p>name</p></td>
+<td><p>$/metric ton H2</p></td>
+<td><p>0 or 1</p></td>
+<td><p>ton CO2/ton H2</p></td>
+<td><p>(fuelStation, lowPurity, or HighPurity)</p></td>
+</tr>
+</tbody>
+</table>
+<section id="id7">
+<h3>Example<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default" id="id32">
+<caption><span class="caption-text">example of demand.csv</span><a class="headerlink" href="#id32" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>sector</p></th>
+<th class="head"><p>breakevenPrice</p></th>
+<th class="head"><p>carbonSensitive</p></th>
+<th class="head"><p>avoided_emissions_tonsCO2_per_H2</p></th>
+<th class="head"><p>demandType</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>transportationFuel</p></td>
+<td><p>4000</p></td>
+<td><p>0</p></td>
+<td><p>13</p></td>
+<td><p>fuelStation</p></td>
+</tr>
+<tr class="row-odd"><td><p>transportationFuel_carbonSensitive</p></td>
+<td><p>5000</p></td>
+<td><p>1</p></td>
+<td><p>13</p></td>
+<td><p>fuelStation</p></td>
+</tr>
+<tr class="row-even"><td><p>industrialFuel</p></td>
+<td><p>5000</p></td>
+<td><p>0</p></td>
+<td><p>12</p></td>
+<td><p>lowPurity</p></td>
+</tr>
+<tr class="row-odd"><td><p>existing</p></td>
+<td><p>5000</p></td>
+<td><p>0</p></td>
+<td><p>9</p></td>
+<td><p>lowPurity</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id8">
+<h3>Relevance to model<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">sector</span></code> corresponds to <span class="math notranslate nohighlight">\(\xi \in \Xi\)</span> in the model formulation.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">breakevenPrice</span></code> is <span class="math notranslate nohighlight">\(U_{bp}\)</span>, used <a class="reference internal" href="../model/create_model.html#utility-gained-through-consumption-of-hydrogen"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">carbonSensitive</span></code> is <span class="math notranslate nohighlight">\(S_{\text{CO}_2}\)</span>, used <a class="reference internal" href="../model/create_model.html#rule-consumerchecs"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">avoided_emissions_tonsCO2_per_H2</span></code> is <span class="math notranslate nohighlight">\(Q'_{\text{CO}_2}\)</span>, used <a class="reference internal" href="../model/create_model.html#utility-gained-through-avoided-carbon-taxes"><span class="std std-ref">here</span></a>.</p></li>
+<li><p>The model currently only supports <code class="code docutils literal notranslate"><span class="pre">fuelStation</span></code>, <code class="code docutils literal notranslate"><span class="pre">lowPurity</span></code>, and <code class="code docutils literal notranslate"><span class="pre">highPurity</span></code> as demand sectors.</p></li>
+</ul>
+<hr></section>
+</section>
+<section id="distribution-csv">
+<h2>distribution.csv<a class="headerlink" href="#distribution-csv" title="Permalink to this heading"></a></h2>
+<p>Describes methods of distribution.</p>
+<table class="docutils align-default" id="id33">
+<caption><span class="caption-text">distribution.csv</span><a class="headerlink" href="#id33" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Header</p></th>
+<th class="head"><p>distributor</p></th>
+<th class="head"><p>unit</p></th>
+<th class="head"><p>capital_usdPerUnit</p></th>
+<th class="head"><p>variable_usdPerKilometer-Ton</p></th>
+<th class="head"><p>flowLimit_tonsPerDay</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Description</p></td>
+<td><p>name of distribution line</p></td>
+<td><p>unit to measure capital cost</p></td>
+<td><p>Capital costs</p></td>
+<td><p>Variable costs</p></td>
+<td><p>Flow limit</p></td>
+</tr>
+<tr class="row-odd"><td><p>Units</p></td>
+<td><p>Either “pipeline” or contains “truck”</p></td>
+<td><p>Either “km” or “truck”</p></td>
+<td><p>$ / unit in “unit” column</p></td>
+<td><p>$ / km</p></td>
+<td><p>Metric tons H2/day through 1 unit</p></td>
+</tr>
+</tbody>
+</table>
+<section id="id9">
+<h3>Example<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default" id="id34">
+<caption><span class="caption-text">example of distribution.csv</span><a class="headerlink" href="#id34" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>distributor</p></th>
+<th class="head"><p>unit</p></th>
+<th class="head"><p>capital_usdPerUnit</p></th>
+<th class="head"><p>fixed_usdPerUnitPerDay</p></th>
+<th class="head"><p>variable_usdPerKilometer-Ton</p></th>
+<th class="head"><p>flowLimit_tonsPerDay</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>pipeline</p></td>
+<td><p>km</p></td>
+<td><p>1117016</p></td>
+<td><p>164.4</p></td>
+<td><p>0.1</p></td>
+<td><p>999999</p></td>
+</tr>
+<tr class="row-odd"><td><p>truckCompressed</p></td>
+<td><p>truck</p></td>
+<td><p>450000</p></td>
+<td><p>52.19</p></td>
+<td><p>7.58</p></td>
+<td><p>2.6</p></td>
+</tr>
+<tr class="row-even"><td><p>truckLiquefied</p></td>
+<td><p>truck</p></td>
+<td><p>1500000</p></td>
+<td><p>139.18</p></td>
+<td><p>0.51</p></td>
+<td><p>8</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id10">
+<h3>Relevance to model<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<ul>
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">distributor</span></code> column decides if the distribution method is a pipeline or a truck.
+This column refers to <span class="math notranslate nohighlight">\(\delta \in \Delta\)</span> in the model.
+The item <code class="code docutils literal notranslate"><span class="pre">pipeline</span></code> is required, and only looks at other distribution methods that contain the word <code class="code docutils literal notranslate"><span class="pre">truck</span></code>.</p>
+<div class="admonition-todo admonition" id="id11">
+<p class="admonition-title">Todo</p>
+<p>This should probably be changed based on unit, look at the code.</p>
+</div>
+</li>
+<li><p>Consequently, the <code class="code docutils literal notranslate"><span class="pre">unit</span></code> column is useless in the current version of the model.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">capital_usdPerUnit</span></code> is <span class="math notranslate nohighlight">\(D_c\)</span>, used <a class="reference internal" href="../model/create_model.html#capital-costs-of-distribution"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">fixed_usdPerUnitPerDay</span></code> is not used since fixed costs are calculated as <span class="math notranslate nohighlight">\(\kappa\)</span> percent of capital costs.</p>
+<blockquote>
+<div><div class="admonition-todo admonition" id="id12">
+<p class="admonition-title">Todo</p>
+<p>Make sure that this is not used anywhere in the code and remove.</p>
+</div>
+</div></blockquote>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">variable_usdPerUnit</span></code> is <span class="math notranslate nohighlight">\(D_v\)</span>, used <a class="reference internal" href="../model/create_model.html#variable-costs-of-distribution"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">flowLimit_tonsPerDay</span></code> is <span class="math notranslate nohighlight">\(y_d^{\text{max}}\)</span> used <a class="reference internal" href="../model/create_model.html#capacity-distribution"><span class="std std-ref">here</span></a>.</p></li>
+</ul>
+<hr></section>
+</section>
+<section id="hubs-csv">
+<h2>hubs.csv<a class="headerlink" href="#hubs-csv" title="Permalink to this heading"></a></h2>
+<p>Describes hubs, which locations can build specific technologies, the amount of hydrogen demand that <em>could</em> be consumed
+at each hub, the local natural gas price, the local electricity price, and the local capital price multiplier.</p>
+<table class="docutils align-default" id="id35">
+<caption><span class="caption-text">hubs.csv</span><a class="headerlink" href="#id35" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Header</p></th>
+<th class="head"><p>hub</p></th>
+<th class="head"><p>build_&lt;producer1&gt;</p></th>
+<th class="head"><p>…</p></th>
+<th class="head"><p>build_&lt;producerN&gt;</p></th>
+<th class="head"><p>&lt;demandSector1&gt;_tonnesperday</p></th>
+<th class="head"><p>…</p></th>
+<th class="head"><p>&lt;demandSectorN&gt;_tonnesperday</p></th>
+<th class="head"><p>ng_usd_per_mmbtu</p></th>
+<th class="head"><p>e_usd_per_kwh</p></th>
+<th class="head"><p>capital_pm</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Description</p></td>
+<td><p>Hub Name</p></td>
+<td><p>Wether or not this hub can build &lt;producer1&gt;</p></td>
+<td><p>…</p></td>
+<td><p>Wether or not this hub can build &lt;producerN&gt;</p></td>
+<td><p>Amount of demand in this hub in &lt;demandSector1&gt;</p></td>
+<td><p>…</p></td>
+<td><p>Amount of demand in this hub in &lt;demandSectorN&gt;</p></td>
+<td><p>Local natural gas price</p></td>
+<td><p>Local elecitricy price</p></td>
+<td><p>Capital price multiplier</p></td>
+</tr>
+<tr class="row-odd"><td><p>Units</p></td>
+<td></td>
+<td><p>0,1 (1=Can build)</p></td>
+<td><p>…</p></td>
+<td><p>Binary</p></td>
+<td><p>tons H2/day</p></td>
+<td><p>…</p></td>
+<td><p>tons H2/day</p></td>
+<td><p>$/MMBTU</p></td>
+<td><p>$/kWh</p></td>
+<td><p>Float near 1.00</p></td>
+</tr>
+</tbody>
+</table>
+<section id="id13">
+<h3>Example<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default" id="id36">
+<caption><span class="caption-text">example of hubs.csv</span><a class="headerlink" href="#id36" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>hub</p></th>
+<th class="head"><p>build_smr-noCCS</p></th>
+<th class="head"><p>build_smr-low</p></th>
+<th class="head"><p>build_smr-high</p></th>
+<th class="head"><p>build_smr-high-ptc</p></th>
+<th class="head"><p>build_electrolyzer</p></th>
+<th class="head"><p>build_electrolyzer-RE</p></th>
+<th class="head"><p>transportationFuel_tonnesperday</p></th>
+<th class="head"><p>transportationFuel_carbonSensitive_tonnesperday</p></th>
+<th class="head"><p>industrialFuel_tonnesperday</p></th>
+<th class="head"><p>existing_tonnesperday</p></th>
+<th class="head"><p>ng_usd_per_mmbtu</p></th>
+<th class="head"><p>e_usd_per_kwh</p></th>
+<th class="head"><p>capital_pm</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>austin</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>354</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>4.182516115</p></td>
+<td><p>0.043290426</p></td>
+<td><p>0.921993104</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>589</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>4.049164359</p></td>
+<td><p>0.043632017</p></td>
+<td><p>0.932665854</p></td>
+</tr>
+<tr class="row-even"><td><p>houston</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>359</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>4.140460697</p></td>
+<td><p>0.046236011</p></td>
+<td><p>0.914349379</p></td>
+</tr>
+<tr class="row-odd"><td><p>freeport</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>538</p></td>
+<td><p>4.155303773</p></td>
+<td><p>0.046236011</p></td>
+<td><p>0.914163499</p></td>
+</tr>
+<tr class="row-even"><td><p>waco</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>21</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>4.021041851</p></td>
+<td><p>0.043632017</p></td>
+<td><p>0.926566559</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id14">
+<h3>Relevance to model<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">hub</span></code> is <span class="math notranslate nohighlight">\(\omega \in \Omega\)</span> in the model formulation.</p></li>
+<li><p>Replace <code class="code docutils literal notranslate"><span class="pre">&lt;producer&gt;</span></code> in <code class="code docutils literal notranslate"><span class="pre">build_&lt;producer&gt;</span></code> with the name of a producer <span class="math notranslate nohighlight">\(\phi \in \Phi\)</span>. If there is not a
+column for each producer <span class="math notranslate nohighlight">\(\phi \in \Phi\)</span>, the model will assume that the producer without a column can be built at any hub.</p></li>
+<li><p>Replace <code class="code docutils literal notranslate"><span class="pre">&lt;demandSector&gt;</span></code> in <code class="code docutils literal notranslate"><span class="pre">demand_&lt;demandSector&gt;</span></code> with the name of a demand sector <span class="math notranslate nohighlight">\(\xi \in \Xi\)</span>.
+The column corresponds to the model variable <span class="math notranslate nohighlight">\(Q_{H_2}(\omega, \xi)\)</span>, used <a class="reference internal" href="../model/create_model.html#consumersize"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">ng_usd_per_mmbtu</span></code> is <span class="math notranslate nohighlight">\(\gamma(\omega)\)</span>, which is used to calculate <a class="reference internal" href="../model/create_model.html#natural-gas-costs"><span class="std std-ref">thermal hydrogen production costs</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">e_usd_per_kwh</span></code> is <span class="math notranslate nohighlight">\(\varepsilon(\omega)\)</span>, which is used to calculate <a class="reference internal" href="../model/create_model.html#electricity-costs-of-production"><span class="std std-ref">electric hydrogen production costs</span></a>
+and <a class="reference internal" href="../model/create_model.html#electricity-costs-of-conversion"><span class="std std-ref">conversion costs</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">capital_pm</span></code> is <span class="math notranslate nohighlight">\(\lambda(\omega)\)</span>, used in calculating all capital costs.</p></li>
+</ul>
+<hr></section>
+</section>
+<section id="production-electric-csv">
+<h2>production_electric.csv<a class="headerlink" href="#production-electric-csv" title="Permalink to this heading"></a></h2>
+<p>Describes prices and relevant information regarding carbon impacts of electricity production (electrolyzers).</p>
+<table class="docutils align-default" id="id37">
+<caption><span class="caption-text">production_electric.csv</span><a class="headerlink" href="#id37" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Header</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>capEx_$_per_kW</p></th>
+<th class="head"><p>kWh_perTon</p></th>
+<th class="head"><p>variable_usdPerTon</p></th>
+<th class="head"><p>utilization</p></th>
+<th class="head"><p>purity</p></th>
+<th class="head"><p>min_h2</p></th>
+<th class="head"><p>max_h2</p></th>
+<th class="head"><p>h2_tax_credit</p></th>
+<th class="head"><p>grid_intensity_tonsCO2_per_h2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Description</p></td>
+<td><p>Name used to describe producer</p></td>
+<td><p>Capital Expenses</p></td>
+<td><p>Amount of electricity need to produce a ton of H2</p></td>
+<td><p>Variable costs of production</p></td>
+<td><p>Perctange of time utilized per time period/100</p></td>
+<td><p>Purity of H2 produced</p></td>
+<td><p>Minimum capacity size</p></td>
+<td><p>Maximum capacity size</p></td>
+<td><p>Tax credit for a new producer</p></td>
+<td><p>Carbon grid intensity</p></td>
+</tr>
+<tr class="row-odd"><td><p>Units</p></td>
+<td></td>
+<td><p>$/kW</p></td>
+<td><p>kWh/ton H2</p></td>
+<td><p>$/ton H2</p></td>
+<td><p>(0.00-1.00) per (day)</p></td>
+<td><p>“low” or “high”</p></td>
+<td><p>tons H2/ day</p></td>
+<td><p>tons H2/day</p></td>
+<td><p>$ /ton H2 produced</p></td>
+<td><p>tons CO2 produced / ton H2 produced</p></td>
+</tr>
+</tbody>
+</table>
+<section id="id15">
+<h3>Example<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default" id="id38">
+<caption><span class="caption-text">example of production_electric.csv</span><a class="headerlink" href="#id38" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>type</p></th>
+<th class="head"><p>fixed_usdPerTon</p></th>
+<th class="head"><p>capEx_$_per_kW</p></th>
+<th class="head"><p>kWh_perTon</p></th>
+<th class="head"><p>variable_usdPerTon</p></th>
+<th class="head"><p>utilization</p></th>
+<th class="head"><p>purity</p></th>
+<th class="head"><p>min_h2</p></th>
+<th class="head"><p>max_h2</p></th>
+<th class="head"><p>h2_tax_credit</p></th>
+<th class="head"><p>grid_intensity_tonsCO2_per_h2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>electrolyzer</p></td>
+<td><p>50</p></td>
+<td><p>720</p></td>
+<td><p>50000</p></td>
+<td><p>0</p></td>
+<td><p>0.975</p></td>
+<td><p>high</p></td>
+<td><p>250</p></td>
+<td><p>50000</p></td>
+<td><p>600</p></td>
+<td><p>3.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>electrolyzer-RE</p></td>
+<td><p>50</p></td>
+<td><p>720</p></td>
+<td><p>50000</p></td>
+<td><p>0</p></td>
+<td><p>0.4</p></td>
+<td><p>high</p></td>
+<td><p>250</p></td>
+<td><p>50000</p></td>
+<td><p>3750</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+<p>In this example, the <code class="code docutils literal notranslate"><span class="pre">electolyzer-RE</span></code> (electrolyzer that uses renewable electricity) differs from the other electrolyzers
+in that the grid intensity is zero and the utilization is lower (representing the fact that renewable electricity is not always available).
+The electrolyzer that uses renewable electricity also gets a larger tax credit.</p>
+</section>
+<section id="id16">
+<h3>Relevance to model<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
+<div class="admonition-todo admonition" id="id17">
+<p class="admonition-title">Todo</p>
+<p>As before, remove fixed costs of production?</p>
+</div>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">type</span></code> is <span class="math notranslate nohighlight">\(\phi_{\text{electric}} \in \Phi_e \in \Phi\)</span> in the model formulation.</p></li>
+<li><p>The product of <code class="code docutils literal notranslate"><span class="pre">capEx_$_per_kW</span></code> <a class="footnote-reference brackets" href="#capex-units" id="id18" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> and <code class="code docutils literal notranslate"><span class="pre">kWh_perTon</span></code> is <span class="math notranslate nohighlight">\(P_c(\phi_e)\)</span>, used <a class="reference internal" href="../model/create_model.html#capital-costs-of-production"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">kWh_perTon</span></code> is also used <a class="reference internal" href="../model/create_model.html#electricity-costs-of-production"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">variable_usdPerTon</span></code> is <span class="math notranslate nohighlight">\(P_v(\phi_e)\)</span>, used <a class="reference internal" href="../model/create_model.html#variable-costs-production"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">utilization</span></code> is <span class="math notranslate nohighlight">\(\mu(\phi_e)\)</span>, used <a class="reference internal" href="../model/create_model.html#capacity-production"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">purity</span></code> determines how the producer is connected to the network.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">min_h2</span></code> is <span class="math notranslate nohighlight">\(y_p^{\text{min}}(\phi_e)\)</span>, used <a class="reference internal" href="../model/create_model.html#capacity-production-min"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">max_h2</span></code> is <span class="math notranslate nohighlight">\(y_p^{\text{max}}(\phi_e)\)</span>, used <a class="reference internal" href="../model/create_model.html#capacity-production-max"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">h2_tax_credit</span></code> is <span class="math notranslate nohighlight">\(\tau_{\text{new}}(\phi_e)\)</span>, used <a class="reference internal" href="../model/create_model.html#utility-gained-through-clean-hydrogen-production-tax-credits"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">grid_intensity_tonsCO2_per_h2</span></code> is <span class="math notranslate nohighlight">\(G(\phi_e)\)</span>, used <a class="reference internal" href="../model/create_model.html#electric-chec"><span class="std std-ref">here</span></a>.</p></li>
+</ul>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="capex-units" role="note">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id18">1</a>,<a role="doc-backlink" href="#id19">2</a>)</span>
+<p>I believe this is $/kW/day. There is a document somewhere that explains these units and how that ties into amortization.</p>
+</aside>
+</aside>
+<div class="admonition-todo admonition" id="id20">
+<p class="admonition-title">Todo</p>
+<p>Double check footnote <a class="footnote-reference brackets" href="#capex-units" id="id19" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> with Dr. Emily Beagle.</p>
+</div>
+<hr></section>
+</section>
+<section id="production-existing-csv">
+<h2>production_existing.csv<a class="headerlink" href="#production-existing-csv" title="Permalink to this heading"></a></h2>
+<p>Describes existing production costs and hubs at which the producers are located.</p>
+<table class="docutils align-default" id="id39">
+<caption><span class="caption-text">production_existing.csv</span><a class="headerlink" href="#id39" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Header</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>hub</p></th>
+<th class="head"><p>capacity_tonPerDay</p></th>
+<th class="head"><p>capital_usdPerTonPerDay</p></th>
+<th class="head"><p>kWh_perTon</p></th>
+<th class="head"><p>ng_mmbtu_per_tonH2</p></th>
+<th class="head"><p>variable_usdPerTon</p></th>
+<th class="head"><p>co2_emissions_per_h2_tons</p></th>
+<th class="head"><p>can_ccs1</p></th>
+<th class="head"><p>can_ccs2</p></th>
+<th class="head"><p>utilization</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Description</p></td>
+<td><p>Type of SMR used</p></td>
+<td><p>Name of hub where located</p></td>
+<td><p>Existing capacity of production</p></td>
+<td><p>Capital costs</p></td>
+<td><p>Electricity use</p></td>
+<td><p>Natural gas use</p></td>
+<td><p>Variable costs</p></td>
+<td><p>CO2 emissions relative to H2 production</p></td>
+<td><p>Ability to build CCS1 tech</p></td>
+<td><p>Ability to build CCS2 tech</p></td>
+<td><p>Perctange of time utilized per time period/100</p></td>
+</tr>
+<tr class="row-odd"><td><p>Units</p></td>
+<td><p>Coressponds to type in production_thermal.csv</p></td>
+<td><p>Corresonds to hub in hubs.csv</p></td>
+<td><p>tons H2/ day</p></td>
+<td><p>$/tonH2/day</p></td>
+<td><p>kWh/ton H2</p></td>
+<td><p>MMBtu / ton H2</p></td>
+<td><p>$/ton H2</p></td>
+<td><p>tons CO2/ tons H2</p></td>
+<td><p>Binary (0,1=Can build)</p></td>
+<td><p>Binary (0,1=Can build)</p></td>
+<td><p>(0.00-1.00) per (day)</p></td>
+</tr>
+</tbody>
+</table>
+<section id="id21">
+<h3>Example<a class="headerlink" href="#id21" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default" id="id40">
+<caption><span class="caption-text">example of production_existing.csv</span><a class="headerlink" href="#id40" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>type</p></th>
+<th class="head"><p>hub</p></th>
+<th class="head"><p>capacity_tonPerDay</p></th>
+<th class="head"><p>fixed_usdPerTonPerDay</p></th>
+<th class="head"><p>capital_usdPerTonPerDay</p></th>
+<th class="head"><p>kWh_perTon</p></th>
+<th class="head"><p>ng_mmbtu_per_tonH2</p></th>
+<th class="head"><p>variable_usdPerTon</p></th>
+<th class="head"><p>co2_emissions_per_h2_tons</p></th>
+<th class="head"><p>can_ccs1</p></th>
+<th class="head"><p>can_ccs2</p></th>
+<th class="head"><p>utilization</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>smr-noCCS</p></td>
+<td><p>freeport</p></td>
+<td><p>482</p></td>
+<td><p>70</p></td>
+<td><p>0</p></td>
+<td><p>640</p></td>
+<td><p>144</p></td>
+<td><p>100</p></td>
+<td><p>9</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0.9</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id22">
+<h3>Relevance to model<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">type</span></code> will match a <code class="code docutils literal notranslate"><span class="pre">type</span></code> in <a class="reference internal" href="#inputs-production-thermal-csv"><span class="std std-ref">production_thermal.csv</span></a>. Corresponding data will be gathered from that row.</p></li>
+</ul>
+<div class="admonition-todo admonition" id="id23">
+<p class="admonition-title">Todo</p>
+<p>Figure out which data are used (good way to learn about the code) and remove unnecessary columns from this input file.</p>
+</div>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">hub</span></code> will match a <code class="code docutils literal notranslate"><span class="pre">hub</span></code> in <a class="reference internal" href="#inputs-hubs-csv"><span class="std std-ref">hubs.csv</span></a>. The existing producer will be built at that hub.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">capacity_tonPerDay</span></code> is used <a class="reference internal" href="../model/create_model.html#rule-productioncapacityexisting"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">capital_usdPerTonPerDay</span></code> is <span class="math notranslate nohighlight">\(P_c\)</span> used <a class="reference internal" href="../model/create_model.html#capital-costs-of-production"><span class="std std-ref">here</span></a>.</p></li>
+</ul>
+<div class="admonition-todo admonition" id="id24">
+<p class="admonition-title">Todo</p>
+<p>Fixed costs</p>
+</div>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">kWh_perTon</span></code> is <span class="math notranslate nohighlight">\(P_e\)</span> used <a class="reference internal" href="../model/create_model.html#electricity-costs-of-production"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">ng_mmbtu_per_tonH2</span></code> is <span class="math notranslate nohighlight">\(P_g\)</span> used <a class="reference internal" href="../model/create_model.html#natural-gas-costs"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">variable_usdPerTon</span></code> is <span class="math notranslate nohighlight">\(P_v\)</span> used <a class="reference internal" href="../model/create_model.html#variable-costs-production"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">co2_emissions_per_h2_tons</span></code> is <span class="math notranslate nohighlight">\(B_{\text{exist}}\)</span> used <a class="reference internal" href="../model/create_model.html#carbon-tax-costs"><span class="std std-ref">here</span></a> and <a class="reference internal" href="../model/create_model.html#rule-ccs1capacityrelationship"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">can_ccs1</span></code> is <span class="math notranslate nohighlight">\(\zeta_{CCS}(n_{p_{\text{exist}}})\)</span> used <a class="reference internal" href="../model/create_model.html#rule-ccs1capacityrelationship"><span class="std std-ref">here</span></a>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">utilization</span></code> is <span class="math notranslate nohighlight">\(\mu\)</span> used <a class="reference internal" href="../model/create_model.html#capacity-production"><span class="std std-ref">here</span></a>.</p></li>
+</ul>
+<hr></section>
+</section>
+<section id="production-thermal-csv">
+<span id="inputs-production-thermal-csv"></span><h2>production_thermal.csv<a class="headerlink" href="#production-thermal-csv" title="Permalink to this heading"></a></h2>
+<p>Describes prices and relevant information regarding carbon impacts of thermal hydrogen production.</p>
+<table class="docutils align-default" id="id41">
+<caption><span class="caption-text">production_thermal.csv</span><a class="headerlink" href="#id41" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Header</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>ccs_capture_rate</p></th>
+<th class="head"><p>capital_usdPerTonPerDay</p></th>
+<th class="head"><p>kWh_perTon</p></th>
+<th class="head"><p>ng_mmbtu_per_tonH2</p></th>
+<th class="head"><p>variable_usdPerTon</p></th>
+<th class="head"><p>utilization</p></th>
+<th class="head"><p>purity</p></th>
+<th class="head"><p>min_h2</p></th>
+<th class="head"><p>max_h2</p></th>
+<th class="head"><p>h2_tax_credit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Description</p></td>
+<td><p>Name used to describe thermal technology</p></td>
+<td><p>Perctange of CO2 captured/100</p></td>
+<td><p>Capital costs</p></td>
+<td><p>Electricity use</p></td>
+<td><p>Natural gas use</p></td>
+<td><p>Variable costs</p></td>
+<td><p>Perctange of time utilized per time period/100</p></td>
+<td><p>Purity of H2 produced</p></td>
+<td><p>Minimum capacity size</p></td>
+<td><p>Maximum capacity size</p></td>
+<td><p>Tax credit for a new producer</p></td>
+</tr>
+<tr class="row-odd"><td><p>Units</p></td>
+<td><p>smr-low</p></td>
+<td><p>0.00-1.00 exclusive</p></td>
+<td><p>$/tonH2/day</p></td>
+<td><p>kWh/ton H2</p></td>
+<td><p>MMBtu/ tonH2</p></td>
+<td><p>$/ton H2</p></td>
+<td><p>(0.00-1.00) per (day)</p></td>
+<td><p>“low” or “high”</p></td>
+<td><p>tons H2/day</p></td>
+<td><p>tons H2/day</p></td>
+<td><p>$ / ton H2 produced</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="settings-yml">
+<h2>settings.yml<a class="headerlink" href="#settings-yml" title="Permalink to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Price tracking settings</p></li>
+</ol>
+<p>These settings control how the delivered price of hydrogen is determined.
+See <a class="reference internal" href="../model/create_network.html#price-nodes"><span class="std std-ref">price nodes</span></a> for more information.</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">find_prices</span></code>: if <code class="code docutils literal notranslate"><span class="pre">True</span></code>, the model will find the price of hydrogen for each specified hub.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">price_tracking_array</span></code></p></li>
+<li><ul>
+<li><p><code class="code docutils literal notranslate"><span class="pre">start</span></code> : the lower bound of the price tracking array</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="preprocessing.html" class="btn btn-neutral float-left" title="Preprocessing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="outputs.html" class="btn btn-neutral float-right" title="Output files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Braden Pecora.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

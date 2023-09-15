@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preprocessing &mdash; HOwDI 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Input files" href="inputs.html" />
+    <link rel="prev" title="Input and output files" href="header.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            HOwDI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../model/header.html">Model Conception</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="header.html">Input and output files</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.preprocessing.create_hubs_data.create_hubs_data"><code class="docutils literal notranslate"><span class="pre">create_hubs_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geocoding-method">Geocoding method</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.preprocessing.geocode.geocode_hubs"><code class="docutils literal notranslate"><span class="pre">geocode_hubs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.preprocessing.create_arcs.get_route"><code class="docutils literal notranslate"><span class="pre">get_route()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-HOwDI.preprocessing.create_arcs">Determining relevant arcs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.preprocessing.create_arcs.create_arcs"><code class="docutils literal notranslate"><span class="pre">create_arcs()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="inputs.html">Input files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outputs.html">Output files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postprocessing.html">Postprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../utility/header.html">Utility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial.html">Running HOwDI Example/Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">HOwDI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="header.html">Input and output files</a></li>
+      <li class="breadcrumb-item active">Preprocessing</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/inputs_outputs/preprocessing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="preprocessing">
+<h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this heading"></a></h1>
+<p>HOwDI’s preprocessing tools are used to create the input files necessary for HOwDI’s main algorithm.
+The preprocessing pipeline determines relevant connections by hubs, geocodes the locations, and determines the
+straight-line (euclidean) and road distances between hubs.</p>
+<p>Use the following from the command line to see the available options:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>HOwDI<span class="w"> </span>create_hub_data<span class="w"> </span>-h
+</pre></div>
+</div>
+<p>The following function drives the preprocessing pipeline. The documentation describes the necessary inputs and outputs files.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.preprocessing.create_hubs_data.create_hubs_data">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.preprocessing.create_hubs_data.</span></span><span class="sig-name descname"><span class="pre">create_hubs_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hub_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace_model_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_inputs_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">price_multipliers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">price_multipliers_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapefile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.preprocessing.create_hubs_data.create_hubs_data" title="Permalink to this definition"></a></dt>
+<dd><p>Creates hub and arc data to be used in the HOwDI model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hub_dir</strong> (<em>str</em>) – <dl class="simple">
+<dt>The directory containing the hubs.csv, arcs_blacklist.csv, and arcs_whitelist.csv files.</dt><dd><ul>
+<li><dl class="simple">
+<dt><cite>hubs.csv</cite>: lists all the hubs (locations) to be used by the model. Columns include:</dt><dd><ul>
+<li><p>hub: The name of the hub.</p></li>
+<li><p>status: The “priority” of the hub. 1 means the hub will be more likely to connect to other hubs, -1 means it will be less likely, and 0 means it will be treated as a normal hub.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>arcs_blacklist.csv</cite>: lists all the hubs that should not be connected to each other. Columns include:</dt><dd><ul>
+<li><p>start_hub: The name of the starting hub of the blacklisted arc.</p></li>
+<li><p>end_hub: The name of the ending hub of the blacklisted arc.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>arcs_whitelist.csv</cite>: lists all the hubs that should be connected to each other. Columns include:</dt><dd><ul>
+<li><p>start_hub: The name of the starting hub of the whitelisted arc.</p></li>
+<li><p>end_hub: The name of the ending hub of the whitelisted arc.</p></li>
+<li><p>exist_pipeline: Binary value indicating whether a pipeline already exists between the two hubs.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>out</strong> (<em>str</em>) – <dl class="simple">
+<dt>The directory to output the hub and arc data to. If None, the hub_dir will be used. Output files include:</dt><dd><ul>
+<li><p><cite>hubs.geojson</cite>:: A GeoJSON file containing the location of each hub.</p></li>
+<li><dl class="simple">
+<dt><cite>arcs.csv</cite>: An input file for the model containing relevant arcs between hubs. Columns include:</dt><dd><ul>
+<li><p>start_hub: The name of the hub the arc starts at.</p></li>
+<li><p>end_hub: The name of the hub the arc ends at.</p></li>
+<li><p>kmLength_euclid: The Euclidean (straight line) distance between the two hubs.</p></li>
+<li><p>kmLength_road: The distance a truck would have to travel to get from one hub to the other.</p></li>
+<li><p>exist_pipeline: Binary value indicating whether a pipeline already exists between the two hubs.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>roads.csv</cite>: A file containing the road geometry between hubs. Used for creating figures. Columns include:</dt><dd><ul>
+<li><p>start_hub: The name of the hub the road starts at.</p></li>
+<li><p>end_hub: The name of the hub the road ends at.</p></li>
+<li><p>road_geometry: The geometry of the road between the two hubs. A string representing a shapely.geometry.LineString object.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><cite>fig.png</cite>: A figure showing the hubs and roads between them. Only saved if create_fig is True.</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>replace_model_inputs</strong> (<em>bool</em>) – Whether to replace the model’s input files with the newly created hub and arc data. Rather than creating a new “hubs.csv” file and manually combining it with the other columns in an existing “hubs.csv” file, this option will replace the existing “hubs.csv” file with the new one and preserve the other columns. This is useful if you want to adjust model hubs, but do not want to worry about the dozen or so other columns that would have to be merged. The “arcs.csv” has no extraneous columns, so it will be replaced by the new file.</p></li>
+<li><p><strong>model_inputs_dir</strong> (<em>str</em>) – The directory containing the model’s input files.</p></li>
+<li><p><strong>price_multipliers</strong> (<em>str</em>) – <dl class="simple">
+<dt>The path to the CSV file containing capital price multipliers, natural gas prices, and electricity prices for each county. The methods used for generating this file are found in <cite>data/price_multipliers/original_files</cite>, which uses data from <a class="reference external" href="https://github.com/joshdr83/The-Full-Cost-of-Electricity-LCOE-maps">here</a>. Columns include:</dt><dd><ul>
+<li><p>County: The name of the county.</p></li>
+<li><p>ng_usd_per_mmbtu: The price of natural gas in USD per MMBtu.</p></li>
+<li><p>e_usd_per_kwh: The price of electricity in USD per kWh.</p></li>
+<li><p>capital_pm: The capital price multiplier for the county</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>price_multipliers_column</strong> (<em>str</em>) – The name of the column in the price_multipliers CSV file to use for matching hubs. Default is “County”</p></li>
+<li><p><strong>create_fig</strong> (<em>bool</em>) – Whether to create a figure of the hub and arc data. Stored in out_dir as “fig.png”.</p></li>
+<li><p><strong>shapefile</strong> (<em>str</em>) – The path to the shapefile to use for adding a background to the image generated (if create_fig is True).
+Should end in <cite>.shp</cite> and be in a folder containing other relevant files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Preprocessing mainly uses data from the <code class="code docutils literal notranslate"><span class="pre">/data</span></code> directory. However, to remove confusion, all necessary data in
+<code class="code docutils literal notranslate"><span class="pre">/data</span></code> should eventually be included in the the input files directory and <code class="code docutils literal notranslate"><span class="pre">/data</span></code> should be removed.
+Writing this note is faster than implementing this change myself and hopefully a future developer will do so.</p>
+</div>
+<section id="geocoding-method">
+<h2>Geocoding method<a class="headerlink" href="#geocoding-method" title="Permalink to this heading"></a></h2>
+<p>The following function is used to geocode the locations found in the inputs to <a class="reference internal" href="#HOwDI.preprocessing.create_hubs_data.create_hubs_data" title="HOwDI.preprocessing.create_hubs_data.create_hubs_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">HOwDI.preprocessing.create_hubs_data.create_hubs_data()</span></code></a>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.preprocessing.geocode.geocode_hubs">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.preprocessing.geocode.</span></span><span class="sig-name descname"><span class="pre">geocode_hubs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hubs.csv'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.preprocessing.geocode.geocode_hubs" title="Permalink to this definition"></a></dt>
+<dd><p>Geocodes hubs using Nominatim. Searches for “{hub}, Texas” and returns the first result,
+where {hub} is the hub name specified in the “hub” column of the hubs.csv file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file</strong> (<em>str</em>) – Location of hubs.csv file. Defaults to “hubs.csv”</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>geohubs</strong> –</p>
+<dl class="simple">
+<dt>GeoDataFrame of hubs with the following columns:</dt><dd><dl class="simple">
+<dt>hub: str</dt><dd><p>The name of the hub as specified1</p>
+</dd>
+<dt>geometry: shapely.geometry.point.Point</dt><dd><p>The longitude (x) and latitude (y) found from geocoding the hub</p>
+</dd>
+<dt>address: str</dt><dd><p>The address of the hub as found from geocoding</p>
+</dd>
+<dt>County: str</dt><dd><p>The county of the hub as found from geocoding</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>The following function is used to determine the road and euclidean between hubs.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.preprocessing.create_arcs.get_route">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.preprocessing.create_arcs.</span></span><span class="sig-name descname"><span class="pre">get_route</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hubA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hubB</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.preprocessing.create_arcs.get_route" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the shortest driving route between two hubs using the Open Source Routing Machine (OSRM) API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hubA</strong> (<em>str</em>) – The starting hub for the route.</p></li>
+<li><p><strong>hubB</strong> (<em>str</em>) – The ending hub for the route.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the route geometry as a GeoJSON object and other route information.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>requests.exceptions.RequestException</strong> – If there was an error making the request to the OSRM API.</p></li>
+<li><p><strong>IndexError</strong> – If there are no routes returned by the OSRM API.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-HOwDI.preprocessing.create_arcs">
+<span id="determining-relevant-arcs"></span><h2>Determining relevant arcs<a class="headerlink" href="#module-HOwDI.preprocessing.create_arcs" title="Permalink to this heading"></a></h2>
+<p>Finds a list of relevant arcs from all possible connections between hubs.
+Finds the road and euclidian distance for said arcs.</p>
+<p>In the context of finding all possible connections between nodes on a graph,
+there are often many arcs (connections) that are not worth considering, especially
+if the model complexity increases significantly with the number of arcs.
+For example, a truck driving from Dallas to San Antonio will always drive through Austin -
+there is no need to consider a route that goes directly from Dallas to San Antonio without going through Austin <a class="footnote-reference brackets" href="#f1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+<p>If there are n nodes in a graph, there are <span class="math notranslate nohighlight">\(n(n-1)/2\)</span> possible arcs. If the (computational) work
+done on each arc is expensive, it is worth reducing the number of arcs considered.</p>
+<p>For the case of this file, the computational work done on each arc is
+an API call to determine road and euclidian distance between two hubs.
+In the scope of HOwDI, each additional arc adds several variables to the optimization
+model, which increases the runtime of the model.</p>
+<p>A heuristic method is used to reduce the number of arcs considered.
+A rigorous approach is not required since run times are on the order of minutes, not days or hours.
+Briefly, the heuristic method is as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">sort_by_distance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">all_possible_connections</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;ascending&quot;</span><span class="p">)</span>
+
+    <span class="n">shortest_distance</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">distance</span>
+    <span class="n">farthest_distance_allowed</span> <span class="o">=</span> <span class="n">shortest_distance</span> <span class="o">*</span> <span class="n">length_factor</span>
+    <span class="c1"># the length factor is determined by classifying the node as major, minor, or regular</span>
+
+    <span class="n">connections_to_keep</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">minimum_number_of_connections</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">uncertain_connections</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">minimum_number_of_connections</span><span class="p">:]</span>
+
+    <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">uncertain_connections</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">connection</span><span class="o">.</span><span class="n">distance</span> <span class="o">&lt;=</span> <span class="n">farthest_distance_allowed</span><span class="p">:</span>
+            <span class="n">connections_to_keep</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Further explanation of the algorithm is outside of the scope of this documentation
+and can be sought out within the code itself.</p>
+<p class="rubric">Footnotes</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="f1" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>I acknowledge that SH130 exists, but the difference this edge case would cause is marginal and unrealistic since trucks rarely utilize toll roads.</p>
+</aside>
+</aside>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.preprocessing.create_arcs.create_arcs">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.preprocessing.create_arcs.</span></span><span class="sig-name descname"><span class="pre">create_arcs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hubs_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geohubs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shpfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3082</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_arcs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blacklist_arcs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minor_length_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">major_length_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regular_length_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_hubs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.preprocessing.create_arcs.create_arcs" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a list of relevant arcs from all possible connections between hubs.
+With a large number of hubs, the number of possible connections is very large and must be scaled down.
+Hubs can be denoted as major (+1), minor (-1), or regular (0) hubs.
+A major hub hub will incur less cost to connect to a connect to more hubs.
+The opposite is true for minor hubs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hubs_dir</strong> (<em>str</em><em> or </em><em>pathlib.Path</em>) – The directory containing the hubs.csv, hubs.geojson, arcs_whitelist.csv, and arcs_blacklist.csv files.</p></li>
+<li><p><strong>geohubs</strong> (<em>geopandas.GeoDataFrame</em><em>, </em><em>optional</em>) – A GeoDataFrame containing the hubs and their geometries. If not provided, the hubs.geojson file in the hubs_dir will be used.</p></li>
+<li><p><strong>create_fig</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, a figure of the hubs and arcs will be created and saved to the hubs_dir.</p></li>
+<li><p><strong>shpfile</strong> (<em>str</em><em> or </em><em>pathlib.Path</em><em>, </em><em>optional</em>) – The underlying shapefile for the figure produced.</p></li>
+<li><p><strong>epsg</strong> (<em>int</em><em>, </em><em>optional</em>) – The EPSG code for the coordinate reference system of the hubs. Default is 3082 (NAD83 / California Albers).</p></li>
+<li><p><strong>existing_arcs</strong> (<em>pandas.DataFrame</em><em>, </em><em>optional</em>) – A DataFrame containing the existing arcs between hubs. If not provided, the arcs_whitelist.csv file in the hubs_dir will be used.</p></li>
+<li><p><strong>blacklist_arcs</strong> (<em>pandas.DataFrame</em><em>, </em><em>optional</em>) – A DataFrame containing the arcs that should not be considered. If not provided, the arcs_blacklist.csv file in the hubs_dir will be used.</p></li>
+<li><p><strong>minor_length_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – Effective reach multiplier.
+Default is 5.</p></li>
+<li><p><strong>major_length_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – Effective reach multiplier.
+Default is 0.8.</p></li>
+<li><p><strong>regular_length_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – Effective reach multiplier.
+Default is 0.9.</p></li>
+<li><p><strong>min_hubs</strong> (<em>int</em><em>, </em><em>optional</em>) – The minimum number of hubs that a hub must be connected to. Supersedes length factor constraints.
+Default is 3. 4 is also a good value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="header.html" class="btn btn-neutral float-left" title="Input and output files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="inputs.html" class="btn btn-neutral float-right" title="Input files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Braden Pecora.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+converter,fixed_usdPerTonPerDay,variable_usdPerTon,capital_usdPerTonPerDay,kWh_perTon,arc_start_class,arc_end_class,utilization
+liquefaction,0,0,2008333,7200,center_highPurity,dist_truckLiquefied,0.95
+compression,0,0,23618,850,center_highPurity,dist_truckCompressed,0.95
+terminalLiquid,290,0,82183,0,converter_liquefaction,dist_truckLiquefied,0.85
+terminalGas,260,0,506419,0,converter_compression,dist_truckCompressed,0.85
+fuelDispenserLiquid,1500,0,6800249,560,dist_truckLiquefied,demand_fuelStation,0.6
+fuelDispenserGas,1575,0,12937579,1970,dist_truckCompressed,demand_fuelStation,0.6
+fuelDispenserPipeline,1575,0,3794362,1970,dist_pipelineHighPurity,demand_fuelStation,0.6
+purification,0,0,52000,1800,center_lowPurity,center_highPurity,0.95

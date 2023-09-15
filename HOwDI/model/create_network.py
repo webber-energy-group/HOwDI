@@ -1,22 +1,24 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """
-hydrogen model module
-takes input csvs and creates the networkx graph object
-needed to run the Pyomo-based hydrogen model
+This module contains functions for creating a hydrogen network from input CSV files.
 """
 
 from itertools import permutations
 
 from networkx import DiGraph
 
+from HOwDI.model.HydrogenData import HydrogenData
+
 
 def cap_first(s):
-    """capitalizes the first letter of a string
+    """Capitalizes the first letter of a string
     without putting other letters in lowercase"""
     return s[0].upper() + s[1:]
 
 
 def free_flow_dict(class_of_flow=None):
-    """returns a dict with free flow values"""
+    """Returns a dict with free (unlimited) flow values"""
     free_flow = {
         "kmLength": 0.0,
         "capital_usdPerUnit": 0.0,
@@ -28,11 +30,24 @@ def free_flow_dict(class_of_flow=None):
     return free_flow
 
 
-def initialize_graph(H):
+def initialize_graph(H: HydrogenData) -> DiGraph:
     """
-    create a directional graph to represent the hydrogen distribution system
-    ---
-    returns g: a network.DiGraph object
+    Builds an initial hydrogen network from a `HydrogenData` object
+    More detail is added in other routines.
+
+    Parameters
+    ----------
+    H : HydrogenData
+        A `HydrogenData` object containing data for the network.
+
+    Returns
+    -------
+    networkx.DiGraph
+        A `networkx.DiGraph` object representing the hydrogen network.
+
+    Notes
+    -----
+
     """
     g = DiGraph()
 
@@ -97,6 +112,7 @@ def initialize_graph(H):
         # capital and fixed cost of the trucks--it represents the trucking fleet that
         # is based out of that hub. The truck fleet size ultimately limits the amount
         # of hydrogen that can flow from the hub node to the truck distribution hub.
+        # NOTE should probably be based on unit?? if that is already a column
         truck_distribution = H.distributors[H.distributors.index.str.contains("truck")]
 
         for truck_type, truck_info in truck_distribution.iterrows():
@@ -254,7 +270,8 @@ def initialize_graph(H):
 
 
 def add_consumers(g: DiGraph, H):
-    """Add consumers to the graph
+    """
+    Adds consumer nodes to the graph.
 
     For each hub, there are arcs from the nodes that represent demand type
     (e.g., fuelStation, lowPurity, highPurity) to the nodes that represent
@@ -262,10 +279,27 @@ def add_consumers(g: DiGraph, H):
     In practice, one could create multiple sectors that connect to the same
     demand type (e.g., long-haul HDV, regional MDV, and LDV all connecting
     to a fuel station)
+
+    Parameters
+    ----------
+    g : networkx.DiGraph
+        A `networkx.DiGraph` object representing the hydrogen network.
+    H : HydrogenData
+        A `HydrogenData` object containing data for the network.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    The function loops through the hubs and demand sectors in `H.hubs` and `H.demand`,
+    respectively, and adds nodes for each demand sector to the graph. It then connects
+    each demand sector node to the corresponding demand node using a free flow dictionary.
+
+    If the demand value for a given demand sector is 0, no demand sector node is added to
+    the corresponding hub.
     """
-    # loop through the hubs, add a node for each demand, and connect it to the appropriate demand hub
-    # loop through the hub names, add a network node for each type of demand, and add a network arc
-    # connecting that demand to the appropriate demand hub
     for hub_name, hub_data in H.hubs.iterrows():
         for demand_sector, demand_data in H.demand.iterrows():
             demand_value = hub_data["{}_tonnesperday".format(demand_sector)]
@@ -301,10 +335,31 @@ def add_consumers(g: DiGraph, H):
 
 def add_producers(g: DiGraph, H):
     """
-    add producers to the graph
-    each producer is a node that send hydrogen to a hub_lowPurity or hub_highPurity node
+    Routine that adds producer nodes to the graph.
+
+    Each producer is a node that sends hydrogen to a hub_lowPurity or hub_highPurity node.
+
+    Parameters
+    ----------
+    g : networkx.DiGraph
+        A `networkx.DiGraph` object representing the hydrogen network.
+    H : HydrogenData
+        A `HydrogenData` object containing data for the network.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    The function loops through the hubs and producers to add the necessary nodes and arcs.
+    For each producer, it creates a node representing the production facility and connects it to the corresponding hub node.
+    The `free_flow_dict` function is used to create a dictionary with free (unlimited) flow values.
+
+    The function also adds existing producer nodes to the graph, which are represented by nodes with the suffix "Existing".
+    These nodes are connected to the corresponding hub node using a free flow dictionary.
+
     """
-    # loop through the hubs and producers to add the necessary nodes and arcs
 
     for prod_tech_type, prod_df in {
         "electric": H.prod_elec,
@@ -441,8 +496,30 @@ def add_producers(g: DiGraph, H):
 
 def add_converters(g: DiGraph, H):
     """
-    add converters to the graph
-    each converter is a node and arc that splits an existing arc into two
+    Routine that adds converter nodes to the graph.
+
+    Each converter is a node and arc that splits an existing arc into two.
+
+    Parameters
+    ----------
+    g : networkx.DiGraph
+        A `networkx.DiGraph` object representing the hydrogen network.
+    H : HydrogenData
+        A `HydrogenData` object containing data for the network.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    The function adds a new node for the converter at the hub, and inserts the
+    converter node between the "arc_start_class" node and the "arc_end_class"
+    node. It also updates the flow values and adds the necessary edges to the
+    graph.
+
+    The `free_flow_dict` function is used to create a dictionary with free
+    (unlimited) flow values.
     """
     # loop through the nodes and converters to add the necessary nodes and arcs
     for converter, converter_data_series in H.converters.iterrows():
@@ -526,21 +603,36 @@ def add_converters(g: DiGraph, H):
 
 def add_price_nodes(g: DiGraph, H):
     """
-    add price nodes to the graph
-    each price is a node that has very little demand and series of breakeven
-    price points to help us estimate the price that customers are paying for
-    hydrogen at that node.
-    ---
-    #TODO maybe the below should be copied somewhere else:
+    Routine that adds price nodes to the graph.
 
-    H.price_range is a iterable array of prices. The model will use this array
+    Each price is a node that has very little demand and a series of breakeven
+    price points to help estimate the price that customers are paying for
+    hydrogen at that node.
+
+    Parameters
+    ----------
+    H : HydrogenData
+        A `HydrogenData` object containing data for the network.
+    g : networkx.DiGraph
+        A `networkx.DiGraph` object representing the hydrogen network.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    H.price_range is an iterable array of prices. The model will use this array
     of discrete prices as fake consumers. In the solution, the price of
     hydrogen at that node is between the most expensive "price consumer" who
     does not use hydrogen and the least expensive "price consumer" who does.
+
     H.price_hubs is a list of the hubs where we want to calculate prices for.
-    if it equals 'all' then all of the hubs will be priced H.price_demand is
-    the total amount of pricing demand at each hub. this can be set to a higher
-    value if you are trying to just test sensitivity to amount of demand
+    If it equals 'all', then all of the hubs will be priced.
+
+    H.price_demand is the total amount of pricing demand at each hub. This can
+    be set to a higher value if you are trying to just test sensitivity to
+    amount of demand.
     """
 
     if not H.find_prices:
@@ -597,11 +689,19 @@ def add_price_nodes(g: DiGraph, H):
                             g.add_edge(demand_node, ph_node, **price_edge_dict)
 
 
-def build_hydrogen_network(H) -> DiGraph:
-    """Builds appropriate hydrogen network
-    from H (a HydrogenData object)
+def build_hydrogen_network(H: HydrogenData) -> DiGraph:
+    """
+    Builds a hydrogen network from a `HydrogenData` object.
 
-    returns g: a networkx.DiGraph object
+    Parameters
+    ----------
+    H : HydrogenData
+        A `HydrogenData` object containing data for the network.
+
+    Returns
+    -------
+    networkx.DiGraph
+        A `networkx.DiGraph` object representing the hydrogen network.
     """
     g = initialize_graph(H)
     add_consumers(g, H)

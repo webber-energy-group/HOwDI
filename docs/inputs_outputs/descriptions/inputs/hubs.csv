@@ -1,0 +1,3 @@
+﻿Header,hub,build_<producer1>,…,build_<producerN>,<demandSector1>_tonnesperday,…,<demandSectorN>_tonnesperday,ng_usd_per_mmbtu,e_usd_per_kwh,capital_pm
+Description,Hub Name,Wether or not this hub can build <producer1>,…,Wether or not this hub can build <producerN>,Amount of demand in this hub in <demandSector1>,…,Amount of demand in this hub in <demandSectorN>,Local natural gas price,Local elecitricy price,Capital price multiplier
+Units,,"0,1 (1=Can build)",…,Binary,tons H2/day,…,tons H2/day,$/MMBTU,$/kWh,Float near 1.00

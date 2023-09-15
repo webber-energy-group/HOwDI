@@ -180,7 +180,27 @@ def monte_carlo_keys(uuid, engine=None):
     return dict_keys_to_list(d)
 
 
-def set_index(df, index_name):
+def set_index(df: pd.DataFrame, index_name: str) -> pd.DataFrame:
+    """
+    Set the index of a pandas DataFrame to a specified column.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame to modify.
+    index_name : str
+        The name of the column to use as the new index.
+
+    Returns
+    -------
+    pd.DataFrame
+        A new DataFrame with the specified column as the index.
+
+    Raises
+    ------
+    AssertionError
+        If the DataFrame's current index does not have a name.
+    """
     df = copy.deepcopy(df)
     if df is None:
         return None

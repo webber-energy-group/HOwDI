@@ -1,0 +1,3 @@
+Header:,type (actual index),variable_usdPerTonCO2,percent_CO2_captured,h2_tax_credit
+Description:,Label of CCS retrofit type,Cost to capture a ton of CO2,Percentage/100 of CO2 captured by the CCS type,Tax credit for hydrogen cleaned by retrofit CCS
+Units:,ccs1 or ccs2,$/ton CO2,0.00-1.00,$/ton H2

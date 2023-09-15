@@ -1,0 +1,3 @@
+Header,type,capEx_$_per_kW,kWh_perTon,variable_usdPerTon,utilization,purity,min_h2,max_h2,h2_tax_credit,grid_intensity_tonsCO2_per_h2
+Description,Name used to describe producer,Capital Expenses,Amount of electricity need to produce a ton of H2,Variable costs of production,Perctange of time utilized per time period/100,Purity of H2 produced,Minimum capacity size,Maximum capacity size,Tax credit for a new producer,Carbon grid intensity
+Units,,$/kW,kWh/ton H2,$/ton H2,(0.00-1.00) per (day),"""low"" or ""high""",tons H2/ day,tons H2/day,$ /ton H2 produced,tons CO2 produced / ton H2 produced

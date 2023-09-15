@@ -4,10 +4,13 @@ Author: Braden Pecora
 """
 
 from functools import reduce
+from typing import Any, Dict
 
 import pandas as pd
 from idaes.core.util import to_json
 from numpy import int64, isclose, where
+
+from HOwDI.model.HydrogenData import HydrogenData
 
 pd.options.mode.chained_assignment = None
 
@@ -61,7 +64,40 @@ def _tuple_split(df, index, name1, name2):
     return df
 
 
-def _create_hub_data(df, hub, start=-1):
+def _create_hub_data(
+    df: pd.DataFrame, hub: str, start: int = -1
+) -> Dict[str, Dict[str, Any]]:
+    """
+    Create a dictionary of data for a specific hub from a pandas DataFrame.
+
+    :param df: The pandas DataFrame to extract data from.
+    :type df: pd.DataFrame
+    :param hub: The name of the hub to extract data for.
+    :type hub: str
+    :param start: The index in the split string to start from (default is -1).
+    :type start: int
+    :return: A dictionary of data for the specified hub.
+    :rtype: Dict[str, Dict[str, Any]]
+
+    The returned dictionary has the following structure:
+
+    {
+        "data1": {
+            "column1": value1,
+            "column2": value2,
+            ...
+        },
+        "data2": {
+            "column1": value3,
+            "column2": value4,
+            ...
+        },
+        ...
+    }
+
+    where `data1`, `data2`, etc. are the index values of the rows in the pandas DataFrame that match the specified hub name,
+    and `column1`, `column2`, etc. are the column names of the pandas DataFrame.
+    """
     index_column = df.index.name
     df = df.reset_index()
     # find values in index column that match the hub name
@@ -81,6 +117,81 @@ def _create_hub_data(df, hub, start=-1):
 
 def _create_hub_distribution_data(df, hub):
     # this is largely an abstraction tool to make main less messy
+    """
+    Create a dictionary of distribution data for a specific hub from a pandas DataFrame.
+
+    :param df: The pandas DataFrame to extract data from.
+    :type df: pd.DataFrame
+    :param hub: The name of the hub to extract data for.
+    :type hub: str
+    :return: A dictionary of distribution data for the specified hub.
+    :rtype: Dict[str, Dict[str, Any]]
+
+    The returned dictionary has the following structure:
+
+    {
+        "local": {
+            "arc1_TO_arc2": {
+                "source_class": "class1",
+                "destination_class": "class2",
+                "dist_h": value1,
+                "source": "arc1",
+                "destination": "arc2",
+                "destination_class": "class2",
+            },
+            "arc3_TO_arc4": {
+                "source_class": "class3",
+                "destination_class": "class4",
+                "dist_h": value2,
+                "source": "arc3",
+                "destination": "arc4",
+                "destination_class": "class4",
+            },
+            ...
+        },
+        "outgoing": {
+            "arc5_TO_hub2": {
+                "source_class": "class5",
+                "destination_class": "hub2_class",
+                "dist_h": value3,
+                "source": "arc5",
+                "destination": "hub2",
+                "destination_class": "hub2_class",
+            },
+            "arc6_TO_hub2": {
+                "source_class": "class6",
+                "destination_class": "hub2_class",
+                "dist_h": value4,
+                "source": "arc6",
+                "destination": "hub2",
+                "destination_class": "hub2_class",
+            },
+            ...
+        },
+        "incoming": {
+            "arc7_TO_hub1": {
+                "source_class": "class7",
+                "destination_class": "hub1_class",
+                "dist_h": value5,
+                "source": "arc7",
+                "destination": "hub1",
+                "destination_class": "hub1_class",
+            },
+            "arc8_TO_hub1": {
+                "source_class": "class8",
+                "destination_class": "hub1_class",
+                "dist_h": value6,
+                "source": "arc8",
+                "destination": "hub1",
+                "destination_class": "hub1_class",
+            },
+            ...
+        },
+    }
+
+    where `arc1_TO_arc2`, `arc3_TO_arc4`, etc. are the index values of the rows in the pandas DataFrame that match the specified hub name,
+    and `source_class`, `destination_class`, `dist_h`, `source`, `destination`, and `destination_class` are the column names of the pandas DataFrame.
+    """
     df = df.reset_index()
 
     hub_string = hub + "_"  #
@@ -99,7 +210,8 @@ def _create_hub_distribution_data(df, hub):
     )
 
     def _out_in_add_info(df):
-        # I'm not sure how python's "pass by object reference" works in for loops so I opted for a function to avoid repeating code
+        # I'm not sure how python's "pass by object reference" works in for loops so I
+        # opted for a function to avoid repeating code/boiler-plating
         df["source"] = df["arc_start"].str.split("_").str[0]
         df["arc_start"] = df["arc_start"].str.replace(hub_string, "")
         df.index = df["arc_start"] + "_TO_" + df["arc_end"]
@@ -389,7 +501,37 @@ def create_outputs_dfs(m, H):
     return dfs
 
 
-def create_output_dict(H):
+def create_output_dict(H: HydrogenData) -> Dict[str, Dict[str, pd.DataFrame]]:
+    """
+    Create a dictionary of output DataFrames for each hub in the `HydrogenData` instance.
+
+    :param H: The `HydrogenData` instance to create output DataFrames from.
+    :type H: HydrogenData
+    :return: A dictionary of output DataFrames for each hub.
+    :rtype: Dict[str, Dict[str, pd.DataFrame]]
+
+    The returned dictionary has the following structure:
+
+    {
+        hub1: {
+            "production": production_df_for_hub1,
+            "consumption": consumption_df_for_hub1,
+            "conversion": conversion_df_for_hub1,
+            "distribution": distribution_df_for_hub1,
+        },
+        hub2: {
+            "production": production_df_for_hub2,
+            "consumption": consumption_df_for_hub2,
+            "conversion": conversion_df_for_hub2,
+            "distribution": distribution_df_for_hub2,
+        },
+        ...
+    }
+
+    where `hub1`, `hub2`, etc. are the names of the hubs in the `HydrogenData` instance, and
+    `production_df_for_hub1`, `consumption_df_for_hub1`, etc. are pandas DataFrames containing
+    the output data for each hub.
+    """
     hubs_list = H.get_hubs_list()
     dfs = H.output_dfs
     hub_dict = {hub: {} for hub in hubs_list}

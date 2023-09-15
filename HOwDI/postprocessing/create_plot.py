@@ -258,7 +258,7 @@ def create_plot(H):
     # us_county = gpd.read_file('US_COUNTY_SHPFILE/US_county_cont.shp')
     tx_county = us_county[us_county["STATE_NAME"] == "Texas"]
     tx = tx_county.dissolve()
-    tx.plot(ax=ax, color="white")
+    tx.plot(ax=ax, color="white", edgecolor="black", zorder=0)
 
     # Plot hubs
     hubs = distribution[distribution.type == "Point"]
@@ -391,7 +391,7 @@ def create_plot(H):
             )
             for tech, tech_plot in hub_plot_tech.items()
             if (tech_plot["name"] != "Only Consumption")
-            and (tech_plot["name"] != "Therm. and Elec. Production")
+            # and (tech_plot["name"] != "Therm. and Elec. Production")
         ]
     )
     legend_elements.extend(

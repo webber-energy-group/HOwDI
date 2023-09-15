@@ -1,10 +1,47 @@
 """
 Finds a list of relevant arcs from all possible connections between hubs.
-Find the road and euclidian distance for said arcs.
+Finds the road and euclidian distance for said arcs.
 
-ref:
-https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#trip-service
-https://2.python-requests.org/en/master/user/advanced/#session-objects
+In the context of finding all possible connections between nodes on a graph,
+there are often many arcs (connections) that are not worth considering, especially
+if the model complexity increases significantly with the number of arcs.
+For example, a truck driving from Dallas to San Antonio will always drive through Austin -
+there is no need to consider a route that goes directly from Dallas to San Antonio without going through Austin [#f1]_.
+
+If there are n nodes in a graph, there are :math:`n(n-1)/2` possible arcs. If the (computational) work
+done on each arc is expensive, it is worth reducing the number of arcs considered.
+
+For the case of this file, the computational work done on each arc is
+an API call to determine road and euclidian distance between two hubs.
+In the scope of HOwDI, each additional arc adds several variables to the optimization
+model, which increases the runtime of the model.
+
+A heuristic method is used to reduce the number of arcs considered.
+A rigorous approach is not required since run times are on the order of minutes, not days or hours.
+Briefly, the heuristic method is as follows:
+
+.. code-block:: python
+
+    for node in nodes:
+        c = sort_by_distance(node.all_possible_connections, how="ascending")
+        
+        shortest_distance = c[0].distance
+        farthest_distance_allowed = shortest_distance * length_factor
+        # the length factor is determined by classifying the node as major, minor, or regular
+        
+        connections_to_keep = c[0:minimum_number_of_connections - 1] 
+        uncertain_connections = c[minimum_number_of_connections:]
+        
+        for connection in uncertain_connections:
+            if connection.distance <= farthest_distance_allowed:
+                connections_to_keep.append(connection)
+                
+Further explanation of the algorithm is outside of the scope of this documentation
+and can be sought out within the code itself.
+
+.. rubric:: Footnotes
+
+.. [#f1] I acknowledge that SH130 exists, but the difference this edge case would cause is marginal and unrealistic since trucks rarely utilize toll roads.   
 """
 import warnings
 from shapely.errors import ShapelyDeprecationWarning
@@ -25,6 +62,7 @@ import pandas as pd
 import requests
 from shapely.geometry import LineString
 
+# https://2.python-requests.org/en/master/user/advanced/#session-objects
 s = requests.Session()  # improve performance over API calls
 
 # def sort_dict(d:dict) -> dict:
@@ -32,7 +70,32 @@ s = requests.Session()  # improve performance over API calls
 
 
 class Hub:
-    """Used in make_route function"""
+    """
+    A class representing a hub location on a map. For use in :func:`get_route`.
+
+    Parameters
+    -----------
+    coords : tuple of float
+        A tuple containing the latitude and longitude coordinates of the hub.
+
+    Attributes
+    -----------
+    x : float
+        The latitude coordinate of the hub.
+    y : float
+        The longitude coordinate of the hub.
+
+    Methods
+    --------
+    __str__():
+        Returns a string representation of the hub in the format "latitude,longitude".
+
+    Example:
+    --------
+    >>> hub = Hub((37.7749, -122.4194))
+    >>> print(hub)
+    37.7749,-122.4194
+    """
 
     def __init__(self, coords):
         self.x = coords[0]
@@ -43,6 +106,29 @@ class Hub:
 
 
 def get_route(hubA, hubB):
+    """
+    Returns the shortest driving route between two hubs using the Open Source Routing Machine (OSRM) API.
+
+    Parameters
+    -----------
+    hubA : str
+        The starting hub for the route.
+    hubB : str
+        The ending hub for the route.
+
+    Returns
+    --------
+    dict
+        A dictionary containing the route geometry as a GeoJSON object and other route information.
+
+    Raises
+    -------
+    requests.exceptions.RequestException
+        If there was an error making the request to the OSRM API.
+    IndexError
+        If there are no routes returned by the OSRM API.
+    """
+    # REF https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#trip-service
     url = "http://router.project-osrm.org/route/v1/driving/{};{}?geometries=geojson".format(
         hubA, hubB
     )
@@ -51,6 +137,27 @@ def get_route(hubA, hubB):
 
 
 def make_route(row):
+    """
+    Calculates the shortest driving route between two hubs and returns route information.
+
+    Parameters
+    -----------
+    row : pandas.Series
+        A pandas Series containing the coordinates of two hubs.
+
+    Returns
+    --------
+    pandas.Series
+        A pandas Series containing the duration, distance, and geometry of the shortest driving route.
+
+    Example
+    --------
+    >>> row = pd.Series({"coords": [(37.7749, -122.4194), (37.8716, -122.2727)]})
+    >>> make_route(row)
+    duration      1308.7
+    distance      19.019
+    """
+
     line = list(row.coords)
     hubA = Hub(line[0])
     hubB = Hub(line[1])
@@ -63,7 +170,56 @@ def make_route(row):
     return pd.Series([duration, km_distance, road_geometry])
 
 
-def create_arcs(geohubs, hubs_dir, create_fig=False, shpfile=None):
+def create_arcs(
+    hubs_dir,
+    geohubs=None,
+    create_fig=False,
+    shpfile=None,
+    epsg: int = 3082,
+    existing_arcs: pd.DataFrame = None,
+    blacklist_arcs: pd.DataFrame = None,
+    minor_length_factor: float = 5,
+    major_length_factor: float = 0.8,
+    regular_length_factor: float = 0.9,
+    min_hubs: int = 3,
+):
+    """
+    Creates a list of relevant arcs from all possible connections between hubs.
+    With a large number of hubs, the number of possible connections is very large and must be scaled down.
+    Hubs can be denoted as major (+1), minor (-1), or regular (0) hubs.
+    A major hub hub will incur less cost to connect to a connect to more hubs.
+    The opposite is true for minor hubs.
+
+    Parameters
+    -----------
+    hubs_dir : str or pathlib.Path
+        The directory containing the hubs.csv, hubs.geojson, arcs_whitelist.csv, and arcs_blacklist.csv files.
+    geohubs : geopandas.GeoDataFrame, optional
+        A GeoDataFrame containing the hubs and their geometries. If not provided, the hubs.geojson file in the hubs_dir will be used.
+    create_fig : bool, optional
+        If True, a figure of the hubs and arcs will be created and saved to the hubs_dir.
+    shpfile : str or pathlib.Path, optional
+        The underlying shapefile for the figure produced.
+    epsg : int, optional
+        The EPSG code for the coordinate reference system of the hubs. Default is 3082 (NAD83 / California Albers).
+    existing_arcs : pandas.DataFrame, optional
+        A DataFrame containing the existing arcs between hubs. If not provided, the arcs_whitelist.csv file in the hubs_dir will be used.
+    blacklist_arcs : pandas.DataFrame, optional
+        A DataFrame containing the arcs that should not be considered. If not provided, the arcs_blacklist.csv file in the hubs_dir will be used.
+    minor_length_factor : float, optional
+        Effective reach multiplier.
+        Default is 5.
+    major_length_factor : float, optional
+        Effective reach multiplier.
+        Default is 0.8.
+    regular_length_factor : float, optional
+        Effective reach multiplier.
+        Default is 0.9.
+    min_hubs : int, optional
+        The minimum number of hubs that a hub must be connected to. Supersedes length factor constraints.
+        Default is 3. 4 is also a good value.
+
+    """
     plt.style.use("dark_background")
     # read files and establish parameters
 
@@ -72,24 +228,20 @@ def create_arcs(geohubs, hubs_dir, create_fig=False, shpfile=None):
     hubs_df = hubs_df.sort_values(by=["status"], ascending=True)
     hubs = hubs_df.index.tolist()
 
-    epsg = 3082
-    geohubs = gpd.read_file(hubs_dir / "hubs.geojson")
+    if geohubs is None:
+        geohubs = gpd.read_file(hubs_dir / "hubs.geojson")
+        geohubs = geohubs.set_index("hub")
     lat_long_crs = geohubs.crs
-    geohubs = geohubs.set_index("hub")
     geohubs = geohubs.to_crs(epsg=epsg)
 
-    existing_arcs = pd.read_csv(hubs_dir / "arcs_whitelist.csv")
-    blacklist_arcs = pd.read_csv(hubs_dir / "arcs_blacklist.csv")
+    if existing_arcs is None:
+        existing_arcs = pd.read_csv(hubs_dir / "arcs_whitelist.csv")
+    if blacklist_arcs is None:
+        blacklist_arcs = pd.read_csv(hubs_dir / "arcs_blacklist.csv")
 
     # length factors (lf) are effective reach
     # length factor > 1, restricts max distance to min*lf
     # length factor < 1, loosens max distance to min*lf (in short)
-    minor_length_factor = 5
-    major_length_factor = 0.8
-    regular_length_factor = 0.9
-
-    # minimum number of connections for each hub
-    min_hubs = 3  # 4 is not bad either
 
     # Initialize Figure with Texas base
     if create_fig:
@@ -111,8 +263,8 @@ def create_arcs(geohubs, hubs_dir, create_fig=False, shpfile=None):
     index = pd.MultiIndex.from_tuples(hubs_combinations, names=["startHub", "endHub"])
     gdf = gpd.GeoDataFrame(index=index)
 
-    hubA = gdf.join(geohubs.rename_axis("startHub"))
-    hubB = gdf.join(geohubs.rename_axis("endHub"))
+    hubA = gpd.GeoDataFrame(gdf.join(geohubs.rename_axis("startHub")))
+    hubB = gpd.GeoDataFrame(gdf.join(geohubs.rename_axis("endHub")))
 
     # create line from hubAA to hubB (for plotting purposes)
     gdf["LINE"] = [
@@ -126,6 +278,7 @@ def create_arcs(geohubs, hubs_dir, create_fig=False, shpfile=None):
 
     class _Connections:
         def __init__(self, hub):
+            """Class to hold information about connections for a given hub"""
             self.hub = hub
 
             # get list of tuples that describe the connection for this hub
@@ -157,13 +310,14 @@ def create_arcs(geohubs, hubs_dir, create_fig=False, shpfile=None):
                 )
 
         def _make_length_dict(self):
+            """Makes a dictionary of euclidian distances to destinations"""
             # make dictionary that describes euclidian distance to destination
             distances = list(gdf.loc[self.connections]["mLength_euclid"])
             d = {self.dests[i]: distances[i] for i in range(len(distances))}
             # considered sorting for optimization purposes but didn't seem to do anything
             return d
 
-        def connection_with(self, hubB):
+        def connection_with(self, hubB: "_Connections"):
             """Returns the tuple used for indexing connection (since multiindexing requires order)"""
             tuple1 = (self.hub, hubB.hub)
             tuple2 = (hubB.hub, self.hub)
@@ -177,11 +331,12 @@ def create_arcs(geohubs, hubs_dir, create_fig=False, shpfile=None):
             else:
                 return None
 
-        def get_length(self, hubB):
-            # hubB is a _Connections object (can do typing but pylance gets mad)
+        def get_length(self, hubB: "_Connections"):
+            """Returns the length of the connection between self and hubB"""
             return self.lengths[hubB.hub]
 
-        def remove_connection(self, hubB):
+        def remove_connection(self, hubB: "_Connections"):
+            """Removes the connection between self and hubB"""
             # hubB should be of type _Connections
             # think of self as hubA
             a_str = self.hub
@@ -210,6 +365,7 @@ def create_arcs(geohubs, hubs_dir, create_fig=False, shpfile=None):
                 pass
 
         def has_remaining_valid_connections(self, current_length, length_factor):
+            """Returns boolean if has enough remaining valid connections based on length_factor and min_hubs"""
             # returns boolean if has enough remaining valid connections
             # (has a number of connections greater than min_hubs with length less than length_factor times current length)
             return (

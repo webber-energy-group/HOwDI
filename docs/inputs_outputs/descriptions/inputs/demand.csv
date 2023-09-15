@@ -1,0 +1,3 @@
+Header,sector,breakevenPrice,carbonSensitive,avoided_emissions_tonsCO2_per_H2,demandType
+Description,Chosen name given to demand sector,Maximum price consumers in this sector are willing to pay,Binary if H2 consumed must have equivalent clean H2 generation,Carbon emissions sector avoids by switching to H2,Type of demand
+Units,name,$/metric ton H2,0 or 1,ton CO2/ton H2,"(fuelStation, lowPurity, or HighPurity)"

@@ -1,0 +1,7 @@
+startHub,endHub,kmLength_euclid,kmLength_road,exist_pipeline
+austin,waco,152.40950173410138,163.5097,0
+dallas,houston,360.431235113376,384.3372,0
+freeport,houston,89.06892475844474,99.1198,1
+waco,houston,261.16592973831126,289.0303,0
+waco,dallas,139.75266300122152,152.1352,0
+austin,houston,235.69261123650796,261.8612,0

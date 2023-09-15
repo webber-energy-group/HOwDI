@@ -1,0 +1,6 @@
+hub,build_smr-noCCS,build_smr-low,build_smr-high,build_smr-high-ptc,build_electrolyzer,build_electrolyzer-RE,transportationFuel_tonnesperday,transportationFuel_carbonSensitive_tonnesperday,industrialFuel_tonnesperday,existing_tonnesperday,ng_usd_per_mmbtu,e_usd_per_kwh,capital_pm
+austin,0,1,1,1,1,0,0,354,0,0,4.182516115,0.043290426,0.921993104
+dallas,0,1,1,1,1,0,0,589,0,0,4.049164359,0.043632017,0.932665854
+houston,0,1,1,1,1,0,0,359,0,0,4.140460697,0.046236011,0.914349379
+freeport,0,1,1,1,1,1,0,0,0,538,4.155303773,0.046236011,0.914163499
+waco,0,1,1,1,1,1,0,21,0,0,4.021041851,0.043632017,0.926566559

@@ -4,13 +4,67 @@ import pyomo
 import pyomo.environ as pe
 from networkx import DiGraph
 
+from HOwDI.model.constraints.capacity_relationships import apply_capacity_relationships
+from HOwDI.model.constraints.checs import apply_CHECs
+from HOwDI.model.constraints.existing_infrastructure import (
+    apply_existing_infrastructure_constraints,
+)
+from HOwDI.model.constraints.mass_conservation import apply_mass_conservation
+from HOwDI.model.constraints.subsidies import apply_subsidy_constraints
 from HOwDI.model.HydrogenData import HydrogenData
 
 start = time.time()
 
 
 def create_node_sets(m: pe.ConcreteModel, g: DiGraph):
-    """Creates all pe.Sets associated with nodes used by the model"""
+    r"""Creates all pe.Sets associated with nodes used by the model
+
+    Parameters
+    ----------
+    m : pe.ConcreteModel
+    g : DiGraph
+
+
+    .. container::
+        :name: table:model_node_sets
+
+        .. table:: Model Node Sets
+
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | Index                      | Set                            |                       | Description                           |
+            +============================+================================+=======================+=======================================+
+            | :math:`n`                  | :math:`\in N`                  |                       | Set of all nodes                      |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`n_p`                | :math:`\in N_p`                | :math:`\subseteq N`   | Producer nodes                        |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`n_{p_\text{exist}}` | :math:`\in N_{p_\text{exist}}` | :math:`\subseteq N_p` | Existing producer nodes               |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`n_{p_\text{new}}`   | :math:`\in N_{p_\text{new}}`   | :math:`\subseteq N_p` | New build producer nodes              |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`n_{p_t}`            | :math:`\in N_{p_t}`            | :math:`\subseteq N_p` | Thermal producer nodes                |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`n_{p_e}`            | :math:`\in N_{p_e}`            | :math:`\subseteq N_p` | Electric producer nodes               |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`n_{cv}`             | :math:`\in N_{cv}`             | :math:`\subseteq N`   | Converter nodes                       |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`n_{u}`              | :math:`\in N_{u}`              | :math:`\subseteq N`   | Consumption/demand nodes              |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`n_{\text{truck}}`   | :math:`\in N_{\text{truck}}`   | :math:`\subseteq N`   | Truck distribution nodes              |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`\omega`             | :math:`\in \Omega`             |                       | Set of all hubs                       |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`\phi`               | :math:`\in \Phi`               |                       | Set of all producer types             |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`\delta`             | :math:`\in \Delta`             |                       | Set of all distribution methods       |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`\pi`                | :math:`\in \Pi`                |                       | Set of all conversion methods         |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`\xi`                | :math:`\in \Xi`                |                       | Set of all unique demand sectors      |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`\psi`               | :math:`\in \Psi`               |                       | Set of all retrofit CCS technologies  |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+
+    """
     # set of all nodes
     m.node_set = pe.Set(initialize=list(g.nodes()))
 
@@ -76,7 +130,38 @@ def create_node_sets(m: pe.ConcreteModel, g: DiGraph):
 
 
 def create_arc_sets(m: pe.ConcreteModel, g: DiGraph):
-    """Creates all pe.Sets associated with arcs used by the model"""
+    r"""Creates all pe.Sets associated with arcs used by the model
+
+    Parameters
+    ----------
+    m : pe.ConcreteModel
+    g : DiGraph
+
+
+    .. container::
+        :name: table:model_arc_sets
+
+        .. table:: Model Arc Sets
+
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | Index                      | Set                            |                       | Description                           |
+            +============================+================================+=======================+=======================================+
+            | :math:`e`                  | :math:`\in E`                  |                       | Set of all edges/arcs                 |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`e_\text{exist}`     | :math:`\in E_\text{exist}`     | :math:`\subseteq E`   | Existing edges (existing pipelines)   |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`e_d`                | :math:`\in E_d`                | :math:`\subseteq E`   | Between demand node and demand sector |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`e_c`                | :math:`\in E_c`                | :math:`\subseteq E`   | Between demand node and demand sector |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`e^n`                | :math:`\in E^n`                | :math:`\subseteq E`   | All edges connected to node :math:`n` |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`e_{in}^n`           | :math:`\in E_{in}^n`           | :math:`\subseteq E`   | All edges entering node :math:`n`     |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+            | :math:`e_{out}^n`          | :math:`\in E_{out}^n`          | :math:`\subseteq E`   | All edges exiting node :math:`n`      |
+            +----------------------------+--------------------------------+-----------------------+---------------------------------------+
+
+    """
     # set of all arcs
     m.arc_set = pe.Set(initialize=list(g.edges()), dimen=None)
 
@@ -117,8 +202,89 @@ def create_arc_sets(m: pe.ConcreteModel, g: DiGraph):
 
 
 def create_params(m: pe.ConcreteModel, H: HydrogenData, g: DiGraph):
-    """Loads parameters from network object (g) into pe.Param objects, which are
-    used as coefficients in the model objective"""
+    r"""Loads parameters from network object (g) into pe.Param objects, which are
+    used as coefficients in the model objective
+
+    .. container::
+        :name: table:model_parameters
+
+        .. table:: Model Parameters
+
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | Parameter                                      | Unit                                               | Description                                     |
+            +================================================+====================================================+=================================================+
+            | :math:`\kappa`                                 | %                                                  | Fixed cost percentage                           |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`A`                                      | %                                                  | Amortization factor                             |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`t`                                      | Days                                               | Time slices                                     |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`U'_{\text{CO}_2}`                       | :math:`\$`/ton\ :math:`\text{CO}_2`                | Carbon emissions tax                            |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`\tau_{\text{CO}_2}`                     | :math:`\$`/ton\ :math:`\text{CO}_2`                | Carbon capture tax credit                       |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`B`                                      | ton\ :math:`\text{CO}_2`/ton\ :math:`\text{H}_2`   | Baseline emissions rate                         |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`\varepsilon(\omega)`                    | $/kWh                                              | Electricity price at a hub                      |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`\gamma(\omega)`                         | $/MMBtu                                            | Gas price at a hub                              |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`\lambda(\omega)`                        | %                                                  | Capital price multiplier at a hub               |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`D_c(\delta)`                            | $/:math:`\delta`-unit                              | Capital cost of a distribution method           |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`D_v(\delta)`                            | $/ton\ :math:`\text{H}_2`                          | Variable cost of a distribution method          |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`y_{d}^{\text{max}}(\delta)`             | ton\ :math:`\text{H}_2`/day                        | Flow limit of a distribution method             |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`P_c(\phi)`                              | $/ton\ :math:`\text{H}_2`/day                      | Capital cost of a production method             |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`P_v(\phi)`                              | $/ton\ :math:`\text{H}_2`                          | Variable cost of a production method            |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`P_e(\phi)`                              | kWh/ton\ :math:`\text{H}_2`                        | Electric costs of a production method           |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`P_g(\phi)`                              | MMBtu/ton\ :math:`\text{H}_2`                      | Gas cost of a production method                 |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`\mu_p(\phi)`                            | %                                                  | Utilization of a production method              |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`G(\phi_{\text{electric}})`              | ton\ :math:`\text{CO}_2`/ton\ :math:`\text{H}_2`   | Carbon grid intensity of an electric producer   |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`\beta(\phi_{\text{new, thermal}})`      | %                                                  | CCS rate of a thermal producer                  |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`\tau_{\text{new}}(\phi)`                | $/ton\ :math:`\text{H}_2`                          | Tax credit of a producer                        |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`y_{p}^{\text{max}}(\phi)`               | ton\ :math:`\text{H}_2`                            | Upper limit of capacity for a producer          |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`y_{p}^{\text{min}}(\phi)`               | ton\ :math:`\text{H}_2`                            | Lower limit of capacity for a producer          |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`C_c(\pi)`                               | $/ton\ :math:`\text{H}_2`/day                      | Capital cost of a converter                     |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`C_v(\pi)`                               | $/ton\ :math:`\text{H}_2`                          | Variable cost of a converter                    |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`C_e(\pi)`                               | kWh/ton\ :math:`\text{H}_2`                        | Electricity costs of a converter                |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`\mu_c(\pi)`                             | %                                                  | Utilization of a conversion method              |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`U_{bp}(\xi)`                            | $/ton\ :math:`\text{H}_2`                          | Breakeven price of a demand sector              |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`Q_{\text{H}_2}(\omega, \xi)`            | ton\ :math:`\text{H}_2`                            | Amount of hydrogen demanded by a sector         |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`Q'_{\text{CO}_2}(\xi)`                  | ton\ :math:`\text{CO}_2`/ton\ :math:`\text{H}_2`   | Avoided carbon emissions of a sector            |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`S_{\text{CO}_2}(\xi)`                   | :math:`\{0,1\}`                                    | Binary for demand sector’s carbon sensitivity   |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`CCS_v(\psi)`                            | :math:`\$`/ton\ :math:`\text{CO}_2`                | Variable costs of retrofitted CCS               |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`\beta(\psi)`                            | %                                                  | CCS rate of a CCS retrofit technology           |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`\tau_{\text{H}_2}(\psi)`                | :math:`\$`/ton\ :math:`\text{H}_2`                 | Tax credit for hydrogen cleaned by retrofit CCS |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`\zeta_{CCS}(n_{p_{\text{exist}}})`      | :math:`\{0,1\}`                                    | Binary allowing CCS retrofitting                |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+            | :math:`B_{\text{exist}}(n_{p_{\text{exist}}})` | ton\ :math:`\text{CO}_2`/ton\ :math:`\text{H}_2`   | Carbon production rate of existing producers    |
+            +------------------------------------------------+----------------------------------------------------+-------------------------------------------------+
+
+    """
     # TODO Add units ?
 
     ## Distribution
@@ -227,8 +393,44 @@ def create_params(m: pe.ConcreteModel, H: HydrogenData, g: DiGraph):
 
 
 def create_variables(m):
-    """Creates variables associated with model"""
-    # TODO once we have definitions written out for all of these, add the definitions and units here
+    r"""Creates variables associated with model
+
+    .. container::
+        :name: table:model_variables
+
+        .. table:: Model Variables
+
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+            | Variable                                       | Units                          | Set                    | Description                                 |
+            +================================================+================================+========================+=============================================+
+            | :math:`\rho_d(e)`                              | Pipelines or trucks            | :math:`\mathbb{Z}_0^+` | Capacity of a distribution edge             |
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+            | :math:`h_d(e)`                                 | ton\ :math:`\text{H}_2`/day    | :math:`\mathbb{R}_0^+` | Hydrogen flow through edge per day          |
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+            | :math:`\rho_p(n_p)`                            | ton\ :math:`\text{H}_2`        | :math:`\mathbb{R}_0^+` | Capacity of a producer                      |
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+            | :math:`h_p(n_p)`                               | ton\ :math:`\text{H}_2`/day    | :math:`\mathbb{R}_0^+` | Amount of hydrogen produced in one day      |
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+            | :math:`\chi_p(n_p)`                            | CHECs/day                      | :math:`\mathbb{R}_0^+` | Amount of CHECs produced                    |
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+            | :math:`z_p(n_p)`                               |                                | :math:`\{0,1\}`        | Binary tracking if producer is built        |
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+            | :math:`\rho_{cv}(n_{cv})`                      | ton\ :math:`\text{H}_2`        | :math:`\mathbb{R}_0^+` | Capacity of a converter                     |
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+            | :math:`h_u(n_u)`                               | ton\ :math:`\text{H}_2`/day    | :math:`\mathbb{R}_0^+` | Amount of hydrogen consumed at a node       |
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+            | :math:`\chi_d(n_u)`                            | CHECs/day                      | :math:`\mathbb{R}_0^+` | Amount of CHECs demanded                    |
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+            | :math:`z_{CCS}(\psi, n_{p_\text{exist}})`      |                                | :math:`\{0,1\}`        | Binary tracking if retrofitted CCS is built |
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+            | :math:`\theta_{CCS}(\psi, n_{p_\text{exist}})` | ton\ :math:`\text{CO}_2`/day   | :math:`\mathbb{R}_0^+` | CO2 captured by retrofitted CCS             |
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+            | :math:`h_{CCS}(\psi, n_{p_\text{exist}})`      | ton\ :math:`\text{H}_2`/day    | :math:`\mathbb{R}_0^+` | Hydrogen "cleaned" by retrofitted CCS       |
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+            | :math:`\rho_{CCS}(\psi, n_{p_\text{exist}})`   | ton\ :math:`\text{CO}_2`       | :math:`\mathbb{R}_0^+` | Capacity of retrofitted CCS                 |
+            +------------------------------------------------+--------------------------------+------------------------+---------------------------------------------+
+
+    """
 
     ## Distribution
     # daily capacity of each arc
@@ -281,12 +483,596 @@ def create_variables(m):
     )
 
 
-def obj_rule(m: pe.ConcreteModel, H: HydrogenData):
-    """Defines the objective function.
+def obj_rule(
+    m: pe.ConcreteModel, H: HydrogenData
+) -> pyomo.core.expr.numeric_expr.SumExpression:
+    r"""Defines the objective function.
 
-    Some values are described as "regional prices", which means that a
-    regional cost multiplier was used in `create_graph.py` to get
-    the regional coefficient
+    Parameters
+    ----------
+    m : ConcreteModel
+        The Pyomo model object
+    H : HydrogenData
+        The HydrogenData object
+
+    Returns
+    -------
+    pyomo.core.expr.numeric_expr.SumExpression
+    
+    
+    Objective Definition
+    --------------------
+    The model objective is to maximize system profit, which includes system-value gained from
+    consumer's consumption of hydrogen, value associated with tax credits, and the avoided carbon taxes.
+    It also includes costs associated with production, distribution, and conversion.
+    
+    The model objective is defined as:
+    
+    .. math::
+    
+        \text{max} \left (
+        \hat{U}_{\text{H}_2}
+        + \hat{U}'_{\text{CO}_2}
+        + \hat{U}_{\text{CCS}}
+        + \hat{U}_{\text{tax credit}}
+        - \hat{P}_c
+        - \hat{P}_v
+        - \hat{P}_e
+        - \hat{P}_g
+        - \hat{P}_{\text{CO}_2 \text{ tax}}
+        \right .
+        \\
+        \left .
+        - \hat{CCS}_v
+        - \hat{D}_c
+        - \hat{D}_v
+        - \hat{C}_c
+        - \hat{C}_v
+        - \hat{C}_e
+        \right )
+        
+    .. code-block:: python
+    
+        def obj_rule(m, H):
+            ...
+            totalSurplus = (
+            U_hydrogen
+            + U_carbon_capture_credit_new
+            + U_carbon_capture_credit_retrofit
+            + U_h2_tax_credit
+            + U_h2_tax_credit_retrofit_ccs
+            + U_carbon
+            - P_variable
+            - P_electricity
+            - P_naturalGas
+            - P_capital
+            - P_carbon
+            - CCS_variable
+            - D_variable
+            - D_capital
+            - CV_variable
+            - CV_electricity
+            - CV_capital
+            # + CV_fuelStation_subsidy
+            )
+    
+        m.OBJ = pe.Objective(rule=obj_rule(m, H), sense=pe.maximize)
+
+    .. _utility-gained-through-consumption-of-hydrogen:
+        
+    Utility gained by consumption of hydrogen
+    +++++++++++++++++++++++++++++++++++++++++
+    The utility gained by the consumption of hydrogen :math:`\hat{U}_{\text{H}_2}` is the amount consumed 
+    :math:`h_u` times the (breakeven) price :math:`U_{bp}` that the consumer at the node's corresponding demand
+    sector :math:`\xi` is willing to pay, summed over all consumers :math:`n_u \in N_u`.
+    
+    .. math::
+    
+        \hat{U}_{\text{H}_2}
+        =
+        \sum_{n_u}^{N_u}
+        U_{bp}(\xi^{n})
+        \cdot
+        h_u(n)
+        
+    .. code-block:: python
+
+        U_hydrogen = sum(m.cons_h[c] * m.cons_price[c] for c in m.consumer_set)
+        
+    .. _utility-gained-through-avoided-carbon-taxes:    
+        
+    Utility gained by consumers by avoiding a carbon tax
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++
+    Although not directly a source of profit, consumers avoid paying some share of carbon taxes
+    when switching from carbon-intensive sources of energy to hydrogen.
+    This reduction is dependent on the avoided emissions, which is calculated by each demand sector
+    and external to the scope of this model.
+    
+    The utility gained by consumers by avoiding a carbon tax :math:`\hat{U}_{\text{tax credit}}` is the carbon
+    emissions tax :math:`U'_{\text{CO}_2}` in dollars per ton of CO2 emitted times the amount of CO2 avoided.
+    The amount of CO2 avoided is the avoided emissions :math:`Q'_{\text{CO}_2}` of a demand sector :math:`\xi`
+    times the amount of hydrogen consumed :math:`h_u` by a consumer :math:`n_u` in that demand sector.
+
+    .. math::
+    
+        \hat{U}'_{\text{CO}_2}
+        =
+        U'_{\text{CO}_2}
+        \left (
+        \sum_{n_u}^{N_u}
+        Q'_{\text{CO}_2}(\xi^{n})
+        \cdot
+        h_u(n)
+        \right )
+        
+    .. code-block:: python
+    
+        U_carbon = (
+            sum(m.cons_h[c] * m.avoided_emissions[c] for c in m.consumer_set)
+        ) * H.carbon_price
+        
+    .. _utility-gained-through-carbon-capture-tax-credits:    
+        
+    Utility gained through carbon capture tax credits
+    +++++++++++++++++++++++++++++++++++++++++++++++++
+    Producers can gain capital through tax credits for the capture of CO2.
+    The model treats carbon capture connected to new and existing thermal production separately.
+    Existing production is not currently equipped with CCS, and the model determines if retrofitting 
+    CCS to these generators would increase the model objective.
+
+    On the other hand, each new thermal producer :math:`\phi` is assumed to be built with CCS.
+    The emissions rate of an unabated consumer :math:`B` is used to calculate the relative amount of carbon captured.
+    This is specified in settings and is most likely the emissions rate of an unabated steam methane reformer.
+    
+    .. math::
+    
+        \hat{U}_{CCS}
+        = 
+        \tau_{\text{CO}_2}
+        \left [
+        \left (
+        \sum_{n_{p_\text{exist}}}^{N_{p_\text{exist}}}
+        \sum_\psi^\Psi
+        \theta_{CCS}(\psi, n)
+        \right )
+        +
+        B
+        \left (
+        \sum_{n_{p_\text{new}}}^{N_{p_\text{new}}}
+        \beta(\psi^n)
+        \cdot
+        h_p(n)
+        \right )
+        \right ]
+        
+    where :math:`\tau_{\text{CO}_2}` is the tax credit per ton of CO2 captured, :math:`\theta_{CCS}` is the
+    CO2 captured by retrofitted CCS (see :func:`HOwDI.model.constraints.existing_infrastructure.rule_ccs1CapacityRelationship`),
+    :math:`B` is the emissions rate of an unabated consumer, :math:`\beta` is the prescribed CCS rate of a new thermal producer 
+    :math:`\phi`, and :math:`h_p` is the amount of hydrogen consumed by a producer at node :math:`n_p`.
+    
+    .. code-block:: python
+     
+        U_carbon_capture_credit_retrofit = (
+            sum(
+                m.ccs1_co2_captured[p] + m.ccs2_co2_captured[p]
+                for p in m.existing_producers
+            )
+            * H.carbon_capture_credit
+        )
+    
+        U_carbon_capture_credit_new = (
+            sum(
+                m.prod_h[p] * H.baseSMR_CO2_per_H2_tons * m.ccs_capture_rate[p]
+                for p in m.new_thermal_producers
+            )
+            * H.carbon_capture_credit
+        )
+        
+    .. _utility-gained-through-clean-hydrogen-production-tax-credits:
+        
+    Utility gained through clean hydrogen production tax credits
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    Producers can also gain tax credits for the production of clean hydrogen. 
+    The tax credit :math:`\tau` a specific type of new producer :math:`\phi` or retrofitted CCS :math:`\psi` will get 
+    is pre-calculated external to the model and specified by the user.
+    When the model chooses to retrofit an existing producer with CCS, the amount of hydrogen that is clean and qualifies
+    for a tax credit is dependent on the carbon capture rate (i.e., if CCS captures 70% of the carbon produced,
+    70% of the hydrogen produced will yield the tax credit, :math:`h_\text{CCS} = 0.70 h_p`). 
+    
+    The utility gained by producers through clean hydrogen production tax credits :math:`\hat{U}_{\text{tax credit}}` is the
+    tax credit :math:`\tau` for the given producer type :math:`\phi` times the amount of hydrogen produced 
+    :math:`h_p` at the producer node :math:`n_p`. 
+    
+    For retrofitted CCS, the amount of hydrogen that qualifies for the tax credit :math:`\tau_{\text{H}_2}(\psi)`
+    is the amount of :ref:`hydrogen cleaned by CCS <rule_ccs1CapacityRelationship>`, :math:`h_\text{CCS}`.
+    To the model, this amount is unique for each potential CCS retrofit technology :math:`\psi`.
+    However, all or all but one of these technologies will have :ref:`a capacity of zero <only-one-ccs>`.
+    
+    .. math::
+    
+        \hat{U}_\text{tax credit} = 
+        \left (
+        \sum_{n_{p_\text{exist}}}^{N_{p_\text{exist}}}
+        \sum_\psi^\Psi
+        \tau_{\text{H}_2}(\psi) 
+        \cdot 
+        h_{CCS}(\psi, n)
+        \right )
+        +
+        \left (
+        \sum_{n_{p_\text{new}}}^{N_{p_\text{new}}}
+        \tau_\text{new}(\phi^n)
+        \cdot
+        h_p(n)
+        \right )
+        
+    .. code-block:: python
+
+        U_h2_tax_credit_retrofit_ccs = sum(
+            m.ccs1_capacity_h2[p] * H.ccs1_h2_tax_credit
+            + m.ccs2_capacity_h2[p] * H.ccs2_h2_tax_credit
+            for p in m.existing_producers
+        )
+
+        U_h2_tax_credit = sum(m.prod_h[p] * m.h2_tax_credit[p] for p in m.new_producers)
+        
+    Costs of production
+    +++++++++++++++++++
+    
+    .. _capital-costs-of-production:
+    
+    Capital costs of production
+    ***************************
+    The total capital cost of a production :math:`\hat{P}_c` is the capital cost of :math:`P_c` of a
+    production method :math:`\phi` times the capacity of that production method :math:`\rho_p` at a
+    production node :math:`n_p`.
+    That cost is multiplied by a regional capital cost adjustment factor :math:`\lambda` at the hub :math:`\omega`
+    corresponding to node :math:`n_p`.
+    The capital cost is summed over all production nodes, divided by the amortization factor :math:`A/t`, and multiplied
+    by :math:`1+\kappa` to account for fixed costs as :math:`\kappa` percent of capital costs.
+    
+    .. math::
+    
+        \hat{P}_c
+        =
+        \frac{1+\kappa}{A/t}
+        \left (
+        \sum_{n_{p}}^{N_{p}}
+        \lambda(\omega^n)
+        \cdot
+        P_c(\phi^n)
+        \cdot
+        \rho_p(n)
+        \right )
+        
+    .. code-block:: python
+    
+        # m.prod_cost_capital[p] is already multiplied by the regional cost adjustment factor
+        P_capital = (
+            sum(m.prod_capacity[p] * m.prod_cost_capital[p] for p in m.producer_set)
+            / H.A
+            / H.time_slices
+            * (1 + H.fixedcost_percent)
+        )
+        
+    .. _variable-costs-production:
+        
+    Variable costs of production
+    ****************************
+    Variable costs :math:`\hat{P}_v` are the sum of variable costs :math:`P_v` of a production method :math:`\phi` per ton of hydrogen
+    produced times the amount of hydrogen produced :math:`h_p` at a production node :math:`n_p`.
+    
+    .. math::
+    
+        \hat{P}_v =
+        \sum_{n_{p}}^{N_{p}}
+        P_v(\phi^n)
+        \cdot
+        h_p(n)
+        
+    .. code-block:: python
+    
+        P_variable = sum(m.prod_h[p] * m.prod_cost_variable[p] for p in m.producer_set)
+        
+    .. _electricity-costs-of-production:
+    
+    Electricity costs of production
+    *******************************
+    The total costs of electricity :math:`\hat{P}_e` is the product of local electricity price :math:`\varepsilon` at the hub :math:`\omega`
+    corresponding to the producer node :math:`n_p`, the amount of electricity (kWh/ton H2) consumed to produce a ton of
+    hydrogen :math:`P_e` corresponding to the producer type :math:`\phi`, and the amount of hydrogen produced :math:`h_p` at a production node :math:`n_p`.
+    
+    .. math::
+    
+        \hat{P}_e
+        =
+        \sum_{n_{p}}^{N_{p}}
+        \varepsilon(\omega^n)
+        \cdot
+        P_e(\phi^n)
+        \cdot
+        h_p(n)
+        
+    .. code-block:: python
+
+        P_electricity = sum(m.prod_h[p] * m.prod_e_price[p] for p in m.producer_set)
+        
+    .. note::
+        
+        Thermal plants and are not excluded here.
+        Conversion also uses electricity and thus has associated :ref:`electricity costs <electricity-costs-of-conversion>`.
+    
+    .. _natural-gas-costs:
+    
+    Natural gas costs of production (SMRs)
+    **************************************
+    The total costs of natural gas :math:`\hat{P}_g` is the product of local natural gas price :math:`\gamma` at the hub :math:`\omega`
+    corresponding to the thermal producer node :math:`n_p`, the amount of natural gas (MMBtu/ton H2) consumed to produce a ton of 
+    hydrogen :math:`P_g` corresponding to the thermal producer type :math:`\phi`, and the amount of hydrogen produced :math:`h_p` at a production node :math:`n_p`.
+    
+    .. math::
+
+        \hat{P}_g
+        =
+        \sum_{n_{p}}^{N_{p}}
+        \gamma(\omega^n)
+        \cdot
+        P_g(\phi^n)
+        \cdot
+        h_p(n)
+        
+    .. code-block:: python
+    
+        P_naturalGas = sum(m.prod_h[p] * m.prod_ng_price[p] for p in m.producer_set)
+        
+    .. _carbon-tax-costs:
+        
+    Carbon tax costs
+    ****************
+    Carbon tax costs are dependent on the carbon emissions tax :math:`U'_{\text{CO}_2}` and the carbon emissions of the producer.
+    
+    For new and existing thermal producers, the carbon emissions are one minus the CCS capture percentage :math:`\beta` times the
+    unabated emissions rate :math:`B` (tonCO2/tonH2) times the amount of hydrogen produced :math:`h_p` at new thermal production node :math:`n_p`
+    or the amount of hydrogen processed by retrofit CCS :math:`h_{CCS}` (all or none, see 
+    :func:`HOwDI.model.constraints.existing_infrastructure.rule_mustBuildAllCCS1`) at existing thermal production nodes.
+    
+    For electric producers, the carbon emissions are the amount of hydrogen produced :math:`h_p` at new electric production node :math:`n_p`
+    times the carbon intensity :math:`G` of the electricity used to produce the hydrogen (tonCO2/tonH2) for the electric producer
+    :math:`\psi` that corresponds to the node.
+    
+    .. math::
+    
+        \hat{P}_{\text{CO}_2 \text{ tax}}
+        = 
+        U'_{\text{CO}_2}
+        \left [
+        \left (
+        \sum_{n_{p_\text{exist}}}^{N_{p_\text{exist}}}
+        \sum_\psi^\Psi
+        (1-\beta(\psi))
+        \cdot
+        B_{\text{exist}}(n)
+        \cdot
+        h_{CCS}(\psi, n_{p})
+        \right )
+        \right.
+        \\
+        \left.
+        +
+        \left (
+        \sum_{n_{p_\text{new, thermal}}}^{N_{p_\text{new, thermal}}}
+        (1-\beta(\psi^n))
+        \cdot
+        B
+        \cdot
+        h_p(n)
+        \right )
+        +
+        \left (
+        \sum_{n_{p_\text{new, electric}}}^{N_{p_\text{new, electric}}}
+        G(\psi^n)
+        \cdot
+        h_p(n)
+        \right )
+        \right ]
+    
+    .. code-block:: python
+    
+        P_carbon = (
+            sum(m.prod_h[p] * m.co2_emissions_rate[p] for p in m.new_producers)
+            + sum(
+                m.ccs1_capacity_h2[p] * m.co2_emissions_rate[p]
+                for p in m.existing_producers
+            )
+            * (1 - H.ccs1_percent_co2_captured)
+            + sum(
+                m.ccs2_capacity_h2[p] * m.co2_emissions_rate[p]
+                for p in m.existing_producers
+            )
+            * (1 - H.ccs2_percent_co2_captured)
+        ) * H.carbon_price
+        
+    .. _variable-costs-of-retrofitted-ccs:
+    
+    Variable costs of retrofitted CCS
+    +++++++++++++++++++++++++++++++++
+    Retrofitting an existing thermal producer with CCS technologies incurs a variable cost.
+    The total variable cost :math:`\hat{CCS}_v` is dependent on the amount of CO2 captured :math:`\theta_{CCS}` at an existing
+    thermal producer node :math:`n_p` for a given CCS technology :math:`\psi`, and the variable cost of CCS :math:`CCS_V` for
+    that CCS technology.
+    
+    .. math::
+    
+        \hat{CCS}_v
+        =
+        \sum_{n_{p_\text{exist}}}^{N_{p_\text{exist}}}
+        \sum_\psi^\Psi
+        CCS_v(\psi^n)
+        \cdot
+        \theta_{CCS}(\psi, n_{p})
+    
+    .. code-block:: python
+    
+        CCS_variable = sum(
+            (m.ccs1_co2_captured[p] * H.ccs1_variable_usdPerTon)
+            + (m.ccs2_co2_captured[p] * H.ccs2_variable_usdPerTon)
+            for p in m.existing_producers
+        )
+        
+    Costs of distribution
+    +++++++++++++++++++++
+    
+    .. _capital-costs-of-distribution:
+    
+    Capital costs of distribution
+    *****************************
+    The capital cost of distribution depends on the distribution method :math:`\delta`.
+    Capital costs :math:`D_c` are in units of $/pipeline if :math:`\delta` is pipeline, and $/truck if :math:`\delta` is truck.
+    The capital cost of distribution is multiplied by the capacity of the distribution method (pipelines or trucks).
+    
+    NOTE
+    ----
+    Given that the model allows for unrestricted flow in a pipeline, the capacity of a pipeline will either be 0 or 1.
+    There is no need for a second pipeline that would add additional infinite flow.
+    
+    
+    The capital costs are multiplied by the average of the regional capital cost multipliers of the connected hubs,
+    notated as :math:`\overline{\lambda}(e)` where :math:`e` is the edge.
+    The total capital costs of distribution, summed over all edges, is divided by the amortization factor :math:`A` that is divided into time slices :math:`t`.
+    The whole term is multiplied by :math:`1+\kappa` to account for fixed costs.
+    
+    .. math::
+    
+        \hat{D}_c
+        =
+        \frac{1+\kappa}{A/t}
+        \left (
+        \sum_{e}^{E}
+        \overline{\lambda}(e)
+        \cdot
+        D_c(\delta^e)
+        \cdot
+        \rho_d(e)
+        \right )
+    
+    .. code-block:: python
+    
+        # m.dist_cost_capital contains the regional multiplier
+        # m.dist_cost_capital for pipelines is in $/pipeline, distance is already calculated in km
+        D_capital = sum(
+            (m.dist_capacity[d] * m.dist_cost_capital[d]) / H.A / H.time_slices
+            for d in m.distribution_arcs
+        ) * (1 + H.fixedcost_percent)
+        
+    .. _variable-costs-of-distribution: 
+        
+    Variable costs of distribution
+    ******************************
+    The variable cost of distribution along an edge :math:`e` is the variable cost of distribution :math:`D_v` ($/tonH2) of the
+    distribution method :math:`\delta` multiplied by the amount of hydrogen :math:`h_d` (tonH2/day) that is distributed along the edge.
+    
+    .. math::
+    
+        \hat{D}_v =
+        \sum_{e}^{E}
+        D_v(\delta^e)
+        \cdot
+        h_d(e)
+        
+    .. code-block:: python
+    
+        D_variable = sum(m.dist_h[d] * m.dist_cost_variable[d] for d in m.distribution_arcs)
+        
+    Costs of conversion
+    +++++++++++++++++++
+    
+    .. _capital-costs-of-conversion:
+    
+    Capital costs of conversion
+    ***************************
+    The capital cost of conversion :math:`\hat{C}_c` is dependent on the converter type :math:`\pi`, the capital cost of that convertor type
+    :math:`C_c`, and the capacity of that convertor :math:`\rho_{cv}` at that node :math:`n`, and the regional capital cost multiplier :math:`\lambda`
+    associated with the hub :math:`\omega` associated with the node.
+    
+    The whole term is divided by the amortization factor :math:`A` that is divided by time slices :math:`t`.
+    Fixed costs are accounted for by multiplying the whole term by :math:`1+\kappa`.
+    
+    .. math::
+    
+        \hat{C}_c
+        =
+        \frac{1+\kappa}{A/t}
+        \left (
+        \sum_{n_{cv}}^{N_{cv}}
+        \lambda(\omega^n)
+        \cdot
+        C_c(\pi^n)
+        \cdot
+        \rho_{cv}(n)
+        \right )
+        
+    .. code-block:: python
+    
+        CV_capital = sum(
+            (m.conv_capacity[cv] * m.conv_cost_capital[cv]) / H.A / H.time_slices
+            for cv in m.converter_set
+        ) * (1 + H.fixedcost_percent)
+        
+    .. _variable-costs-of-conversion:
+        
+    Variable costs of conversion
+    ****************************
+    The total variable cost of conversion :math:`\hat{C}_v` is the variable cost of conversion :math:`C_v` of the converter :math:`\pi`
+    times the utilization of the converter :math:\mu_{c}` times the built capacity of the converter :math:`\rho_{cv}` at the node :math:`n`.
+    
+    .. math::
+    
+        \hat{C}_v =
+        \sum_{n_{cv}}^{N_{cv}}
+        C_v(\pi^n)
+        \cdot
+        \mu(\pi^n)
+        \cdot
+        \rho_{cv}(n)
+        
+    .. code-block:: python
+    
+        CV_variable = sum(
+            m.conv_capacity[cv] * m.conv_utilization[cv] * m.conv_cost_variable[cv]
+            for cv in m.converter_set
+        )
+        
+    .. _electricity-costs-of-conversion:
+        
+    Electricity costs of conversion
+    *******************************
+    The price of electricity for conversion is the price of electricity :math:`\varepsilon` at the hub :math:`\omega` associated
+    with the node :math:`n` at which the converter is located times the electricity efficiency of the convertor :math:`C_e` (kwH/tonH2)
+    multiplied by the utilization :math:`\mu` and the capacity :math:`\rho_{cv}`.
+    
+    .. math::
+    
+        \hat{C}_e
+        = 
+        \sum_{n_{cv}}^{N_{cv}}
+        \varepsilon(\omega^n)
+        \cdot
+        C_e(\pi^n)
+        \cdot
+        \mu(\pi^n)
+        \cdot
+        \rho_{cv}(n)
+        
+    .. code-block:: python
+        
+        CV_electricity = sum(
+            (m.conv_capacity[cv] * m.conv_utilization[cv] * m.conv_e_price[cv])
+            for cv in m.converter_set
+        )
+        
+    TODO
+    ----
+    The electricity associated with the converter does not have a carbon tax or remove CHECs.
     """
     # TODO units?
 
@@ -416,6 +1202,7 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenData):
     # The daily variable cost of conversion is the sum of
     # (conversion capacity) * (conversion utilization) * (conversion variable costs)
     # for each convertor
+    # TODO maybe the two below equations could be combined for efficiency?
     CV_variable = sum(
         m.conv_capacity[cv] * m.conv_utilization[cv] * m.conv_cost_variable[cv]
         for cv in m.converter_set
@@ -471,494 +1258,13 @@ def obj_rule(m: pe.ConcreteModel, H: HydrogenData):
     return totalSurplus
 
 
-def apply_constraints(m: pe.ConcreteModel, H: HydrogenData, g: DiGraph):
-    """Applies constraints to the model"""
-
-    ## Distribution
-
-    def rule_flowBalance(m, node):
-        """Mass conservation for each node
-
-        Constraint:
-            sum of(
-                + flow into a node
-                - flow out a node
-                + flow produced by a node
-                - flow consumed by a node
-                ) == 0
-
-        Set:
-            All nodes
-        """
-        expr = 0
-        if g.in_edges(node):
-            expr += pe.summation(m.dist_h, index=g.in_edges(node))
-        if g.out_edges(node):
-            expr += -pe.summation(m.dist_h, index=g.out_edges(node))
-        # the equality depends on whether the node is a producer, consumer, or hub
-        if node in m.producer_set:  # if producer:
-            constraint = m.prod_h[node] + expr == 0.0
-        elif node in m.consumer_set:  # if consumer:
-            constraint = expr - m.cons_h[node] == 0.0
-        else:  # if hub:
-            constraint = expr == 0.0
-        return constraint
-
-    m.constr_flowBalance = pe.Constraint(m.node_set, rule=rule_flowBalance)
-
-    def rule_flowCapacityExisting(m, startNode, endNode):
-        """Force existing pipelines
-
-        Constraint:
-            Existing pipelines' capacity is greater than or equal to 1
-
-        Set:
-            Existing distribution arcs (existing pipelines)
-        """
-        constraint = (
-            m.dist_capacity[startNode, endNode]
-            >= g.edges[startNode, endNode]["existing"]
-        )
-        return constraint
-
-    m.constr_flowCapacityExisting = pe.Constraint(
-        m.distribution_arc_existing_set, rule=rule_flowCapacityExisting
-    )
-
-    def rule_flowCapacity(m, startNode, endNode):
-        """Capacity-distribution relationship
-
-        Constraint:
-            (amount of hydrogen through a distribution arc)
-            <=
-            (capacity of the arc (# of pipelines or trucks))
-            * (the allowable flow through one unit of capacity)
-
-        Set:
-            All distribution arcs
-        """
-        constraint = (
-            m.dist_h[startNode, endNode]
-            <= m.dist_capacity[startNode, endNode]
-            * m.dist_flowLimit[startNode, endNode]
-        )
-        return constraint
-
-    m.constr_flowCapacity = pe.Constraint(m.distribution_arcs, rule=rule_flowCapacity)
-
-    def rule_truckCapacityConsistency(m, truck_dist_node):
-        """Truck mass balance
-
-        Constraint:
-            The number of trucks entering a node must be >=
-            the number of trucks leaving a node
-
-        Set:
-            All nodes relevant to trucks (all distribution
-            nodes in distribution.csv that include truck)
-        """
-        # in_trucks = pe.summation(m.dist_capacity, index=g.in_edges(truck_dist_node))
-        # out_trucks = pe.summation(m.dist_capacity, index=g.out_edges(truck_dist_node))
-
-        in_trucks = sum(
-            m.dist_capacity[(in_node, truck_dist_node)]
-            for in_node, _ in g.in_edges(truck_dist_node)
-            if "converter" in in_node
-        )
-        out_trucks = sum(
-            m.dist_capacity[(truck_dist_node, out_node)]
-            for _, out_node in g.out_edges(truck_dist_node)
-            if "converter" in out_node or "dist" in out_node or "demand" in out_node
-        )
-
-        constraint = in_trucks - out_trucks == 0
-        return constraint
-
-    m.const_truckConsistency = pe.Constraint(
-        m.truck_set, rule=rule_truckCapacityConsistency
-    )
-
-    def rule_flowCapacityConverters(m, converterNode):
-        """Flow across a convertor is limited
-        by the capacity of the conversion node
-
-        Note: utilization =/= efficiency
-
-        Constraint:
-            flow out of a conversion node <=
-            (capacity of convertor) * (utilization of convertor)
-
-        Set:
-            All convertor nodes
-        """
-        flow_out = pe.summation(m.dist_h, index=g.out_edges(converterNode))
-        constraint = (
-            flow_out
-            <= m.conv_capacity[converterNode] * m.conv_utilization[converterNode]
-        )
-        return constraint
-
-    m.constr_flowCapacityConverters = pe.Constraint(
-        m.converter_set, rule=rule_flowCapacityConverters
-    )
-
-    ## Production
-
-    def rule_forceExistingProduction(m, node):
-        """Existing production must be built
-
-        Constraint:
-            Binary tracking if producer built or not == 1
-
-        Set:
-            Existing producers
-        """
-        constraint = m.prod_exists[node] == 1
-        return constraint
-
-    m.const_forceExistingProduction = pe.Constraint(
-        m.existing_producers, rule=rule_forceExistingProduction
-    )
-
-    def rule_productionCapacityExisting(m, node):
-        """Capacity of existing producers equals their existing capacity
-
-        Constraint:
-            Amount of capacity of producer in model == existing capacity
-
-        Set:
-            Existing producers
-
-        NOTE maybe this could be removed to allow retirement of existing production
-        """
-        constraint = m.prod_capacity[node] == g.nodes[node]["capacity_tonPerDay"]
-        return constraint
-
-    m.constr_productionCapacityExisting = pe.Constraint(
-        m.existing_producers, rule=rule_productionCapacityExisting
-    )
-
-    def rule_productionCapacity(m, node):
-        """Each producer's production capacity
-        cannot exceed its capacity
-
-        Constraint:
-            production of hydrogen <=
-            producer's capacity * producers utilization
-
-        Set:
-            All producers
-        """
-        constraint = m.prod_h[node] <= m.prod_capacity[node] * m.prod_utilization[node]
-        return constraint
-
-    m.constr_productionCapacity = pe.Constraint(
-        m.producer_set, rule=rule_productionCapacity
-    )
-
-    def rule_minProductionCapacity(m, node):
-        """Minimum bound of production for a producer
-        (only on new producers)
-
-        Constraint:
-            Produced hydrogen >=
-            allowed minimum value * binary tracking if producer is built
-
-            If prod_exists is zero, the minimum allowed hydrogen production is zero.
-            Paired with the maximum constraint, the forces capacity of producers
-            not built to be zero.
-
-        Set:
-            New producers
-        """
-        # multiply by "prod_exists" (a binary) so that constraint is only enforced if the producer exists
-        # this gives the model the option to not build the producer
-        constraint = (
-            m.prod_capacity[node] >= g.nodes[node]["min_h2"] * m.prod_exists[node]
-        )
-        return constraint
-
-    m.constr_minProductionCapacity = pe.Constraint(
-        m.new_producers, rule=rule_minProductionCapacity
-    )
-
-    def rule_maxProductionCapacity(m, node):
-        """Upper bound of production for a producer
-        (only on new producers)
-
-        Constraint:
-            Produced hydrogen <=
-            allowed maximum value * binary tracking if producer is built
-
-            If prod_exists is zero, the maximum allowed hydrogen production is zero
-            Paired with the minimum constraint, the forces capacity of producers
-            not built to be zero.
-
-        Set:
-            New producers
-        """
-        # multiply by "prod_exists" (a binary) so that constraint is only enforced
-        # if the producer exists with the prior constraint, forces 0 production
-        # if producer DNE
-        constraint = (
-            m.prod_capacity[node] <= g.nodes[node]["max_h2"] * m.prod_exists[node]
-        )
-        return constraint
-
-    m.constr_maxProductionCapacity = pe.Constraint(
-        m.new_producers, rule=rule_maxProductionCapacity
-    )
-
-    ## CCS (Retrofit)
-
-    def rule_onlyOneCCS(m, node):
-        """Existing producers can only build one of the ccs tech options
-
-        Constraint:
-            NAND(ccs1_built, ccs2_built)
-            - but this can't be solved numerically, thus
-
-            sum of (binary tracking if a ccs technology was built)
-            over all ccs techs <= 1
-
-        Set:
-            Existing producers
-
-        """
-        constraint = m.ccs1_built[node] + m.ccs2_built[node] <= 1
-        return constraint
-
-    m.constr_onlyOneCCS = pe.Constraint(m.existing_producers, rule=rule_onlyOneCCS)
-
-    def rule_ccs1CapacityRelationship(m, node):
-        """Define CCS1 CO2 Capacity
-
-        Constraint:
-            Amount of CO2 captured ==
-            the amount of hydrogen produced that went through CCS1
-            * the amount of CO2 produced per unit of hydrogen produced
-            * the efficiency of CCS1
-
-        Set:
-            Existing producers
-        """
-        constraint = (
-            m.ccs1_co2_captured[node] * m.can_ccs1[node]
-            == m.ccs1_capacity_h2[node]
-            * m.co2_emissions_rate[node]
-            * H.ccs1_percent_co2_captured
-        )
-        return constraint
-
-    m.constr_ccs1CapacityRelationship = pe.Constraint(
-        m.existing_producers, rule=rule_ccs1CapacityRelationship
-    )
-
-    def rule_ccs2CapacityRelationship(m, node):
-        """Define CCS2 CO2 Capacity
-
-        Constraint:
-            Amount of CO2 captured ==
-            the amount of hydrogen produced that went through CCS1
-            * the amount of CO2 produced per unit of hydrogen produced
-            * the efficiency of CCS1
-
-        Set:
-            Existing Producers
-        """
-        constraint = (
-            m.ccs2_co2_captured[node] * m.can_ccs2[node]
-            == m.ccs2_capacity_h2[node]
-            * m.co2_emissions_rate[node]
-            * H.ccs2_percent_co2_captured
-        )
-        return constraint
-
-    m.constr_ccs2CapacityRelationship = pe.Constraint(
-        m.existing_producers, rule=rule_ccs2CapacityRelationship
-    )
-
-    def rule_mustBuildAllCCS1(m, node):
-        """To build CCS1, it must be built over the entire possible capacity
-
-        Constraint:
-            If CCS1 is built:
-                Amount of hydrogen through CCS1 == Amount of hydrogen produced
-
-        Set:
-            Existing producers
-        """
-        constraint = m.ccs1_capacity_h2[node] == m.ccs1_built[node] * m.prod_h[node]
-        return constraint
-
-    m.constr_mustBuildAllCCS1 = pe.Constraint(
-        m.existing_producers, rule=rule_mustBuildAllCCS1
-    )
-
-    def rule_mustBuildAllCCS2(m, node):
-        """To build CCS2, it must be built over the entire possible capacity
-
-        Constraint:
-            If CCS2 is built:
-                Amount of hydrogen through CCS2 == Amount of hydrogen produced
-
-        Set:
-            Existing producers
-        """
-        constraint = m.ccs2_capacity_h2[node] == m.ccs2_built[node] * m.prod_h[node]
-        return constraint
-
-    m.constr_mustBuildAllCCS2 = pe.Constraint(
-        m.existing_producers, rule=rule_mustBuildAllCCS2
-    )
-
-    ## Consumption
-
-    def rule_consumerSize(m, node):
-        """Each consumer's consumption cannot exceed its size
-
-        Constraint:
-            consumed hydrogen <= consumption size
-
-        Set:
-            All consumers
-        """
-        constraint = m.cons_h[node] <= m.cons_size[node]
-        return constraint
-
-    m.constr_consumerSize = pe.Constraint(m.consumer_set, rule=rule_consumerSize)
-
-    ## CHECs
-
-    def rule_ccs1Checs(m, node):
-        """CHECs produced from CCS1 cannot exceed the clean hydrogen from CCS1
-
-        Constraint:
-            CHECs from CCS1 <= Clean Hydrogen as a result of CCS1
-
-        Set:
-            All producers, defacto existing producers
-        """
-        if H.fractional_chec:
-            constraint = (
-                m.ccs1_checs[node]
-                <= m.ccs1_capacity_h2[node] * H.ccs1_percent_co2_captured
-            )
-        else:
-            constraint = m.ccs1_checs[node] <= m.ccs1_capacity_h2[node]
-        return constraint
-
-    m.constr_ccs1Checs = pe.Constraint(m.existing_producers, rule=rule_ccs1Checs)
-
-    def rule_ccs2Checs(m, node):
-        """CHECs produced from CCS2 cannot exceed the clean hydrogen from CCS2
-
-        Constraint:
-            CHECs from CCS2 <= Clean Hydrogen as a result of CCS2
-
-        Set:
-            All producers, defacto existing producers
-        """
-        if H.fractional_chec:
-            constraint = (
-                m.ccs2_checs[node]
-                <= m.ccs2_capacity_h2[node] * H.ccs2_percent_co2_captured
-            )
-        else:
-            constraint = m.ccs2_checs[node] <= m.ccs2_capacity_h2[node]
-        return constraint
-
-    m.constr_ccs2Checs = pe.Constraint(m.existing_producers, rule=rule_ccs2Checs)
-
-    def rule_productionChec(m, node):
-        """The amount of CHECs produced by a producer =
-            hydrogen produced * checs / ton
-
-            NOTE I don't think this is necessary, it is just a definition
-
-        Constraint:
-            CHECs produced == hydrogen produced * checs/ton
-
-        Set:
-            New producers
-        """
-
-        constraint = m.prod_checs[node] == m.prod_h[node] * m.chec_per_ton[node]
-        return constraint
-
-    m.constr_productionChecs = pe.Constraint(m.new_producers, rule=rule_productionChec)
-
-    def rule_consumerChecs(m, node):
-        """Each carbon-sensitive consumer's consumption of CHECs
-            equals its consumption of hydrogen
-
-            NOTE I don't think this is necessary, it is just a definition
-
-        Constraint:
-            consumer CHECs ==
-                consumed hydrogen * binary tracking if consumer is carbon-sensitive
-
-        Set:
-            All consumers
-        """
-        constraint = m.cons_checs[node] == m.cons_h[node] * m.cons_carbonSensitive[node]
-        return constraint
-
-    m.constr_consumerChec = pe.Constraint(m.consumer_set, rule=rule_consumerChecs)
-
-    def rule_checsBalance(m):
-        """CHECs mass balance
-
-        Constraint:
-            total CHECs consumed <= checs produced
-
-        Set:
-            All producers and consumers
-        """
-        checs_produced = pe.summation(m.prod_checs)
-        checs_produced += pe.summation(m.ccs1_checs)
-        checs_produced += pe.summation(m.ccs2_checs)
-
-        checs_consumed = pe.summation(m.cons_checs)
-
-        constraint = checs_consumed <= checs_produced
-        return constraint
-
-    m.constr_checsBalance = pe.Constraint(rule=rule_checsBalance)
-
-    ###subsidy for infrastructure
-    # total subsidy dollars must be less than or equal to the available subsidy funds
-    # =============================================================================
-    # def rule_subsidyTotal(m, node):
-    #     constraint = sum(m.fuelStation_cost_capital_subsidy[fs] for fs in m.fuelStation_set) <= (H.subsidy_dollar_billion * 1E9)
-    #     return constraint
-    # m.constr_subsidyTotal = pe.Constraint(rule=rule_subsidyTotal)
-    # =============================================================================
-
-    # conversion facility subsidies
-    def rule_subsidyConverter(m, node):
-        """Subsidies for a convertor is equal to the cost share fraction
-
-        Constraint:
-            Subsidies from conversion ==
-                Cost of conversion * fraction of cost paid by subsidies
-
-        Set:
-            All fuel stations
-        """
-
-        conversion_cost = m.conv_capacity[node] * m.conv_cost_capital[node]
-
-        constraint = m.fuelStation_cost_capital_subsidy[node] == conversion_cost * (
-            1 - H.subsidy_cost_share_fraction
-        )
-        # note that existing production facilities have a cost_capital
-        #  of zero, so they cannot be subsidized
-        return constraint
-
-    m.constr_subsidyConverter = pe.Constraint(
-        m.fuelStation_set, rule=rule_subsidyConverter
-    )
+def apply_constraints(m, H: HydrogenData, g: DiGraph):
+    """Apply constraints to the model"""
+    apply_mass_conservation(m, g)
+    apply_existing_infrastructure_constraints(m, g, H)
+    apply_capacity_relationships(m, g)
+    apply_CHECs(m, H)
+    apply_subsidy_constraints(m, H)
 
 
 def build_h2_model(H: HydrogenData, g: DiGraph):

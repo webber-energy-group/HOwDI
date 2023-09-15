@@ -1,0 +1,3 @@
+startHub,endHub,kmLength_euclid,kmLength_road,exist_pipeline
+"Name of the first hub, as defined in hubs.csv",Name of the end hub,Distance between hubs in straightline distance,Distance that a road vehicle would travel between hubs,Is there an existing pipeline between these hubs?
+Names should be in camelCase,,Km,Km,Binary (1 or 0)

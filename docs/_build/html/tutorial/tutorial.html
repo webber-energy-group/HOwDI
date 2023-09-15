@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Running HOwDI Example/Tutorial &mdash; HOwDI 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Utility functions and other things." href="../utility/utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            HOwDI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../model/header.html">Model Conception</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs_outputs/header.html">Input and output files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utility/header.html">Utility</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Running HOwDI Example/Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#step-1-preprocessing">Step 1: Preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-2-generating-inputs">Step 2: Generating Inputs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#arcs-csv">arcs.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ccs-csv">ccs.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conversion-csv">conversion.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#demand-csv">demand.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#distribution-csv">distribution.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hubs-csv">hubs.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#production-electric-csv">production_electric.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#production-existing-csv">production_existing.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#production-thermal-csv">production_thermal.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#settings-yml">settings.yml</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#step-3-running-the-model">Step 3: Running the Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-4-outputs-and-viewing-results">Step 4: Outputs and Viewing Results</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#outputs-production-csv">outputs/production.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#outputs-distribution-csv">outputs/distribution.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#outputs-consumption-csv">outputs/consumption.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#outputs-conversion-csv">outputs/conversion.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#outputs-fig-png">outputs/fig.png</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#outputs-outputs-json">outputs/outputs.json</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#step-5-further-result-analysis">Step 5: Further result analysis</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">HOwDI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Running HOwDI Example/Tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/tutorial.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="running-howdi-example-tutorial">
+<span id="tutorial"></span><h1>Running HOwDI Example/Tutorial<a class="headerlink" href="#running-howdi-example-tutorial" title="Permalink to this heading"></a></h1>
+<p>This page walks through a simple example of using HOwDI to determine the optimal infrastructure in a reduced version of Texas.</p>
+<p>In this scenario, Dallas, Waco, Austin, Houston, and Freeport are the cities of interest.
+Freeport has an existing Steam Methane Reformer (SMR) and a pipeline to Houston.
+We would like to determine the optimal way to build hydrogen infrastructure given a potential demand.</p>
+<section id="step-1-preprocessing">
+<h2>Step 1: Preprocessing<a class="headerlink" href="#step-1-preprocessing" title="Permalink to this heading"></a></h2>
+<p>As a first step, the initial data must be preprocessed to generate necessary input files.
+The preprocessing steps involve finding the geographic location of cities and determining the distance between them.
+These steps can be skipped if the necessary input files are already available.</p>
+<ol class="arabic">
+<li><p>Create a <code class="code docutils literal notranslate"><span class="pre">hubs.csv</span></code> file with the following columns:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">hub</span></code>: The name of the hub. This will be used to geocode the hub, so it should correspond to an actual city.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">status</span></code>: The “reach” of the hub. 1 corresponds to a major hub, -1 corresponds to a minor hub, and 0 corresponds to a regular hub. A major hub will be more likely to connect to other hubs than a regular hub will (an regular &gt; minor).</p></li>
+</ul>
+<p>For this example, the <code class="code docutils literal notranslate"><span class="pre">hubs.csv</span></code> file should look like:</p>
+<table class="docutils align-default" id="id12">
+<caption><span class="caption-text">hubs.csv</span><a class="headerlink" href="#id12" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>hub</p></th>
+<th class="head"><p>status</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>austin</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>houston</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>freeport</p></td>
+<td><p>-1</p></td>
+</tr>
+<tr class="row-even"><td><p>waco</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p>Create <code class="code docutils literal notranslate"><span class="pre">arcs_whitelist.csv</span></code> and <code class="code docutils literal notranslate"><span class="pre">arcs_blacklist.csv</span></code> in the same directory.
+Both have columns <code class="code docutils literal notranslate"><span class="pre">startHub</span></code> and <code class="code docutils literal notranslate"><span class="pre">endHub</span></code> corresponding to the hubs that should or should not be forced to connect.
+<code class="code docutils literal notranslate"><span class="pre">arcs_whitelist.csv</span></code> also contains a third column, <code class="code docutils literal notranslate"><span class="pre">exist_pipeline</span></code>, which is <code class="code docutils literal notranslate"><span class="pre">True</span></code> if there is an existing hydrogen pipeline that connects the hubs.</p>
+<p>For this example, the preprocessing code should connect Houston and Freeport, but we would like to specify that a pipeline exists.
+The preprocessing code may also connect Dallas and Austin, which is unnecessary since any route from Dallas to Austin must go through Waco.</p>
+<blockquote>
+<div><table class="docutils align-default" id="id13">
+<caption><span class="caption-text">arcs_whitelist.csv</span><a class="headerlink" href="#id13" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>startHub</p></th>
+<th class="head"><p>endHub</p></th>
+<th class="head"><p>exist_pipeline</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>houston</p></td>
+<td><p>freeport</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id14">
+<caption><span class="caption-text">arcs_blacklist.csv</span><a class="headerlink" href="#id14" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>startHub</p></th>
+<th class="head"><p>endHub</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>austin</p></td>
+<td><p>dallas</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p>The preprocessing code can be run from the directory containing the three generated files. We’ll add other parameters to create a figure.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>HOwDI<span class="w"> </span>create_hub_data<span class="w"> </span>-f<span class="w"> </span>-shp<span class="w"> </span>US_COUNTY_SHPFILE/US_county_cont.shp
+</pre></div>
+</div>
+</li>
+</ol>
+<p>The following file is generated:</p>
+<table class="docutils align-default" id="id15">
+<caption><span class="caption-text">arcs.csv</span><a class="headerlink" href="#id15" title="Permalink to this table"></a></caption>
+<tbody>
+<tr class="row-odd"><td><p>startHub</p></td>
+<td><p>endHub</p></td>
+<td><p>kmLength_euclid</p></td>
+<td><p>kmLength_road</p></td>
+<td><p>exist_pipeline</p></td>
+</tr>
+<tr class="row-even"><td><p>austin</p></td>
+<td><p>waco</p></td>
+<td><p>152.40950173410138</p></td>
+<td><p>163.5097</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas</p></td>
+<td><p>houston</p></td>
+<td><p>360.431235113376</p></td>
+<td><p>384.3372</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>freeport</p></td>
+<td><p>houston</p></td>
+<td><p>89.06892475844474</p></td>
+<td><p>99.1198</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>waco</p></td>
+<td><p>houston</p></td>
+<td><p>261.16592973831126</p></td>
+<td><p>289.0303</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>waco</p></td>
+<td><p>dallas</p></td>
+<td><p>139.75266300122152</p></td>
+<td><p>152.1352</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>austin</p></td>
+<td><p>houston</p></td>
+<td><p>235.69261123650796</p></td>
+<td><p>261.8612</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+<p>Additionally, for generating output figures, <code class="code docutils literal notranslate"><span class="pre">fig.png</span></code>, <code class="code docutils literal notranslate"><span class="pre">hubs.geojson</span></code>, and <code class="code docutils literal notranslate"><span class="pre">roads.csv</span></code> are generated.
+These files are not necessary to run the HOwDI model, but are useful for visualizing the results.</p>
+<figure class="align-center" id="id16">
+<img alt="../_images/fig.png" src="../_images/fig.png" />
+<figcaption>
+<p><span class="caption-text">fig.png</span><a class="headerlink" href="#id16" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">hubs.geojson</span><a class="headerlink" href="#id17" title="Permalink to this code"></a></div>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;crs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:ogc:def:crs:OGC:1.3:CRS84&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;hub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;austin&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Austin, Travis County, Texas, United States&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;County&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Travis County&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Point&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="mf">-97.7436995</span><span class="p">,</span><span class="w"> </span><span class="mf">30.2711286</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;hub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dallas&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dallas, Dallas County, Texas, United States&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;County&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dallas County&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Point&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="mf">-96.7968559</span><span class="p">,</span><span class="w"> </span><span class="mf">32.7762719</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;hub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;houston&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Houston, Harris County, Texas, United States&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;County&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Harris County&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Point&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="mf">-95.3676974</span><span class="p">,</span><span class="w"> </span><span class="mf">29.7589382</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;hub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;freeport&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Freeport, Brazoria County, Texas, 77541, United States&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;County&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Brazoria County&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Point&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="mf">-95.3596617</span><span class="p">,</span><span class="w"> </span><span class="mf">28.9541368</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;hub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;waco&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Waco, McLennan County, Texas, United States&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;County&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;McLennan County&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Point&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;coordinates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="mf">-97.1474628</span><span class="p">,</span><span class="w"> </span><span class="mf">31.5491899</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<table class="docutils align-default" id="id18">
+<caption><span class="caption-text">roads.csv</span><a class="headerlink" href="#id18" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>startHub</p></th>
+<th class="head"><p>endHub</p></th>
+<th class="head"><p>road_geometry</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>austin</p></td>
+<td><p>waco</p></td>
+<td><p>LINESTRING (-97.743783 30.270907999999977, -97.733854 30.26658799999998, -97.673723 30.382728000000004, -97.666147 30.454658999999996, -97.691924 30.534654999999994, -97.691649 30.63126500000001, -97.659261 30.68278300000001, -97.614865 30.80689600000002, -97.577517 30.88178800000001, -97.545482 30.920103999999988, -97.535617 30.955724000000004, -97.498828 30.991477999999987, -97.466502 31.046531000000005, -97.407167 31.084183999999986, -97.363712 31.098055000000024, -97.351779 31.121295000000003, -97.333901 31.129025000000002, -97.30054900000002 31.212805000000003, -97.223822 31.335548000000028, -97.205481 31.402076000000015, -97.131062 31.530791000000022, -97.147339 31.54909000000001)</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas</p></td>
+<td><p>houston</p></td>
+<td><p>LINESTRING (-96.796749 32.775945, -96.665371 32.562380000000005, -96.646323 32.37626400000001, -96.474319 32.20015300000002, -96.424542 31.932164999999998, -96.181614 31.729890999999995, -96.147664 31.57790300000001, -96.020984 31.377658999999994, -95.94341 31.04177800000001, -95.511999 30.662122999999987, -95.36786300000001 29.758731)</p></td>
+</tr>
+<tr class="row-even"><td><p>freeport</p></td>
+<td><p>houston</p></td>
+<td><p>LINESTRING (-95.359698 28.954035999999974, -95.373713 28.957954000000033, -95.386073 29.000937, -95.430422 29.014515, -95.45567 29.052825000000006, -95.453143 29.252676, -95.424952 29.304636999999985, -95.426328 29.446377000000012, -95.388144 29.504065999999995, -95.387306 29.656840999999996, -95.37814 29.71828000000003, -95.363735 29.743345999999995, -95.372097 29.76359800000001, -95.36786300000001 29.758731)</p></td>
+</tr>
+<tr class="row-odd"><td><p>waco</p></td>
+<td><p>houston</p></td>
+<td><p>LINESTRING (-97.147339 31.54909000000001, -97.10652 31.566756999999985, -96.932639 31.49521300000001, -96.873784 31.275735999999984, -96.7404 31.163317000000006, -96.712267 31.120467000000005, -96.703133 31.010866999999998, -96.579828 30.86095500000002, -96.48073600000001 30.763594999999984, -96.35283200000002 30.691217999999992, -96.279096 30.57630000000002, -96.074742 30.401654999999977, -96.067871 30.376226999999986, -95.965673 30.35555199999999, -95.927947 30.309015999999993, -95.824685 30.293994999999995, -95.779799 30.250813000000004, -95.743302 30.246873999999988, -95.679212 30.18003399999998, -95.561211 29.970518000000006, -95.410127 29.87344199999999, -95.36786300000001 29.758731)</p></td>
+</tr>
+<tr class="row-even"><td><p>waco</p></td>
+<td><p>dallas</p></td>
+<td><p>LINESTRING (-97.147339 31.54909000000001, -97.10913 31.584787000000013, -97.095472 31.629062000000012, -97.102669 31.791805, -97.081265 31.877232999999997, -97.11901 31.96884499999999, -97.095697 32.00415200000002, -97.091649 32.056627000000006, -96.93771200000002 32.14477599999999, -96.910499 32.17432099999999, -96.876698 32.242174000000006, -96.85443 32.34845899999999, -96.872207 32.412110999999996, -96.822087 32.50098499999998, -96.829718 32.71218099999999, -96.796749 32.775945)</p></td>
+</tr>
+<tr class="row-odd"><td><p>austin</p></td>
+<td><p>houston</p></td>
+<td><p>LINESTRING (-97.743783 30.270907999999977, -97.692187 30.25033799999999, -97.682127 30.224430000000012, -97.614763 30.186304000000014, -97.545024 30.18438999999999, -97.41301900000002 30.11131899999999, -97.294382 30.104860000000002, -97.253224 30.08937099999998, -97.175756 30.04346099999999, -97.068669 29.943622000000016, -96.986819 29.936258000000002, -96.913184 29.906002, -96.868753 29.923280000000013, -96.817603 29.90005900000002, -96.778176 29.89874800000001, -96.586015 29.736518999999998, -96.57123 29.692510999999996, -96.54146 29.691986999999994, -96.493809 29.712039000000004, -96.285437 29.75045600000001, -96.16799 29.759950000000007, -96.12336 29.77546999999998, -96.043157 29.769696999999997, -95.989873 29.781573999999996, -95.46257 29.783930000000012, -95.374306 29.778604999999978, -95.36786300000001 29.758731)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="step-2-generating-inputs">
+<h2>Step 2: Generating Inputs<a class="headerlink" href="#step-2-generating-inputs" title="Permalink to this heading"></a></h2>
+<p>Inputs for the HOwDI model can be placed anywhere.
+Create a directory corresponding to the scenario, and create an inputs directory within that.
+The output directory will be created automatically within this scenario directory.</p>
+<p>For more detail on the inputs, see <a class="reference internal" href="../inputs_outputs/inputs.html#inputs"><span class="std std-ref">inputs</span></a>.</p>
+<p>The following input files are required for the HOwDI model:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#arcs-csv"><span class="std std-ref">arcs.csv</span></a>: distances between hubs (generated in the previous step, no additional data required)</p></li>
+<li><p><a class="reference internal" href="#ccs-csv"><span class="std std-ref">ccs.csv</span></a>: parameters and costs for retrofitting existing SMRs with CCS</p></li>
+<li><p><a class="reference internal" href="#conversion-csv"><span class="std std-ref">conversion.csv</span></a>: parameters and costs for conversion technologies (liquefaction, compression, terminals, fuel dispensers, purification)</p></li>
+<li><p><a class="reference internal" href="#demand-csv"><span class="std std-ref">demand.csv</span></a>: demand sector descriptions</p></li>
+<li><p><a class="reference internal" href="#hubs-csv"><span class="std std-ref">hubs.csv</span></a>: name of each each hub, ability to build infrastructure, and demand per demand sector</p></li>
+<li><p><a class="reference internal" href="#production-electric-csv"><span class="std std-ref">production_electric.csv</span></a>: parameters and costs for electrolysis and other electric production technologies</p></li>
+<li><p><a class="reference internal" href="#production-existing-csv"><span class="std std-ref">production_existing.csv</span></a>: parameters, costs, and hubs for existing SMRs</p></li>
+<li><p><a class="reference internal" href="#production-thermal-csv"><span class="std std-ref">production_thermal.csv</span></a>: parameters and costs for thermal production technologies (SMR)</p></li>
+<li><p><a class="reference internal" href="#settings-yml"><span class="std std-ref">settings.yml</span></a>: settings for the model</p></li>
+</ul>
+<section id="arcs-csv">
+<span id="id1"></span><h3>arcs.csv<a class="headerlink" href="#arcs-csv" title="Permalink to this heading"></a></h3>
+<p>This file is generated in the previous step. No additional data are required.</p>
+<table class="docutils align-default" id="id19">
+<caption><span class="caption-text">arcs.csv</span><a class="headerlink" href="#id19" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>startHub</p></th>
+<th class="head"><p>endHub</p></th>
+<th class="head"><p>kmLength_euclid</p></th>
+<th class="head"><p>kmLength_road</p></th>
+<th class="head"><p>exist_pipeline</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>austin</p></td>
+<td><p>waco</p></td>
+<td><p>152.40950173410138</p></td>
+<td><p>163.5097</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas</p></td>
+<td><p>houston</p></td>
+<td><p>360.431235113376</p></td>
+<td><p>384.3372</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>freeport</p></td>
+<td><p>houston</p></td>
+<td><p>89.06892475844474</p></td>
+<td><p>99.1198</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>waco</p></td>
+<td><p>houston</p></td>
+<td><p>261.16592973831126</p></td>
+<td><p>289.0303</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>waco</p></td>
+<td><p>dallas</p></td>
+<td><p>139.75266300122152</p></td>
+<td><p>152.1352</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>austin</p></td>
+<td><p>houston</p></td>
+<td><p>235.69261123650796</p></td>
+<td><p>261.8612</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="ccs-csv">
+<span id="id2"></span><h3>ccs.csv<a class="headerlink" href="#ccs-csv" title="Permalink to this heading"></a></h3>
+<p>This file contains the parameters and costs for retrofitting existing SMRs with CCS.
+It currently only supports the use of two CCS retrofit technologies aptly named <code class="code docutils literal notranslate"><span class="pre">ccs1</span></code> and <code class="code docutils literal notranslate"><span class="pre">ccs2</span></code>.
+The model will choose to build or or none of these for <a class="reference internal" href="#production-existing-csv"><span class="std std-ref">existing SMRs</span></a>.</p>
+<table class="docutils align-default" id="id20">
+<caption><span class="caption-text">ccs.csv</span><a class="headerlink" href="#id20" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>type</p></th>
+<th class="head"><p>variable_usdPerTonCO2</p></th>
+<th class="head"><p>percent_CO2_captured</p></th>
+<th class="head"><p>h2_tax_credit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ccs1</p></td>
+<td><p>50</p></td>
+<td><p>0.6</p></td>
+<td><p>459</p></td>
+</tr>
+<tr class="row-odd"><td><p>ccs2</p></td>
+<td><p>70</p></td>
+<td><p>0.9</p></td>
+<td><p>689</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="conversion-csv">
+<span id="id3"></span><h3>conversion.csv<a class="headerlink" href="#conversion-csv" title="Permalink to this heading"></a></h3>
+<p>This file describes conversion steps that occur between production, distribution, and demand, and the associated costs.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Adding or subtracting converters from the <code class="code docutils literal notranslate"><span class="pre">converter</span></code> index or changing
+<code class="code docutils literal notranslate"><span class="pre">arc_start_class</span></code> and <code class="code docutils literal notranslate"><span class="pre">arc_end_class</span></code> is only for advanced users.</p>
+</div>
+<table class="docutils align-default" id="id21">
+<caption><span class="caption-text">conversion.csv</span><a class="headerlink" href="#id21" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>converter</p></th>
+<th class="head"><p>fixed_usdPerTonPerDay</p></th>
+<th class="head"><p>variable_usdPerTon</p></th>
+<th class="head"><p>capital_usdPerTonPerDay</p></th>
+<th class="head"><p>kWh_perTon</p></th>
+<th class="head"><p>arc_start_class</p></th>
+<th class="head"><p>arc_end_class</p></th>
+<th class="head"><p>utilization</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>liquefaction</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>2008333</p></td>
+<td><p>7200</p></td>
+<td><p>center_highPurity</p></td>
+<td><p>dist_truckLiquefied</p></td>
+<td><p>0.95</p></td>
+</tr>
+<tr class="row-odd"><td><p>compression</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>23618</p></td>
+<td><p>850</p></td>
+<td><p>center_highPurity</p></td>
+<td><p>dist_truckCompressed</p></td>
+<td><p>0.95</p></td>
+</tr>
+<tr class="row-even"><td><p>terminalLiquid</p></td>
+<td><p>290</p></td>
+<td><p>0</p></td>
+<td><p>82183</p></td>
+<td><p>0</p></td>
+<td><p>converter_liquefaction</p></td>
+<td><p>dist_truckLiquefied</p></td>
+<td><p>0.85</p></td>
+</tr>
+<tr class="row-odd"><td><p>terminalGas</p></td>
+<td><p>260</p></td>
+<td><p>0</p></td>
+<td><p>506419</p></td>
+<td><p>0</p></td>
+<td><p>converter_compression</p></td>
+<td><p>dist_truckCompressed</p></td>
+<td><p>0.85</p></td>
+</tr>
+<tr class="row-even"><td><p>fuelDispenserLiquid</p></td>
+<td><p>1500</p></td>
+<td><p>0</p></td>
+<td><p>6800249</p></td>
+<td><p>560</p></td>
+<td><p>dist_truckLiquefied</p></td>
+<td><p>demand_fuelStation</p></td>
+<td><p>0.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>fuelDispenserGas</p></td>
+<td><p>1575</p></td>
+<td><p>0</p></td>
+<td><p>12937579</p></td>
+<td><p>1970</p></td>
+<td><p>dist_truckCompressed</p></td>
+<td><p>demand_fuelStation</p></td>
+<td><p>0.6</p></td>
+</tr>
+<tr class="row-even"><td><p>fuelDispenserPipeline</p></td>
+<td><p>1575</p></td>
+<td><p>0</p></td>
+<td><p>3794362</p></td>
+<td><p>1970</p></td>
+<td><p>dist_pipelineHighPurity</p></td>
+<td><p>demand_fuelStation</p></td>
+<td><p>0.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>purification</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>52000</p></td>
+<td><p>1800</p></td>
+<td><p>center_lowPurity</p></td>
+<td><p>center_highPurity</p></td>
+<td><p>0.95</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="demand-csv">
+<span id="id4"></span><h3>demand.csv<a class="headerlink" href="#demand-csv" title="Permalink to this heading"></a></h3>
+<p>This file describes the price a consumer is willing to pay for hydrogen in each demand sector (<code class="code docutils literal notranslate"><span class="pre">breakevenPrice</span></code>),
+wether or not the demand sector is carbon sensitive (<a class="reference internal" href="../model/create_model.html#module-HOwDI.model.constraints.checs" title="HOwDI.model.constraints.checs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">CHECs</span></code></a>),
+the amount of carbon emissions avoided by switching to a hydrogen for a demand sector, and the demand type
+(<code class="code docutils literal notranslate"><span class="pre">lowPurity</span></code>, <code class="code docutils literal notranslate"><span class="pre">highPurity</span></code>, or <code class="code docutils literal notranslate"><span class="pre">fuelStation</span></code>).</p>
+<table class="docutils align-default" id="id22">
+<caption><span class="caption-text">demand.csv</span><a class="headerlink" href="#id22" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>sector</p></th>
+<th class="head"><p>breakevenPrice</p></th>
+<th class="head"><p>carbonSensitive</p></th>
+<th class="head"><p>avoided_emissions_tonsCO2_per_H2</p></th>
+<th class="head"><p>demandType</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>transportationFuel</p></td>
+<td><p>4000</p></td>
+<td><p>0</p></td>
+<td><p>13</p></td>
+<td><p>fuelStation</p></td>
+</tr>
+<tr class="row-odd"><td><p>transportationFuel_carbonSensitive</p></td>
+<td><p>5000</p></td>
+<td><p>1</p></td>
+<td><p>13</p></td>
+<td><p>fuelStation</p></td>
+</tr>
+<tr class="row-even"><td><p>industrialFuel</p></td>
+<td><p>5000</p></td>
+<td><p>0</p></td>
+<td><p>12</p></td>
+<td><p>lowPurity</p></td>
+</tr>
+<tr class="row-odd"><td><p>existing</p></td>
+<td><p>5000</p></td>
+<td><p>0</p></td>
+<td><p>9</p></td>
+<td><p>lowPurity</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="distribution-csv">
+<span id="id5"></span><h3>distribution.csv<a class="headerlink" href="#distribution-csv" title="Permalink to this heading"></a></h3>
+<p>This file describes the cost of building and operating distribution infrastructure.</p>
+<table class="docutils align-default" id="id23">
+<caption><span class="caption-text">distribution.csv</span><a class="headerlink" href="#id23" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>distributor</p></th>
+<th class="head"><p>unit</p></th>
+<th class="head"><p>capital_usdPerUnit</p></th>
+<th class="head"><p>fixed_usdPerUnitPerDay</p></th>
+<th class="head"><p>variable_usdPerKilometer-Ton</p></th>
+<th class="head"><p>flowLimit_tonsPerDay</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>pipeline</p></td>
+<td><p>km</p></td>
+<td><p>1117016</p></td>
+<td><p>164.4</p></td>
+<td><p>0.1</p></td>
+<td><p>999999</p></td>
+</tr>
+<tr class="row-odd"><td><p>truckCompressed</p></td>
+<td><p>truck</p></td>
+<td><p>450000</p></td>
+<td><p>52.19</p></td>
+<td><p>7.58</p></td>
+<td><p>2.6</p></td>
+</tr>
+<tr class="row-even"><td><p>truckLiquefied</p></td>
+<td><p>truck</p></td>
+<td><p>1500000</p></td>
+<td><p>139.18</p></td>
+<td><p>0.51</p></td>
+<td><p>8</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="hubs-csv">
+<span id="id6"></span><h3>hubs.csv<a class="headerlink" href="#hubs-csv" title="Permalink to this heading"></a></h3>
+<p>This file describes which hubs are used by the model, if a technology can be built at that hub
+(<code class="code docutils literal notranslate"><span class="pre">build_&lt;tech&gt;</span></code>, binary), the demand per demand sector at that hub (<code class="code docutils literal notranslate"><span class="pre">&lt;demandSector&gt;_tonnesperday</span></code>, where
+<code class="code docutils literal notranslate"><span class="pre">&lt;demandSector&gt;</span></code> is defined in <a class="reference internal" href="#demand-csv"><span class="std std-ref">demand.csv</span></a>), and the hub’s natural gas price, electricity price, and capital price multiplier.</p>
+<table class="docutils align-default" id="id24">
+<caption><span class="caption-text">hubs.csv</span><a class="headerlink" href="#id24" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>hub</p></th>
+<th class="head"><p>build_smr-noCCS</p></th>
+<th class="head"><p>build_smr-low</p></th>
+<th class="head"><p>build_smr-high</p></th>
+<th class="head"><p>build_smr-high-ptc</p></th>
+<th class="head"><p>build_electrolyzer</p></th>
+<th class="head"><p>build_electrolyzer-RE</p></th>
+<th class="head"><p>transportationFuel_tonnesperday</p></th>
+<th class="head"><p>transportationFuel_carbonSensitive_tonnesperday</p></th>
+<th class="head"><p>industrialFuel_tonnesperday</p></th>
+<th class="head"><p>existing_tonnesperday</p></th>
+<th class="head"><p>ng_usd_per_mmbtu</p></th>
+<th class="head"><p>e_usd_per_kwh</p></th>
+<th class="head"><p>capital_pm</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>austin</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>354</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>4.182516115</p></td>
+<td><p>0.043290426</p></td>
+<td><p>0.921993104</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>589</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>4.049164359</p></td>
+<td><p>0.043632017</p></td>
+<td><p>0.932665854</p></td>
+</tr>
+<tr class="row-even"><td><p>houston</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>359</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>4.140460697</p></td>
+<td><p>0.046236011</p></td>
+<td><p>0.914349379</p></td>
+</tr>
+<tr class="row-odd"><td><p>freeport</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>538</p></td>
+<td><p>4.155303773</p></td>
+<td><p>0.046236011</p></td>
+<td><p>0.914163499</p></td>
+</tr>
+<tr class="row-even"><td><p>waco</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>21</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>4.021041851</p></td>
+<td><p>0.043632017</p></td>
+<td><p>0.926566559</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="production-electric-csv">
+<span id="id7"></span><h3>production_electric.csv<a class="headerlink" href="#production-electric-csv" title="Permalink to this heading"></a></h3>
+<p>This file describes the cost of building and operating electric production infrastructure, size restrictions, tax credits, and the carbon intensity of the electricity used.
+Since HOwDI does not have a time domain, <code class="code docutils literal notranslate"><span class="pre">utilization</span></code> refers to the fraction of the time (day) that the technology is operating.</p>
+<table class="docutils align-default" id="id25">
+<caption><span class="caption-text">production_electric.csv</span><a class="headerlink" href="#id25" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>type</p></th>
+<th class="head"><p>fixed_usdPerTon</p></th>
+<th class="head"><p>capEx_$_per_kW</p></th>
+<th class="head"><p>kWh_perTon</p></th>
+<th class="head"><p>variable_usdPerTon</p></th>
+<th class="head"><p>utilization</p></th>
+<th class="head"><p>purity</p></th>
+<th class="head"><p>min_h2</p></th>
+<th class="head"><p>max_h2</p></th>
+<th class="head"><p>h2_tax_credit</p></th>
+<th class="head"><p>grid_intensity_tonsCO2_per_h2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>electrolyzer</p></td>
+<td><p>50</p></td>
+<td><p>720</p></td>
+<td><p>50000</p></td>
+<td><p>0</p></td>
+<td><p>0.975</p></td>
+<td><p>high</p></td>
+<td><p>250</p></td>
+<td><p>50000</p></td>
+<td><p>600</p></td>
+<td><p>3.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>electrolyzer-RE</p></td>
+<td><p>50</p></td>
+<td><p>720</p></td>
+<td><p>50000</p></td>
+<td><p>0</p></td>
+<td><p>0.4</p></td>
+<td><p>high</p></td>
+<td><p>250</p></td>
+<td><p>50000</p></td>
+<td><p>3750</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="production-existing-csv">
+<span id="id8"></span><h3>production_existing.csv<a class="headerlink" href="#production-existing-csv" title="Permalink to this heading"></a></h3>
+<p>This file describes existing production capacity. The <code class="code docutils literal notranslate"><span class="pre">type</span></code> column corresponds to a thermal producer defined in
+<a class="reference internal" href="#production-thermal-csv"><span class="std std-ref">production_thermal.csv</span></a>. The <code class="code docutils literal notranslate"><span class="pre">hub</span></code> is the location, and <code class="code docutils literal notranslate"><span class="pre">capacity_tonPerDay</span></code> is the existing capacity.
+The columns <code class="code docutils literal notranslate"><span class="pre">can_ccs1</span></code> and <code class="code docutils literal notranslate"><span class="pre">can_ccs2</span></code> are binaries allowing the addition of CCS to the existing SMR.</p>
+<table class="docutils align-default" id="id26">
+<caption><span class="caption-text">production_existing.csv</span><a class="headerlink" href="#id26" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>type</p></th>
+<th class="head"><p>hub</p></th>
+<th class="head"><p>capacity_tonPerDay</p></th>
+<th class="head"><p>fixed_usdPerTonPerDay</p></th>
+<th class="head"><p>capital_usdPerTonPerDay</p></th>
+<th class="head"><p>kWh_perTon</p></th>
+<th class="head"><p>ng_mmbtu_per_tonH2</p></th>
+<th class="head"><p>variable_usdPerTon</p></th>
+<th class="head"><p>co2_emissions_per_h2_tons</p></th>
+<th class="head"><p>can_ccs1</p></th>
+<th class="head"><p>can_ccs2</p></th>
+<th class="head"><p>utilization</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>smr-noCCS</p></td>
+<td><p>freeport</p></td>
+<td><p>482</p></td>
+<td><p>70</p></td>
+<td><p>0</p></td>
+<td><p>640</p></td>
+<td><p>144</p></td>
+<td><p>100</p></td>
+<td><p>9</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0.9</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="production-thermal-csv">
+<span id="id9"></span><h3>production_thermal.csv<a class="headerlink" href="#production-thermal-csv" title="Permalink to this heading"></a></h3>
+<p>Similar to other production files, this file describes the costs associated with building and operating thermal production infrastructure.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the zeros in the <code class="code docutils literal notranslate"><span class="pre">build_smr-noCCS</span></code> column of <a class="reference internal" href="#hubs-csv"><span class="std std-ref">hubs.csv</span></a> prevent the model from building this type of CCS,
+this “type” is used in the <a class="reference internal" href="#production-existing-csv"><span class="std std-ref">production_existing.csv</span></a>, indicating that the prices in <a class="reference internal" href="#production-thermal-csv"><span class="std std-ref">production_thermal.csv</span></a> are used.</p>
+<div class="admonition-todo admonition" id="id10">
+<p class="admonition-title">Todo</p>
+<p>This is a bit confusing and I’m not sure which data are used at the moment.</p>
+</div>
+</div>
+<table class="docutils align-default" id="id27">
+<caption><span class="caption-text">production_thermal.csv</span><a class="headerlink" href="#id27" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>type</p></th>
+<th class="head"><p>ccs_capture_rate</p></th>
+<th class="head"><p>fixed_usdPerTon</p></th>
+<th class="head"><p>capital_usdPerTonPerDay</p></th>
+<th class="head"><p>kWh_perTon</p></th>
+<th class="head"><p>ng_mmbtu_per_tonH2</p></th>
+<th class="head"><p>variable_usdPerTon</p></th>
+<th class="head"><p>utilization</p></th>
+<th class="head"><p>purity</p></th>
+<th class="head"><p>min_h2</p></th>
+<th class="head"><p>max_h2</p></th>
+<th class="head"><p>h2_tax_credit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>smr-noCCS</p></td>
+<td><p>0</p></td>
+<td><p>70</p></td>
+<td><p>2000000</p></td>
+<td><p>640</p></td>
+<td><p>144</p></td>
+<td><p>90</p></td>
+<td><p>0.9</p></td>
+<td><p>low</p></td>
+<td><p>300</p></td>
+<td><p>10000</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>smr-high-ptc</p></td>
+<td><p>0.9</p></td>
+<td><p>70</p></td>
+<td><p>3500000</p></td>
+<td><p>1912</p></td>
+<td><p>153</p></td>
+<td><p>90</p></td>
+<td><p>0.9</p></td>
+<td><p>low</p></td>
+<td><p>300</p></td>
+<td><p>50000</p></td>
+<td><p>600</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="settings-yml">
+<span id="id11"></span><h3>settings.yml<a class="headerlink" href="#settings-yml" title="Permalink to this heading"></a></h3>
+<p>The settings file specifies any options outside of the scope of
+the other input files.</p>
+<p>The only setting that may need to be changed now is <code class="code docutils literal notranslate"><span class="pre">solver_settings/solver</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="id28">
+<div class="code-block-caption"><span class="caption-text">settings.yml</span><a class="headerlink" href="#id28" title="Permalink to this code"></a></div>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="c1"># Price tracking settings</span>
+<span class="nt">find_prices</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"> </span><span class="c1"># True: Use price tracking feature</span>
+<span class="nt">price_tracking_array</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">stop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">  </span><span class="nt">step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
+<span class="nt">price_hubs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">all</span>
+<span class="c1">#[&quot;austin&quot;, &quot;pasadena&quot;] # &quot;all&quot;</span>
+<span class="nt">price_demand</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0E-5</span>
+
+<span class="c1"># Carbon settings, should maybe be a csv file</span>
+<span class="nt">carbon_price_dollars_per_ton</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="nt">carbon_capture_credit_dollars_per_ton</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span>
+<span class="nt">baseSMR_CO2_per_H2_tons</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9</span><span class="w"> </span><span class="c1"># the co2 mass per h2 mass that defines 0 CHECs.</span>
+
+<span class="c1"># Subsidy settings, should maybe be a csv file</span>
+<span class="nt">subsidy_dollar_billion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="nt">subsidy_cost_share_fraction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.9</span>
+
+<span class="c1"># Investment settings, should maybe be a csv file</span>
+<span class="nt">investment_interest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.06</span>
+<span class="nt">investment_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="nt">time_slices</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">365</span>
+
+<span class="c1"># percent of capital used to estimate fixed costs</span>
+<span class="nt">fixedcost_percent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.02</span>
+
+<span class="c1"># Solver settings</span>
+<span class="nt">solver_settings</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">solver</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;gurobi&quot;</span>
+<span class="w">  </span><span class="nt">solver_debug</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
+<span class="w">  </span><span class="nt">mipgap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0E-2</span>
+
+<span class="c1"># other options</span>
+<span class="nt">fractional_chec</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"> </span><span class="c1"># True - CHECs are assigned based on carbon free hydrogen, False - CHECs are given for all production if producer has any form of carbon reduction</span>
+
+<span class="c1"># optional options</span>
+<span class="c1"># hubs_dir: C:\\path\\to\\hubs\\directory\\where hubs.geojson, roads.csv, etc. are stored</span>
+<span class="c1"># otherwise, uses what is specified in data/data_mapping.yml</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="step-3-running-the-model">
+<h2>Step 3: Running the Model<a class="headerlink" href="#step-3-running-the-model" title="Permalink to this heading"></a></h2>
+<p>Navigate to the “scenario” directory that is above/contains the “inputs” directory.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ls
+&gt;<span class="w"> </span>/inputs
+</pre></div>
+</div>
+<p>Run the model with the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>HOwDI<span class="w"> </span>run
+</pre></div>
+</div>
+</section>
+<section id="step-4-outputs-and-viewing-results">
+<h2>Step 4: Outputs and Viewing Results<a class="headerlink" href="#step-4-outputs-and-viewing-results" title="Permalink to this heading"></a></h2>
+<p>The model will generate a directory called “outputs” in the scenario directory.
+This directory contains the following files:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#o-production-csv"><span class="std std-ref">production.csv</span></a>: production infrastructure built</p></li>
+<li><p><a class="reference internal" href="#o-distribution-csv"><span class="std std-ref">distribution.csv</span></a>: distribution infrastructure built</p></li>
+<li><p><a class="reference internal" href="#o-consumption-csv"><span class="std std-ref">consumption.csv</span></a>: demand met and theoretical delivered prices</p></li>
+<li><p><a class="reference internal" href="#o-conversion-csv"><span class="std std-ref">conversion.csv</span></a>: conversion infrastructure built</p></li>
+<li><p><a class="reference internal" href="#o-fig-png"><span class="std std-ref">fig.png</span></a>: a figure showing the infrastructure built</p></li>
+<li><p><a class="reference internal" href="#o-outputs-json"><span class="std std-ref">outputs.json</span></a>: A JSON file containing all the outputs in a single file</p></li>
+</ul>
+<section id="outputs-production-csv">
+<span id="o-production-csv"></span><h3>outputs/production.csv<a class="headerlink" href="#outputs-production-csv" title="Permalink to this heading"></a></h3>
+<p>This file describes the production infrastructure built by the model.
+In this case, the model decided to add CCS2 to the existing SMR in Freeport, and build electrolyzers in Freeport and Waco.</p>
+<table class="docutils align-default" id="id29">
+<caption><span class="caption-text">production.csv</span><a class="headerlink" href="#id29" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>producer</p></th>
+<th class="head"><p>prod_capacity</p></th>
+<th class="head"><p>prod_utilization</p></th>
+<th class="head"><p>prod_h</p></th>
+<th class="head"><p>prod_cost_capital</p></th>
+<th class="head"><p>prod_cost_fixed</p></th>
+<th class="head"><p>prod_cost_variable</p></th>
+<th class="head"><p>prod_e_price</p></th>
+<th class="head"><p>prod_ng_price</p></th>
+<th class="head"><p>h2_tax_credit</p></th>
+<th class="head"><p>co2_emissions_rate</p></th>
+<th class="head"><p>ccs_capture_rate</p></th>
+<th class="head"><p>chec_per_ton</p></th>
+<th class="head"><p>prod_checs</p></th>
+<th class="head"><p>ccs_retrofit_variable_costs</p></th>
+<th class="head"><p>co2_emitted</p></th>
+<th class="head"><p>carbon_tax</p></th>
+<th class="head"><p>co2_captured</p></th>
+<th class="head"><p>carbon_capture_tax_credit</p></th>
+<th class="head"><p>total_cost</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>freeport_production_electrolyzer-RE</p></td>
+<td><p>1158.0083999999886</p></td>
+<td><p>0.4</p></td>
+<td><p>463.2033599999954</p></td>
+<td><p>379291.8806286653</p></td>
+<td><p>21172.180216307625</p></td>
+<td><p>0.0</p></td>
+<td><p>1070833.7824098375</p></td>
+<td><p>0.0</p></td>
+<td><p>1737012.5999999829</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>1.0</p></td>
+<td><p>463.2033599999954</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>-265714.75674517243</p></td>
+</tr>
+<tr class="row-odd"><td><p>freeport_production_smr-noCCSExisting</p></td>
+<td><p>482.0</p></td>
+<td><p>0.9</p></td>
+<td><p>433.8</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>43380.0</p></td>
+<td><p>12836.596205952</p></td>
+<td><p>259570.1918487456</p></td>
+<td><p>298888.2</p></td>
+<td><p>0.8999999999999998</p></td>
+<td><p>0.9</p></td>
+<td><p>0.9</p></td>
+<td><p>390.42</p></td>
+<td><p>245964.6</p></td>
+<td><p>390.4199999999999</p></td>
+<td><p>0.0</p></td>
+<td><p>3513.78</p></td>
+<td><p>175689.0</p></td>
+<td><p>87174.18805469753</p></td>
+</tr>
+<tr class="row-even"><td><p>waco_production_electrolyzer-RE</p></td>
+<td><p>2410.01185</p></td>
+<td><p>0.4</p></td>
+<td><p>964.00474</p></td>
+<td><p>800080.6360853777</p></td>
+<td><p>44660.72774007448</p></td>
+<td><p>0.0</p></td>
+<td><p>2103073.560188029</p></td>
+<td><p>0.0</p></td>
+<td><p>3615017.775</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>1.0</p></td>
+<td><p>964.00474</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>-667202.8509865189</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="outputs-distribution-csv">
+<span id="o-distribution-csv"></span><h3>outputs/distribution.csv<a class="headerlink" href="#outputs-distribution-csv" title="Permalink to this heading"></a></h3>
+<p>This file describes the distribution infrastructure built by the model. In this case, the existing pipeline is utilized and
+new pipelines transport hydrogen from Waco to Austin and Dallas.</p>
+<p>This file can be better understood by looking at <a class="reference internal" href="#o-fig-png"><span class="std std-ref">fig.png</span></a> or using the <code class="code docutils literal notranslate"><span class="pre">HOwDI</span> <span class="pre">traceback</span></code> or
+<code class="code docutils literal notranslate"><span class="pre">HOwDI</span> <span class="pre">traceforward</span></code> commands.</p>
+<table class="docutils align-default" id="id30">
+<caption><span class="caption-text">distribution.csv</span><a class="headerlink" href="#id30" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>arc_start</p></th>
+<th class="head"><p>arc_end</p></th>
+<th class="head"><p>dist_capacity</p></th>
+<th class="head"><p>dist_cost_capital</p></th>
+<th class="head"><p>dist_cost_fixed</p></th>
+<th class="head"><p>dist_cost_variable</p></th>
+<th class="head"><p>dist_flowLimit</p></th>
+<th class="head"><p>dist_h</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>austin_converter_fuelDispenserPipeline</p></td>
+<td><p>austin_demand_fuelStation</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>354.00158</p></td>
+</tr>
+<tr class="row-odd"><td><p>austin_demand_fuelStation</p></td>
+<td><p>austin_demandSector_transportationFuel_carbonSensitive</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>354.0</p></td>
+</tr>
+<tr class="row-even"><td><p>austin_dist_pipelineHighPurity</p></td>
+<td><p>austin_converter_fuelDispenserPipeline</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>999999.0</p></td>
+<td><p>354.00158</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas_converter_fuelDispenserPipeline</p></td>
+<td><p>dallas_demand_fuelStation</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>589.00158</p></td>
+</tr>
+<tr class="row-even"><td><p>dallas_demand_fuelStation</p></td>
+<td><p>dallas_demandSector_transportationFuel_carbonSensitive</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>589.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas_dist_pipelineHighPurity</p></td>
+<td><p>dallas_converter_fuelDispenserPipeline</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>999999.0</p></td>
+<td><p>589.00158</p></td>
+</tr>
+<tr class="row-even"><td><p>freeport_center_highPurity</p></td>
+<td><p>freeport_dist_pipelineHighPurity</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>463.2033599999954</p></td>
+</tr>
+<tr class="row-odd"><td><p>freeport_center_lowPurity</p></td>
+<td><p>freeport_dist_pipelineLowPurity</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>433.8</p></td>
+</tr>
+<tr class="row-even"><td><p>freeport_demand_lowPurity</p></td>
+<td><p>freeport_demandSector_existing</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>538.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>freeport_dist_pipelineHighPurity</p></td>
+<td><p>freeport_demand_lowPurity</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>999999.0</p></td>
+<td><p>104.20179999999544</p></td>
+</tr>
+<tr class="row-even"><td><p>freeport_dist_pipelineHighPurity</p></td>
+<td><p>houston_dist_pipelineHighPurity</p></td>
+<td><p>1.0</p></td>
+<td><p>101225012.41677822</p></td>
+<td><p>14898.07848886528</p></td>
+<td><p>9.91198</p></td>
+<td><p>999999.0</p></td>
+<td><p>359.00156</p></td>
+</tr>
+<tr class="row-odd"><td><p>freeport_dist_pipelineLowPurity</p></td>
+<td><p>freeport_demand_lowPurity</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>999999.0</p></td>
+<td><p>433.8</p></td>
+</tr>
+<tr class="row-even"><td><p>freeport_production_electrolyzer-RE</p></td>
+<td><p>freeport_center_highPurity</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>463.2033599999954</p></td>
+</tr>
+<tr class="row-odd"><td><p>freeport_production_smr-noCCSExisting</p></td>
+<td><p>freeport_center_lowPurity</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>433.8</p></td>
+</tr>
+<tr class="row-even"><td><p>houston_converter_fuelDispenserPipeline</p></td>
+<td><p>houston_demand_fuelStation</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>359.00156</p></td>
+</tr>
+<tr class="row-odd"><td><p>houston_demand_fuelStation</p></td>
+<td><p>houston_demandSector_transportationFuel_carbonSensitive</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>359.0</p></td>
+</tr>
+<tr class="row-even"><td><p>houston_dist_pipelineHighPurity</p></td>
+<td><p>houston_converter_fuelDispenserPipeline</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>999999.0</p></td>
+<td><p>359.00156</p></td>
+</tr>
+<tr class="row-odd"><td><p>waco_center_highPurity</p></td>
+<td><p>waco_dist_pipelineHighPurity</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>964.00474</p></td>
+</tr>
+<tr class="row-even"><td><p>waco_converter_fuelDispenserPipeline</p></td>
+<td><p>waco_demand_fuelStation</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>21.00158</p></td>
+</tr>
+<tr class="row-odd"><td><p>waco_demand_fuelStation</p></td>
+<td><p>waco_demandSector_transportationFuel_carbonSensitive</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>21.0</p></td>
+</tr>
+<tr class="row-even"><td><p>waco_dist_pipelineHighPurity</p></td>
+<td><p>austin_dist_pipelineHighPurity</p></td>
+<td><p>1.0</p></td>
+<td><p>168813196.025963</p></td>
+<td><p>24845.5612333828</p></td>
+<td><p>16.35097</p></td>
+<td><p>999999.0</p></td>
+<td><p>354.00158</p></td>
+</tr>
+<tr class="row-odd"><td><p>waco_dist_pipelineHighPurity</p></td>
+<td><p>dallas_dist_pipelineHighPurity</p></td>
+<td><p>1.0</p></td>
+<td><p>157976609.9940757</p></td>
+<td><p>23250.655928855133</p></td>
+<td><p>15.21352</p></td>
+<td><p>999999.0</p></td>
+<td><p>589.00158</p></td>
+</tr>
+<tr class="row-even"><td><p>waco_dist_pipelineHighPurity</p></td>
+<td><p>waco_converter_fuelDispenserPipeline</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>999999.0</p></td>
+<td><p>21.00158</p></td>
+</tr>
+<tr class="row-odd"><td><p>waco_production_electrolyzer-RE</p></td>
+<td><p>waco_center_highPurity</p></td>
+<td><p>1.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>0.0</p></td>
+<td><p>99999999.9</p></td>
+<td><p>964.00474</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="outputs-consumption-csv">
+<span id="o-consumption-csv"></span><h3>outputs/consumption.csv<a class="headerlink" href="#outputs-consumption-csv" title="Permalink to this heading"></a></h3>
+<p>This file describes the demand met by the model. There are also very small demands that are met to determine the
+<a class="reference internal" href="../model/create_network.html#price-nodes"><span class="std std-ref">price-nodes</span></a> price. In this <cite>demonstrative</cite> case, all demand is met, and hydrogen can be delivered to fuel stations
+for just above $2/kg.</p>
+<table class="docutils align-default" id="id31">
+<caption><span class="caption-text">consumption.csv</span><a class="headerlink" href="#id31" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>consumer</p></th>
+<th class="head"><p>cons_carbonSensitive</p></th>
+<th class="head"><p>cons_h</p></th>
+<th class="head"><p>cons_checs</p></th>
+<th class="head"><p>cons_price</p></th>
+<th class="head"><p>cons_size</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>austin_demandSector_transportationFuel_carbonSensitive</p></td>
+<td><p>1</p></td>
+<td><p>354.0</p></td>
+<td><p>354.0</p></td>
+<td><p>5000.0</p></td>
+<td><p>354.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas_demandSector_transportationFuel_carbonSensitive</p></td>
+<td><p>1</p></td>
+<td><p>589.0</p></td>
+<td><p>589.0</p></td>
+<td><p>5000.0</p></td>
+<td><p>589.0</p></td>
+</tr>
+<tr class="row-even"><td><p>freeport_demandSector_existing</p></td>
+<td><p>0</p></td>
+<td><p>538.0</p></td>
+<td><p>0.0</p></td>
+<td><p>5000.0</p></td>
+<td><p>538.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>houston_demandSector_transportationFuel_carbonSensitive</p></td>
+<td><p>1</p></td>
+<td><p>359.0</p></td>
+<td><p>359.0</p></td>
+<td><p>5000.0</p></td>
+<td><p>359.0</p></td>
+</tr>
+<tr class="row-even"><td><p>waco_demandSector_transportationFuel_carbonSensitive</p></td>
+<td><p>1</p></td>
+<td><p>21.0</p></td>
+<td><p>21.0</p></td>
+<td><p>5000.0</p></td>
+<td><p>21.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>austin_priceFuelStation_2.10</p></td>
+<td><p>0</p></td>
+<td><p>1e-05</p></td>
+<td><p>0.0</p></td>
+<td><p>2100.0</p></td>
+<td><p>1e-05</p></td>
+</tr>
+<tr class="row-even"><td><p>dallas_priceFuelStation_2.10</p></td>
+<td><p>0</p></td>
+<td><p>1e-05</p></td>
+<td><p>0.0</p></td>
+<td><p>2100.0</p></td>
+<td><p>1e-05</p></td>
+</tr>
+<tr class="row-odd"><td><p>houston_priceFuelStation_2.20</p></td>
+<td><p>0</p></td>
+<td><p>1e-05</p></td>
+<td><p>0.0</p></td>
+<td><p>2200.0</p></td>
+<td><p>1e-05</p></td>
+</tr>
+<tr class="row-even"><td><p>waco_priceFuelStation_2.10</p></td>
+<td><p>0</p></td>
+<td><p>1e-05</p></td>
+<td><p>0.0</p></td>
+<td><p>2100.0</p></td>
+<td><p>1e-05</p></td>
+</tr>
+<tr class="row-odd"><td><p>freeport_priceLowPurity_1.00</p></td>
+<td><p>0</p></td>
+<td><p>1e-05</p></td>
+<td><p>0.0</p></td>
+<td><p>1000.0</p></td>
+<td><p>1e-05</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="outputs-conversion-csv">
+<span id="o-conversion-csv"></span><h3>outputs/conversion.csv<a class="headerlink" href="#outputs-conversion-csv" title="Permalink to this heading"></a></h3>
+<p>This file describes the conversion infrastructure built by the model.</p>
+<table class="docutils align-default" id="id32">
+<caption><span class="caption-text">conversion.csv</span><a class="headerlink" href="#id32" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>convertor</p></th>
+<th class="head"><p>conv_capacity</p></th>
+<th class="head"><p>conv_cost_capital</p></th>
+<th class="head"><p>conv_cost_fixed</p></th>
+<th class="head"><p>conv_cost_variable</p></th>
+<th class="head"><p>conv_e_price</p></th>
+<th class="head"><p>conv_utilization</p></th>
+<th class="head"><p>fuelStation_cost_capital_subsidy</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>austin_converter_fuelDispenserPipeline</p></td>
+<td><p>590.0026333333334</p></td>
+<td><p>3498375.598079648</p></td>
+<td><p>1452.1391388</p></td>
+<td><p>0</p></td>
+<td><p>85.28213922</p></td>
+<td><p>0.6</p></td>
+<td><p>206405081.5256067</p></td>
+</tr>
+<tr class="row-odd"><td><p>dallas_converter_fuelDispenserPipeline</p></td>
+<td><p>981.6693</p></td>
+<td><p>3538871.8751151483</p></td>
+<td><p>1468.94872005</p></td>
+<td><p>0</p></td>
+<td><p>85.95507349</p></td>
+<td><p>0.6</p></td>
+<td><p>347400187.64339745</p></td>
+</tr>
+<tr class="row-even"><td><p>houston_converter_fuelDispenserPipeline</p></td>
+<td><p>598.3359333333333</p></td>
+<td><p>3469372.538401198</p></td>
+<td><p>1440.100271925</p></td>
+<td><p>0</p></td>
+<td><p>91.08494167</p></td>
+<td><p>0.6</p></td>
+<td><p>207585025.58453164</p></td>
+</tr>
+<tr class="row-odd"><td><p>waco_converter_fuelDispenserPipeline</p></td>
+<td><p>35.002633333333335</p></td>
+<td><p>3515728.941940358</p></td>
+<td><p>1459.342330425</p></td>
+<td><p>0</p></td>
+<td><p>85.95507349</p></td>
+<td><p>0.6</p></td>
+<td><p>12305977.105412629</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="outputs-fig-png">
+<span id="o-fig-png"></span><h3>outputs/fig.png<a class="headerlink" href="#outputs-fig-png" title="Permalink to this heading"></a></h3>
+<p>This file is a figure showing the infrastructure built by the model.
+Hydrogen is produced in electrolysis Waco, consumed locally, and transported to Dallas and Austin via pipeline.
+Hydrogen is also produced in Freeport, consumed locally, and transported to Houston via pipeline.</p>
+<figure class="align-center" id="id33">
+<img alt="../_images/fig1.png" src="../_images/fig1.png" />
+<figcaption>
+<p><span class="caption-text">fig.png</span><a class="headerlink" href="#id33" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="outputs-outputs-json">
+<span id="o-outputs-json"></span><h3>outputs/outputs.json<a class="headerlink" href="#outputs-outputs-json" title="Permalink to this heading"></a></h3>
+<p>This file contains all the outputs in a single file, which is useful for some data manipulation.</p>
+<div class="literal-block-wrapper docutils container" id="id34">
+<div class="code-block-caption"><span class="caption-text">outputs.json (first few lines)</span><a class="headerlink" href="#id34" title="Permalink to this code"></a></div>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;austin&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;production&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;conversion&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;fuelDispenserPipeline&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;conv_capacity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">590.0026333333334</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;conv_cost_capital&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3498375.598079648</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;conv_cost_fixed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1452.1391388</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;conv_cost_variable&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;conv_e_price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">85.28213922</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;conv_utilization&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.6</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;fuelStation_cost_capital_subsidy&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">206405081.5256067</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;consumption&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;demandSector_transportationFuel_carbonSensitive&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;cons_carbonSensitive&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;cons_h&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">354.0</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;cons_checs&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">354.0</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;cons_price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.0</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;cons_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">354.0</span>
+<span class="w">            </span><span class="p">},</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="step-5-further-result-analysis">
+<h2>Step 5: Further result analysis<a class="headerlink" href="#step-5-further-result-analysis" title="Permalink to this heading"></a></h2>
+<p>The <code class="code docutils literal notranslate"><span class="pre">HOwDI</span> <span class="pre">traceback</span></code> and <code class="code docutils literal notranslate"><span class="pre">HOwDI</span> <span class="pre">traceforward</span></code> commands can be used to trace the flow of hydrogen through the network.</p>
+<p>Using <code class="code docutils literal notranslate"><span class="pre">HOwDI</span> <span class="pre">traceforward</span></code>, we can see that hydrogen from freeport is consumed locally and transported to Houston via pipeline.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>howdi<span class="w"> </span>traceforward<span class="w"> </span>--hub<span class="w"> </span>freeport
+
+origin-freeport<span class="w"> </span><span class="o">(</span><span class="m">0</span>.00*100.00%<span class="o">=</span><span class="m">0</span>.00<span class="o">)</span>
+├──<span class="w"> </span>origin-electrolyzer-RE<span class="w"> </span><span class="o">(</span><span class="m">0</span>.00<span class="w"> </span>-&gt;<span class="w"> </span><span class="m">897</span>.00,<span class="w"> </span><span class="m">897</span>.00*51.64%<span class="o">=</span><span class="m">463</span>.20<span class="o">)</span>
+│<span class="w">   </span>└──<span class="w"> </span>freeport-production_electrolyzer-RE_TO_center_highPurity<span class="w"> </span><span class="o">(</span><span class="m">463</span>.20*100.00%<span class="o">=</span><span class="m">463</span>.20<span class="o">)</span>
+│<span class="w">       </span>└──<span class="w"> </span>freeport-center_highPurity_TO_dist_pipelineHighPurity<span class="w"> </span><span class="o">(</span><span class="m">463</span>.20*100.00%<span class="o">=</span><span class="m">463</span>.20<span class="o">)</span>
+│<span class="w">           </span>├──<span class="w"> </span>freeport-dist_pipelineHighPurity_TO_demand_lowPurity<span class="w"> </span><span class="o">(</span><span class="m">463</span>.20*22.50%<span class="o">=</span><span class="m">104</span>.20<span class="o">)</span>
+│<span class="w">           </span>│<span class="w">   </span>└──<span class="w"> </span>freeport-demand_lowPurity_TO_demandSector_existing<span class="w"> </span><span class="o">(</span><span class="m">104</span>.20<span class="w"> </span>-&gt;<span class="w"> </span><span class="m">538</span>.00,<span class="w"> </span><span class="m">538</span>.00*100.00%<span class="o">=</span><span class="m">538</span>.00<span class="o">)</span>
+│<span class="w">           </span>│<span class="w">       </span>└──<span class="w"> </span>freeport-demandSector_existing<span class="w"> </span><span class="o">(</span><span class="m">538</span>.00*100.00%<span class="o">=</span><span class="m">538</span>.00<span class="o">)</span>
+│<span class="w">           </span>└──<span class="w"> </span>freeport-dist_pipelineHighPurity_TO_houston_dist_pipelineHighPurity<span class="w"> </span><span class="o">(</span><span class="m">463</span>.20*77.50%<span class="o">=</span><span class="m">359</span>.00<span class="o">)</span>
+│<span class="w">               </span>└──<span class="w"> </span>houston-dist_pipelineHighPurity_TO_converter_fuelDispenserPipeline<span class="w"> </span><span class="o">(</span><span class="m">359</span>.00*100.00%<span class="o">=</span><span class="m">359</span>.00<span class="o">)</span>
+│<span class="w">                   </span>└──<span class="w"> </span>houston-converter_fuelDispenserPipeline_TO_demand_fuelStation<span class="w"> </span><span class="o">(</span><span class="m">359</span>.00*100.00%<span class="o">=</span><span class="m">359</span>.00<span class="o">)</span>
+│<span class="w">                       </span>└──<span class="w"> </span>houston-demand_fuelStation_TO_demandSector_transportationFuel_carbonSensitive<span class="w"> </span><span class="o">(</span><span class="m">359</span>.00<span class="w"> </span>-&gt;<span class="w"> </span><span class="m">359</span>.00,<span class="w"> </span><span class="m">359</span>.00*100.00%<span class="o">=</span><span class="m">359</span>.00<span class="o">)</span>
+│<span class="w">                           </span>└──<span class="w"> </span>houston-demandSector_transportationFuel_carbonSensitive<span class="w"> </span><span class="o">(</span><span class="m">359</span>.00*100.00%<span class="o">=</span><span class="m">359</span>.00<span class="o">)</span>
+└──<span class="w"> </span>origin-smr-noCCSExisting<span class="w"> </span><span class="o">(</span><span class="m">0</span>.00<span class="w"> </span>-&gt;<span class="w"> </span><span class="m">897</span>.00,<span class="w"> </span><span class="m">897</span>.00*48.36%<span class="o">=</span><span class="m">433</span>.80<span class="o">)</span>
+<span class="w">    </span>└──<span class="w"> </span>freeport-production_smr-noCCSExisting_TO_center_lowPurity<span class="w"> </span><span class="o">(</span><span class="m">433</span>.80*100.00%<span class="o">=</span><span class="m">433</span>.80<span class="o">)</span>
+<span class="w">        </span>└──<span class="w"> </span>freeport-center_lowPurity_TO_dist_pipelineLowPurity<span class="w"> </span><span class="o">(</span><span class="m">433</span>.80*100.00%<span class="o">=</span><span class="m">433</span>.80<span class="o">)</span>
+<span class="w">            </span>└──<span class="w"> </span>freeport-dist_pipelineLowPurity_TO_demand_lowPurity<span class="w"> </span><span class="o">(</span><span class="m">433</span>.80*100.00%<span class="o">=</span><span class="m">433</span>.80<span class="o">)</span>
+<span class="w">                </span>└──<span class="w"> </span>freeport-demand_lowPurity_TO_demandSector_existing<span class="w"> </span><span class="o">(</span><span class="m">433</span>.80<span class="w"> </span>-&gt;<span class="w"> </span><span class="m">538</span>.00,<span class="w"> </span><span class="m">538</span>.00*100.00%<span class="o">=</span><span class="m">538</span>.00<span class="o">)</span>
+<span class="w">                    </span>└──<span class="w"> </span>freeport-demandSector_existing<span class="w"> </span><span class="o">(</span><span class="m">538</span>.00*100.00%<span class="o">=</span><span class="m">538</span>.00<span class="o">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Production numbers can sometimes seem off, but this is a result of utilization. For instance, the existing steam methane reformer in Freeport is producing 433.80
+tonnes of hydrogen, but the capacity in <a class="reference internal" href="#production-existing-csv"><span class="std std-ref">production_existing.csv</span></a> is 482 tonnes.
+However, the utilization of this SMR is 0.9, so the actual production is capacity times utilization, 482*0.9 = 433.80.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../utility/utils.html" class="btn btn-neutral float-left" title="Utility functions and other things." accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Braden Pecora.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+producer,prod_capacity,prod_utilization,prod_h,prod_cost_capital,prod_cost_fixed,prod_cost_variable,prod_e_price,prod_ng_price,h2_tax_credit,co2_emissions_rate,ccs_capture_rate,chec_per_ton,prod_checs,ccs_retrofit_variable_costs,co2_emitted,carbon_tax,co2_captured,carbon_capture_tax_credit,total_cost
+freeport_production_electrolyzer-RE,1158.0083999999886,0.4,463.2033599999954,379291.8806286653,21172.180216307625,0.0,1070833.7824098375,0.0,1737012.5999999829,0.0,0.0,1.0,463.2033599999954,0.0,0.0,0.0,0.0,0.0,-265714.75674517243
+freeport_production_smr-noCCSExisting,482.0,0.9,433.8,0.0,0.0,43380.0,12836.596205952,259570.1918487456,298888.2,0.8999999999999998,0.9,0.9,390.42,245964.6,390.4199999999999,0.0,3513.78,175689.0,87174.18805469753
+waco_production_electrolyzer-RE,2410.01185,0.4,964.00474,800080.6360853777,44660.72774007448,0.0,2103073.560188029,0.0,3615017.775,0.0,0.0,1.0,964.00474,0.0,0.0,0.0,0.0,0.0,-667202.8509865189

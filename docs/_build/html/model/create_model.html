@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Model Formulation &mdash; HOwDI 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Input and output files" href="../inputs_outputs/header.html" />
+    <link rel="prev" title="Network Formulation" href="create_network.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            HOwDI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="header.html">Model Conception</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="HydrogenData.html">HydrogenData Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create_network.html">Network Formulation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Model Formulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.model.create_model.build_h2_model"><code class="docutils literal notranslate"><span class="pre">build_h2_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sets">Sets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_model.create_node_sets"><code class="docutils literal notranslate"><span class="pre">create_node_sets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_model.create_arc_sets"><code class="docutils literal notranslate"><span class="pre">create_arc_sets()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#parameters">Parameters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_model.create_params"><code class="docutils literal notranslate"><span class="pre">create_params()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#variables">Variables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_model.create_variables"><code class="docutils literal notranslate"><span class="pre">create_variables()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#objective-function">Objective Function</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_model.obj_rule"><code class="docutils literal notranslate"><span class="pre">obj_rule()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#constraints">Constraints</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.create_model.apply_constraints"><code class="docutils literal notranslate"><span class="pre">apply_constraints()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-HOwDI.model.constraints.mass_conservation">Mass Conservation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-HOwDI.model.constraints.existing_infrastructure">Existing Infrastructure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-HOwDI.model.constraints.capacity_relationships">Capacity Relationships</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-HOwDI.model.constraints.checs">Clean Hydrogen Energy Credits (CHECs)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-HOwDI.model.constraints.subsidies">Subsidies</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs_outputs/header.html">Input and output files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utility/header.html">Utility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial.html">Running HOwDI Example/Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">HOwDI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="header.html">Model Conception</a></li>
+      <li class="breadcrumb-item active">Model Formulation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/model/create_model.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="model-formulation">
+<h1>Model Formulation<a class="headerlink" href="#model-formulation" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_model.build_h2_model">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_model.</span></span><span class="sig-name descname"><span class="pre">build_h2_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><span class="pre">HydrogenData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.create_model.build_h2_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<section id="sets">
+<h2>Sets<a class="headerlink" href="#sets" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_model.create_node_sets">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_model.</span></span><span class="sig-name descname"><span class="pre">create_node_sets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.create_model.create_node_sets" title="Permalink to this definition"></a></dt>
+<dd><p>Creates all pe.Sets associated with nodes used by the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pe.ConcreteModel</em>) – </p></li>
+<li><p><strong>g</strong> (<em>DiGraph</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<div class="docutils container" id="table-model-node-sets">
+<table class="docutils align-default" id="id13">
+<caption><span class="caption-text">Model Node Sets</span><a class="headerlink" href="#id13" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Index</p></th>
+<th class="head"><p>Set</p></th>
+<th class="head"></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(n\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in N\)</span></p></td>
+<td></td>
+<td><p>Set of all nodes</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(n_p\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in N_p\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq N\)</span></p></td>
+<td><p>Producer nodes</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(n_{p_\text{exist}}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in N_{p_\text{exist}}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq N_p\)</span></p></td>
+<td><p>Existing producer nodes</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(n_{p_\text{new}}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in N_{p_\text{new}}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq N_p\)</span></p></td>
+<td><p>New build producer nodes</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(n_{p_t}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in N_{p_t}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq N_p\)</span></p></td>
+<td><p>Thermal producer nodes</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(n_{p_e}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in N_{p_e}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq N_p\)</span></p></td>
+<td><p>Electric producer nodes</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(n_{cv}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in N_{cv}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq N\)</span></p></td>
+<td><p>Converter nodes</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(n_{u}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in N_{u}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq N\)</span></p></td>
+<td><p>Consumption/demand nodes</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(n_{\text{truck}}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in N_{\text{truck}}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq N\)</span></p></td>
+<td><p>Truck distribution nodes</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\omega\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in \Omega\)</span></p></td>
+<td></td>
+<td><p>Set of all hubs</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\phi\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in \Phi\)</span></p></td>
+<td></td>
+<td><p>Set of all producer types</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\delta\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in \Delta\)</span></p></td>
+<td></td>
+<td><p>Set of all distribution methods</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\pi\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in \Pi\)</span></p></td>
+<td></td>
+<td><p>Set of all conversion methods</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\xi\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in \Xi\)</span></p></td>
+<td></td>
+<td><p>Set of all unique demand sectors</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\psi\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in \Psi\)</span></p></td>
+<td></td>
+<td><p>Set of all retrofit CCS technologies</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_model.create_arc_sets">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_model.</span></span><span class="sig-name descname"><span class="pre">create_arc_sets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.create_model.create_arc_sets" title="Permalink to this definition"></a></dt>
+<dd><p>Creates all pe.Sets associated with arcs used by the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pe.ConcreteModel</em>) – </p></li>
+<li><p><strong>g</strong> (<em>DiGraph</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<div class="docutils container" id="table-model-arc-sets">
+<table class="docutils align-default" id="id14">
+<caption><span class="caption-text">Model Arc Sets</span><a class="headerlink" href="#id14" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Index</p></th>
+<th class="head"><p>Set</p></th>
+<th class="head"></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(e\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in E\)</span></p></td>
+<td></td>
+<td><p>Set of all edges/arcs</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(e_\text{exist}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in E_\text{exist}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq E\)</span></p></td>
+<td><p>Existing edges (existing pipelines)</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(e_d\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in E_d\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq E\)</span></p></td>
+<td><p>Between demand node and demand sector</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(e_c\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in E_c\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq E\)</span></p></td>
+<td><p>Between demand node and demand sector</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(e^n\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in E^n\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq E\)</span></p></td>
+<td><p>All edges connected to node <span class="math notranslate nohighlight">\(n\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(e_{in}^n\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in E_{in}^n\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq E\)</span></p></td>
+<td><p>All edges entering node <span class="math notranslate nohighlight">\(n\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(e_{out}^n\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\in E_{out}^n\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\subseteq E\)</span></p></td>
+<td><p>All edges exiting node <span class="math notranslate nohighlight">\(n\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+</section>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_model.create_params">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_model.</span></span><span class="sig-name descname"><span class="pre">create_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><span class="pre">HydrogenData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.create_model.create_params" title="Permalink to this definition"></a></dt>
+<dd><p>Loads parameters from network object (g) into pe.Param objects, which are
+used as coefficients in the model objective</p>
+<div class="docutils container" id="table-model-parameters">
+<table class="docutils align-default" id="id15">
+<caption><span class="caption-text">Model Parameters</span><a class="headerlink" href="#id15" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Unit</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\kappa\)</span></p></td>
+<td><p>%</p></td>
+<td><p>Fixed cost percentage</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(A\)</span></p></td>
+<td><p>%</p></td>
+<td><p>Amortization factor</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(t\)</span></p></td>
+<td><p>Days</p></td>
+<td><p>Time slices</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(U'_{\text{CO}_2}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\$\)</span>/ton<span class="math notranslate nohighlight">\(\text{CO}_2\)</span></p></td>
+<td><p>Carbon emissions tax</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\tau_{\text{CO}_2}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\$\)</span>/ton<span class="math notranslate nohighlight">\(\text{CO}_2\)</span></p></td>
+<td><p>Carbon capture tax credit</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(B\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{CO}_2\)</span>/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Baseline emissions rate</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\varepsilon(\omega)\)</span></p></td>
+<td><p>$/kWh</p></td>
+<td><p>Electricity price at a hub</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\gamma(\omega)\)</span></p></td>
+<td><p>$/MMBtu</p></td>
+<td><p>Gas price at a hub</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\lambda(\omega)\)</span></p></td>
+<td><p>%</p></td>
+<td><p>Capital price multiplier at a hub</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(D_c(\delta)\)</span></p></td>
+<td><p>$/<span class="math notranslate nohighlight">\(\delta\)</span>-unit</p></td>
+<td><p>Capital cost of a distribution method</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(D_v(\delta)\)</span></p></td>
+<td><p>$/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Variable cost of a distribution method</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(y_{d}^{\text{max}}(\delta)\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span>/day</p></td>
+<td><p>Flow limit of a distribution method</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(P_c(\phi)\)</span></p></td>
+<td><p>$/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span>/day</p></td>
+<td><p>Capital cost of a production method</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(P_v(\phi)\)</span></p></td>
+<td><p>$/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Variable cost of a production method</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(P_e(\phi)\)</span></p></td>
+<td><p>kWh/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Electric costs of a production method</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(P_g(\phi)\)</span></p></td>
+<td><p>MMBtu/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Gas cost of a production method</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\mu_p(\phi)\)</span></p></td>
+<td><p>%</p></td>
+<td><p>Utilization of a production method</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(G(\phi_{\text{electric}})\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{CO}_2\)</span>/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Carbon grid intensity of an electric producer</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\beta(\phi_{\text{new, thermal}})\)</span></p></td>
+<td><p>%</p></td>
+<td><p>CCS rate of a thermal producer</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\tau_{\text{new}}(\phi)\)</span></p></td>
+<td><p>$/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Tax credit of a producer</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(y_{p}^{\text{max}}(\phi)\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Upper limit of capacity for a producer</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(y_{p}^{\text{min}}(\phi)\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Lower limit of capacity for a producer</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(C_c(\pi)\)</span></p></td>
+<td><p>$/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span>/day</p></td>
+<td><p>Capital cost of a converter</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(C_v(\pi)\)</span></p></td>
+<td><p>$/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Variable cost of a converter</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(C_e(\pi)\)</span></p></td>
+<td><p>kWh/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Electricity costs of a converter</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\mu_c(\pi)\)</span></p></td>
+<td><p>%</p></td>
+<td><p>Utilization of a conversion method</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(U_{bp}(\xi)\)</span></p></td>
+<td><p>$/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Breakeven price of a demand sector</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(Q_{\text{H}_2}(\omega, \xi)\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Amount of hydrogen demanded by a sector</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(Q'_{\text{CO}_2}(\xi)\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{CO}_2\)</span>/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Avoided carbon emissions of a sector</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(S_{\text{CO}_2}(\xi)\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\{0,1\}\)</span></p></td>
+<td><p>Binary for demand sector’s carbon sensitivity</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(CCS_v(\psi)\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\$\)</span>/ton<span class="math notranslate nohighlight">\(\text{CO}_2\)</span></p></td>
+<td><p>Variable costs of retrofitted CCS</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\beta(\psi)\)</span></p></td>
+<td><p>%</p></td>
+<td><p>CCS rate of a CCS retrofit technology</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\tau_{\text{H}_2}(\psi)\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\$\)</span>/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Tax credit for hydrogen cleaned by retrofit CCS</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\zeta_{CCS}(n_{p_{\text{exist}}})\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\{0,1\}\)</span></p></td>
+<td><p>Binary allowing CCS retrofitting</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(B_{\text{exist}}(n_{p_{\text{exist}}})\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{CO}_2\)</span>/ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p>Carbon production rate of existing producers</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+</section>
+<section id="variables">
+<h2>Variables<a class="headerlink" href="#variables" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_model.create_variables">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_model.</span></span><span class="sig-name descname"><span class="pre">create_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.create_model.create_variables" title="Permalink to this definition"></a></dt>
+<dd><p>Creates variables associated with model</p>
+<div class="docutils container" id="table-model-variables">
+<table class="docutils align-default" id="id16">
+<caption><span class="caption-text">Model Variables</span><a class="headerlink" href="#id16" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Set</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\rho_d(e)\)</span></p></td>
+<td><p>Pipelines or trucks</p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbb{Z}_0^+\)</span></p></td>
+<td><p>Capacity of a distribution edge</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(h_d(e)\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span>/day</p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbb{R}_0^+\)</span></p></td>
+<td><p>Hydrogen flow through edge per day</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\rho_p(n_p)\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbb{R}_0^+\)</span></p></td>
+<td><p>Capacity of a producer</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(h_p(n_p)\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span>/day</p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbb{R}_0^+\)</span></p></td>
+<td><p>Amount of hydrogen produced in one day</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\chi_p(n_p)\)</span></p></td>
+<td><p>CHECs/day</p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbb{R}_0^+\)</span></p></td>
+<td><p>Amount of CHECs produced</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(z_p(n_p)\)</span></p></td>
+<td></td>
+<td><p><span class="math notranslate nohighlight">\(\{0,1\}\)</span></p></td>
+<td><p>Binary tracking if producer is built</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\rho_{cv}(n_{cv})\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbb{R}_0^+\)</span></p></td>
+<td><p>Capacity of a converter</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(h_u(n_u)\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span>/day</p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbb{R}_0^+\)</span></p></td>
+<td><p>Amount of hydrogen consumed at a node</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\chi_d(n_u)\)</span></p></td>
+<td><p>CHECs/day</p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbb{R}_0^+\)</span></p></td>
+<td><p>Amount of CHECs demanded</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(z_{CCS}(\psi, n_{p_\text{exist}})\)</span></p></td>
+<td></td>
+<td><p><span class="math notranslate nohighlight">\(\{0,1\}\)</span></p></td>
+<td><p>Binary tracking if retrofitted CCS is built</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\theta_{CCS}(\psi, n_{p_\text{exist}})\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{CO}_2\)</span>/day</p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbb{R}_0^+\)</span></p></td>
+<td><p>CO2 captured by retrofitted CCS</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(h_{CCS}(\psi, n_{p_\text{exist}})\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{H}_2\)</span>/day</p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbb{R}_0^+\)</span></p></td>
+<td><p>Hydrogen “cleaned” by retrofitted CCS</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\rho_{CCS}(\psi, n_{p_\text{exist}})\)</span></p></td>
+<td><p>ton<span class="math notranslate nohighlight">\(\text{CO}_2\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathbb{R}_0^+\)</span></p></td>
+<td><p>Capacity of retrofitted CCS</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+</section>
+<section id="objective-function">
+<h2>Objective Function<a class="headerlink" href="#objective-function" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_model.obj_rule">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_model.</span></span><span class="sig-name descname"><span class="pre">obj_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><span class="pre">HydrogenData</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SumExpression</span></span></span><a class="headerlink" href="#HOwDI.model.create_model.obj_rule" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the objective function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>ConcreteModel</em>) – The Pyomo model object</p></li>
+<li><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – The HydrogenData object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pyomo.core.expr.numeric_expr.SumExpression</p>
+</dd>
+</dl>
+<section id="objective-definition">
+<h3>Objective Definition<a class="headerlink" href="#objective-definition" title="Permalink to this heading"></a></h3>
+<p>The model objective is to maximize system profit, which includes system-value gained from
+consumer’s consumption of hydrogen, value associated with tax credits, and the avoided carbon taxes.
+It also includes costs associated with production, distribution, and conversion.</p>
+<p>The model objective is defined as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\text{max} \left (
+\hat{U}_{\text{H}_2}
++ \hat{U}'_{\text{CO}_2}
++ \hat{U}_{\text{CCS}}
++ \hat{U}_{\text{tax credit}}
+- \hat{P}_c
+- \hat{P}_v
+- \hat{P}_e
+- \hat{P}_g
+- \hat{P}_{\text{CO}_2 \text{ tax}}
+\right .
+\\
+\left .
+- \hat{CCS}_v
+- \hat{D}_c
+- \hat{D}_v
+- \hat{C}_c
+- \hat{C}_v
+- \hat{C}_e
+\right )\end{split}\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">obj_rule</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">H</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">totalSurplus</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">U_hydrogen</span>
+    <span class="o">+</span> <span class="n">U_carbon_capture_credit_new</span>
+    <span class="o">+</span> <span class="n">U_carbon_capture_credit_retrofit</span>
+    <span class="o">+</span> <span class="n">U_h2_tax_credit</span>
+    <span class="o">+</span> <span class="n">U_h2_tax_credit_retrofit_ccs</span>
+    <span class="o">+</span> <span class="n">U_carbon</span>
+    <span class="o">-</span> <span class="n">P_variable</span>
+    <span class="o">-</span> <span class="n">P_electricity</span>
+    <span class="o">-</span> <span class="n">P_naturalGas</span>
+    <span class="o">-</span> <span class="n">P_capital</span>
+    <span class="o">-</span> <span class="n">P_carbon</span>
+    <span class="o">-</span> <span class="n">CCS_variable</span>
+    <span class="o">-</span> <span class="n">D_variable</span>
+    <span class="o">-</span> <span class="n">D_capital</span>
+    <span class="o">-</span> <span class="n">CV_variable</span>
+    <span class="o">-</span> <span class="n">CV_electricity</span>
+    <span class="o">-</span> <span class="n">CV_capital</span>
+    <span class="c1"># + CV_fuelStation_subsidy</span>
+    <span class="p">)</span>
+
+<span class="n">m</span><span class="o">.</span><span class="n">OBJ</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Objective</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">obj_rule</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">H</span><span class="p">),</span> <span class="n">sense</span><span class="o">=</span><span class="n">pe</span><span class="o">.</span><span class="n">maximize</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="utility-gained-by-consumption-of-hydrogen">
+<span id="utility-gained-through-consumption-of-hydrogen"></span><h4>Utility gained by consumption of hydrogen<a class="headerlink" href="#utility-gained-by-consumption-of-hydrogen" title="Permalink to this heading"></a></h4>
+<p>The utility gained by the consumption of hydrogen <span class="math notranslate nohighlight">\(\hat{U}_{\text{H}_2}\)</span> is the amount consumed
+<span class="math notranslate nohighlight">\(h_u\)</span> times the (breakeven) price <span class="math notranslate nohighlight">\(U_{bp}\)</span> that the consumer at the node’s corresponding demand
+sector <span class="math notranslate nohighlight">\(\xi\)</span> is willing to pay, summed over all consumers <span class="math notranslate nohighlight">\(n_u \in N_u\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\hat{U}_{\text{H}_2}
+=
+\sum_{n_u}^{N_u}
+U_{bp}(\xi^{n})
+\cdot
+h_u(n)\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">U_hydrogen</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">cons_h</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">cons_price</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">consumer_set</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="utility-gained-by-consumers-by-avoiding-a-carbon-tax">
+<span id="utility-gained-through-avoided-carbon-taxes"></span><h4>Utility gained by consumers by avoiding a carbon tax<a class="headerlink" href="#utility-gained-by-consumers-by-avoiding-a-carbon-tax" title="Permalink to this heading"></a></h4>
+<p>Although not directly a source of profit, consumers avoid paying some share of carbon taxes
+when switching from carbon-intensive sources of energy to hydrogen.
+This reduction is dependent on the avoided emissions, which is calculated by each demand sector
+and external to the scope of this model.</p>
+<p>The utility gained by consumers by avoiding a carbon tax <span class="math notranslate nohighlight">\(\hat{U}_{\text{tax credit}}\)</span> is the carbon
+emissions tax <span class="math notranslate nohighlight">\(U'_{\text{CO}_2}\)</span> in dollars per ton of CO2 emitted times the amount of CO2 avoided.
+The amount of CO2 avoided is the avoided emissions <span class="math notranslate nohighlight">\(Q'_{\text{CO}_2}\)</span> of a demand sector <span class="math notranslate nohighlight">\(\xi\)</span>
+times the amount of hydrogen consumed <span class="math notranslate nohighlight">\(h_u\)</span> by a consumer <span class="math notranslate nohighlight">\(n_u\)</span> in that demand sector.</p>
+<div class="math notranslate nohighlight">
+\[\hat{U}'_{\text{CO}_2}
+=
+U'_{\text{CO}_2}
+\left (
+\sum_{n_u}^{N_u}
+Q'_{\text{CO}_2}(\xi^{n})
+\cdot
+h_u(n)
+\right )\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">U_carbon</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="nb">sum</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">cons_h</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">avoided_emissions</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">consumer_set</span><span class="p">)</span>
+<span class="p">)</span> <span class="o">*</span> <span class="n">H</span><span class="o">.</span><span class="n">carbon_price</span>
+</pre></div>
+</div>
+</section>
+<section id="utility-gained-through-carbon-capture-tax-credits">
+<span id="id1"></span><h4>Utility gained through carbon capture tax credits<a class="headerlink" href="#utility-gained-through-carbon-capture-tax-credits" title="Permalink to this heading"></a></h4>
+<p>Producers can gain capital through tax credits for the capture of CO2.
+The model treats carbon capture connected to new and existing thermal production separately.
+Existing production is not currently equipped with CCS, and the model determines if retrofitting
+CCS to these generators would increase the model objective.</p>
+<p>On the other hand, each new thermal producer <span class="math notranslate nohighlight">\(\phi\)</span> is assumed to be built with CCS.
+The emissions rate of an unabated consumer <span class="math notranslate nohighlight">\(B\)</span> is used to calculate the relative amount of carbon captured.
+This is specified in settings and is most likely the emissions rate of an unabated steam methane reformer.</p>
+<div class="math notranslate nohighlight">
+\[\hat{U}_{CCS}
+=
+\tau_{\text{CO}_2}
+\left [
+\left (
+\sum_{n_{p_\text{exist}}}^{N_{p_\text{exist}}}
+\sum_\psi^\Psi
+\theta_{CCS}(\psi, n)
+\right )
++
+B
+\left (
+\sum_{n_{p_\text{new}}}^{N_{p_\text{new}}}
+\beta(\psi^n)
+\cdot
+h_p(n)
+\right )
+\right ]\]</div>
+<p>where <span class="math notranslate nohighlight">\(\tau_{\text{CO}_2}\)</span> is the tax credit per ton of CO2 captured, <span class="math notranslate nohighlight">\(\theta_{CCS}\)</span> is the
+CO2 captured by retrofitted CCS (see <a class="reference internal" href="#HOwDI.model.constraints.existing_infrastructure.rule_ccs1CapacityRelationship" title="HOwDI.model.constraints.existing_infrastructure.rule_ccs1CapacityRelationship"><code class="xref py py-func docutils literal notranslate"><span class="pre">HOwDI.model.constraints.existing_infrastructure.rule_ccs1CapacityRelationship()</span></code></a>),
+<span class="math notranslate nohighlight">\(B\)</span> is the emissions rate of an unabated consumer, <span class="math notranslate nohighlight">\(\beta\)</span> is the prescribed CCS rate of a new thermal producer
+<span class="math notranslate nohighlight">\(\phi\)</span>, and <span class="math notranslate nohighlight">\(h_p\)</span> is the amount of hydrogen consumed by a producer at node <span class="math notranslate nohighlight">\(n_p\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">U_carbon_capture_credit_retrofit</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="nb">sum</span><span class="p">(</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">ccs1_co2_captured</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">ccs2_co2_captured</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">existing_producers</span>
+    <span class="p">)</span>
+    <span class="o">*</span> <span class="n">H</span><span class="o">.</span><span class="n">carbon_capture_credit</span>
+<span class="p">)</span>
+
+<span class="n">U_carbon_capture_credit_new</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="nb">sum</span><span class="p">(</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">prod_h</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">H</span><span class="o">.</span><span class="n">baseSMR_CO2_per_H2_tons</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">ccs_capture_rate</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">new_thermal_producers</span>
+    <span class="p">)</span>
+    <span class="o">*</span> <span class="n">H</span><span class="o">.</span><span class="n">carbon_capture_credit</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="utility-gained-through-clean-hydrogen-production-tax-credits">
+<span id="id2"></span><h4>Utility gained through clean hydrogen production tax credits<a class="headerlink" href="#utility-gained-through-clean-hydrogen-production-tax-credits" title="Permalink to this heading"></a></h4>
+<p>Producers can also gain tax credits for the production of clean hydrogen.
+The tax credit <span class="math notranslate nohighlight">\(\tau\)</span> a specific type of new producer <span class="math notranslate nohighlight">\(\phi\)</span> or retrofitted CCS <span class="math notranslate nohighlight">\(\psi\)</span> will get
+is pre-calculated external to the model and specified by the user.
+When the model chooses to retrofit an existing producer with CCS, the amount of hydrogen that is clean and qualifies
+for a tax credit is dependent on the carbon capture rate (i.e., if CCS captures 70% of the carbon produced,
+70% of the hydrogen produced will yield the tax credit, <span class="math notranslate nohighlight">\(h_\text{CCS} = 0.70 h_p\)</span>).</p>
+<p>The utility gained by producers through clean hydrogen production tax credits <span class="math notranslate nohighlight">\(\hat{U}_{\text{tax credit}}\)</span> is the
+tax credit <span class="math notranslate nohighlight">\(\tau\)</span> for the given producer type <span class="math notranslate nohighlight">\(\phi\)</span> times the amount of hydrogen produced
+<span class="math notranslate nohighlight">\(h_p\)</span> at the producer node <span class="math notranslate nohighlight">\(n_p\)</span>.</p>
+<p>For retrofitted CCS, the amount of hydrogen that qualifies for the tax credit <span class="math notranslate nohighlight">\(\tau_{\text{H}_2}(\psi)\)</span>
+is the amount of <a class="reference internal" href="#rule-ccs1capacityrelationship"><span class="std std-ref">hydrogen cleaned by CCS</span></a>, <span class="math notranslate nohighlight">\(h_\text{CCS}\)</span>.
+To the model, this amount is unique for each potential CCS retrofit technology <span class="math notranslate nohighlight">\(\psi\)</span>.
+However, all or all but one of these technologies will have <a class="reference internal" href="#only-one-ccs"><span class="std std-ref">a capacity of zero</span></a>.</p>
+<div class="math notranslate nohighlight">
+\[\hat{U}_\text{tax credit} =
+\left (
+\sum_{n_{p_\text{exist}}}^{N_{p_\text{exist}}}
+\sum_\psi^\Psi
+\tau_{\text{H}_2}(\psi)
+\cdot
+h_{CCS}(\psi, n)
+\right )
++
+\left (
+\sum_{n_{p_\text{new}}}^{N_{p_\text{new}}}
+\tau_\text{new}(\phi^n)
+\cdot
+h_p(n)
+\right )\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">U_h2_tax_credit_retrofit_ccs</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">ccs1_capacity_h2</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">H</span><span class="o">.</span><span class="n">ccs1_h2_tax_credit</span>
+    <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">ccs2_capacity_h2</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">H</span><span class="o">.</span><span class="n">ccs2_h2_tax_credit</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">existing_producers</span>
+<span class="p">)</span>
+
+<span class="n">U_h2_tax_credit</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">prod_h</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">h2_tax_credit</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">new_producers</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="costs-of-production">
+<h4>Costs of production<a class="headerlink" href="#costs-of-production" title="Permalink to this heading"></a></h4>
+<section id="capital-costs-of-production">
+<span id="id3"></span><h5>Capital costs of production<a class="headerlink" href="#capital-costs-of-production" title="Permalink to this heading"></a></h5>
+<p>The total capital cost of a production <span class="math notranslate nohighlight">\(\hat{P}_c\)</span> is the capital cost of <span class="math notranslate nohighlight">\(P_c\)</span> of a
+production method <span class="math notranslate nohighlight">\(\phi\)</span> times the capacity of that production method <span class="math notranslate nohighlight">\(\rho_p\)</span> at a
+production node <span class="math notranslate nohighlight">\(n_p\)</span>.
+That cost is multiplied by a regional capital cost adjustment factor <span class="math notranslate nohighlight">\(\lambda\)</span> at the hub <span class="math notranslate nohighlight">\(\omega\)</span>
+corresponding to node <span class="math notranslate nohighlight">\(n_p\)</span>.
+The capital cost is summed over all production nodes, divided by the amortization factor <span class="math notranslate nohighlight">\(A/t\)</span>, and multiplied
+by <span class="math notranslate nohighlight">\(1+\kappa\)</span> to account for fixed costs as <span class="math notranslate nohighlight">\(\kappa\)</span> percent of capital costs.</p>
+<div class="math notranslate nohighlight">
+\[\hat{P}_c
+=
+\frac{1+\kappa}{A/t}
+\left (
+\sum_{n_{p}}^{N_{p}}
+\lambda(\omega^n)
+\cdot
+P_c(\phi^n)
+\cdot
+\rho_p(n)
+\right )\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># m.prod_cost_capital[p] is already multiplied by the regional cost adjustment factor</span>
+<span class="n">P_capital</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="nb">sum</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">prod_capacity</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">prod_cost_capital</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">producer_set</span><span class="p">)</span>
+    <span class="o">/</span> <span class="n">H</span><span class="o">.</span><span class="n">A</span>
+    <span class="o">/</span> <span class="n">H</span><span class="o">.</span><span class="n">time_slices</span>
+    <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">H</span><span class="o">.</span><span class="n">fixedcost_percent</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="variable-costs-of-production">
+<span id="variable-costs-production"></span><h5>Variable costs of production<a class="headerlink" href="#variable-costs-of-production" title="Permalink to this heading"></a></h5>
+<p>Variable costs <span class="math notranslate nohighlight">\(\hat{P}_v\)</span> are the sum of variable costs <span class="math notranslate nohighlight">\(P_v\)</span> of a production method <span class="math notranslate nohighlight">\(\phi\)</span> per ton of hydrogen
+produced times the amount of hydrogen produced <span class="math notranslate nohighlight">\(h_p\)</span> at a production node <span class="math notranslate nohighlight">\(n_p\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\hat{P}_v =
+\sum_{n_{p}}^{N_{p}}
+P_v(\phi^n)
+\cdot
+h_p(n)\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P_variable</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">prod_h</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">prod_cost_variable</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">producer_set</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="electricity-costs-of-production">
+<span id="id4"></span><h5>Electricity costs of production<a class="headerlink" href="#electricity-costs-of-production" title="Permalink to this heading"></a></h5>
+<p>The total costs of electricity <span class="math notranslate nohighlight">\(\hat{P}_e\)</span> is the product of local electricity price <span class="math notranslate nohighlight">\(\varepsilon\)</span> at the hub <span class="math notranslate nohighlight">\(\omega\)</span>
+corresponding to the producer node <span class="math notranslate nohighlight">\(n_p\)</span>, the amount of electricity (kWh/ton H2) consumed to produce a ton of
+hydrogen <span class="math notranslate nohighlight">\(P_e\)</span> corresponding to the producer type <span class="math notranslate nohighlight">\(\phi\)</span>, and the amount of hydrogen produced <span class="math notranslate nohighlight">\(h_p\)</span> at a production node <span class="math notranslate nohighlight">\(n_p\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\hat{P}_e
+=
+\sum_{n_{p}}^{N_{p}}
+\varepsilon(\omega^n)
+\cdot
+P_e(\phi^n)
+\cdot
+h_p(n)\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P_electricity</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">prod_h</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">prod_e_price</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">producer_set</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Thermal plants and are not excluded here.
+Conversion also uses electricity and thus has associated <a class="reference internal" href="#electricity-costs-of-conversion"><span class="std std-ref">electricity costs</span></a>.</p>
+</div>
+</section>
+<section id="natural-gas-costs-of-production-smrs">
+<span id="natural-gas-costs"></span><h5>Natural gas costs of production (SMRs)<a class="headerlink" href="#natural-gas-costs-of-production-smrs" title="Permalink to this heading"></a></h5>
+<p>The total costs of natural gas <span class="math notranslate nohighlight">\(\hat{P}_g\)</span> is the product of local natural gas price <span class="math notranslate nohighlight">\(\gamma\)</span> at the hub <span class="math notranslate nohighlight">\(\omega\)</span>
+corresponding to the thermal producer node <span class="math notranslate nohighlight">\(n_p\)</span>, the amount of natural gas (MMBtu/ton H2) consumed to produce a ton of
+hydrogen <span class="math notranslate nohighlight">\(P_g\)</span> corresponding to the thermal producer type <span class="math notranslate nohighlight">\(\phi\)</span>, and the amount of hydrogen produced <span class="math notranslate nohighlight">\(h_p\)</span> at a production node <span class="math notranslate nohighlight">\(n_p\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\hat{P}_g
+=
+\sum_{n_{p}}^{N_{p}}
+\gamma(\omega^n)
+\cdot
+P_g(\phi^n)
+\cdot
+h_p(n)\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P_naturalGas</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">prod_h</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">prod_ng_price</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">producer_set</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="carbon-tax-costs">
+<span id="id5"></span><h5>Carbon tax costs<a class="headerlink" href="#carbon-tax-costs" title="Permalink to this heading"></a></h5>
+<p>Carbon tax costs are dependent on the carbon emissions tax <span class="math notranslate nohighlight">\(U'_{\text{CO}_2}\)</span> and the carbon emissions of the producer.</p>
+<p>For new and existing thermal producers, the carbon emissions are one minus the CCS capture percentage <span class="math notranslate nohighlight">\(\beta\)</span> times the
+unabated emissions rate <span class="math notranslate nohighlight">\(B\)</span> (tonCO2/tonH2) times the amount of hydrogen produced <span class="math notranslate nohighlight">\(h_p\)</span> at new thermal production node <span class="math notranslate nohighlight">\(n_p\)</span>
+or the amount of hydrogen processed by retrofit CCS <span class="math notranslate nohighlight">\(h_{CCS}\)</span> (all or none, see
+<a class="reference internal" href="#HOwDI.model.constraints.existing_infrastructure.rule_mustBuildAllCCS1" title="HOwDI.model.constraints.existing_infrastructure.rule_mustBuildAllCCS1"><code class="xref py py-func docutils literal notranslate"><span class="pre">HOwDI.model.constraints.existing_infrastructure.rule_mustBuildAllCCS1()</span></code></a>) at existing thermal production nodes.</p>
+<p>For electric producers, the carbon emissions are the amount of hydrogen produced <span class="math notranslate nohighlight">\(h_p\)</span> at new electric production node <span class="math notranslate nohighlight">\(n_p\)</span>
+times the carbon intensity <span class="math notranslate nohighlight">\(G\)</span> of the electricity used to produce the hydrogen (tonCO2/tonH2) for the electric producer
+<span class="math notranslate nohighlight">\(\psi\)</span> that corresponds to the node.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\hat{P}_{\text{CO}_2 \text{ tax}}
+=
+U'_{\text{CO}_2}
+\left [
+\left (
+\sum_{n_{p_\text{exist}}}^{N_{p_\text{exist}}}
+\sum_\psi^\Psi
+(1-\beta(\psi))
+\cdot
+B_{\text{exist}}(n)
+\cdot
+h_{CCS}(\psi, n_{p})
+\right )
+\right.
+\\
+\left.
++
+\left (
+\sum_{n_{p_\text{new, thermal}}}^{N_{p_\text{new, thermal}}}
+(1-\beta(\psi^n))
+\cdot
+B
+\cdot
+h_p(n)
+\right )
++
+\left (
+\sum_{n_{p_\text{new, electric}}}^{N_{p_\text{new, electric}}}
+G(\psi^n)
+\cdot
+h_p(n)
+\right )
+\right ]\end{split}\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P_carbon</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="nb">sum</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">prod_h</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">co2_emissions_rate</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">new_producers</span><span class="p">)</span>
+    <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">ccs1_capacity_h2</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">co2_emissions_rate</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">existing_producers</span>
+    <span class="p">)</span>
+    <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">H</span><span class="o">.</span><span class="n">ccs1_percent_co2_captured</span><span class="p">)</span>
+    <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">ccs2_capacity_h2</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">co2_emissions_rate</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">existing_producers</span>
+    <span class="p">)</span>
+    <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">H</span><span class="o">.</span><span class="n">ccs2_percent_co2_captured</span><span class="p">)</span>
+<span class="p">)</span> <span class="o">*</span> <span class="n">H</span><span class="o">.</span><span class="n">carbon_price</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="variable-costs-of-retrofitted-ccs">
+<span id="id6"></span><h4>Variable costs of retrofitted CCS<a class="headerlink" href="#variable-costs-of-retrofitted-ccs" title="Permalink to this heading"></a></h4>
+<p>Retrofitting an existing thermal producer with CCS technologies incurs a variable cost.
+The total variable cost <span class="math notranslate nohighlight">\(\hat{CCS}_v\)</span> is dependent on the amount of CO2 captured <span class="math notranslate nohighlight">\(\theta_{CCS}\)</span> at an existing
+thermal producer node <span class="math notranslate nohighlight">\(n_p\)</span> for a given CCS technology <span class="math notranslate nohighlight">\(\psi\)</span>, and the variable cost of CCS <span class="math notranslate nohighlight">\(CCS_V\)</span> for
+that CCS technology.</p>
+<div class="math notranslate nohighlight">
+\[\hat{CCS}_v
+=
+\sum_{n_{p_\text{exist}}}^{N_{p_\text{exist}}}
+\sum_\psi^\Psi
+CCS_v(\psi^n)
+\cdot
+\theta_{CCS}(\psi, n_{p})\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CCS_variable</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">ccs1_co2_captured</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">H</span><span class="o">.</span><span class="n">ccs1_variable_usdPerTon</span><span class="p">)</span>
+    <span class="o">+</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">ccs2_co2_captured</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">*</span> <span class="n">H</span><span class="o">.</span><span class="n">ccs2_variable_usdPerTon</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">existing_producers</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="costs-of-distribution">
+<h4>Costs of distribution<a class="headerlink" href="#costs-of-distribution" title="Permalink to this heading"></a></h4>
+<section id="capital-costs-of-distribution">
+<span id="id7"></span><h5>Capital costs of distribution<a class="headerlink" href="#capital-costs-of-distribution" title="Permalink to this heading"></a></h5>
+<p>The capital cost of distribution depends on the distribution method <span class="math notranslate nohighlight">\(\delta\)</span>.
+Capital costs <span class="math notranslate nohighlight">\(D_c\)</span> are in units of $/pipeline if <span class="math notranslate nohighlight">\(\delta\)</span> is pipeline, and $/truck if <span class="math notranslate nohighlight">\(\delta\)</span> is truck.
+The capital cost of distribution is multiplied by the capacity of the distribution method (pipelines or trucks).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Given that the model allows for unrestricted flow in a pipeline, the capacity of a pipeline will either be 0 or 1.
+There is no need for a second pipeline that would add additional infinite flow.</p>
+</div>
+<p>The capital costs are multiplied by the average of the regional capital cost multipliers of the connected hubs,
+notated as <span class="math notranslate nohighlight">\(\overline{\lambda}(e)\)</span> where <span class="math notranslate nohighlight">\(e\)</span> is the edge.
+The total capital costs of distribution, summed over all edges, is divided by the amortization factor <span class="math notranslate nohighlight">\(A\)</span> that is divided into time slices <span class="math notranslate nohighlight">\(t\)</span>.
+The whole term is multiplied by <span class="math notranslate nohighlight">\(1+\kappa\)</span> to account for fixed costs.</p>
+<div class="math notranslate nohighlight">
+\[\hat{D}_c
+=
+\frac{1+\kappa}{A/t}
+\left (
+\sum_{e}^{E}
+\overline{\lambda}(e)
+\cdot
+D_c(\delta^e)
+\cdot
+\rho_d(e)
+\right )\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># m.dist_cost_capital contains the regional multiplier</span>
+<span class="c1"># m.dist_cost_capital for pipelines is in $/pipeline, distance is already calculated in km</span>
+<span class="n">D_capital</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">dist_capacity</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">dist_cost_capital</span><span class="p">[</span><span class="n">d</span><span class="p">])</span> <span class="o">/</span> <span class="n">H</span><span class="o">.</span><span class="n">A</span> <span class="o">/</span> <span class="n">H</span><span class="o">.</span><span class="n">time_slices</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">distribution_arcs</span>
+<span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">H</span><span class="o">.</span><span class="n">fixedcost_percent</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="variable-costs-of-distribution">
+<span id="id8"></span><h5>Variable costs of distribution<a class="headerlink" href="#variable-costs-of-distribution" title="Permalink to this heading"></a></h5>
+<p>The variable cost of distribution along an edge <span class="math notranslate nohighlight">\(e\)</span> is the variable cost of distribution <span class="math notranslate nohighlight">\(D_v\)</span> ($/tonH2) of the
+distribution method <span class="math notranslate nohighlight">\(\delta\)</span> multiplied by the amount of hydrogen <span class="math notranslate nohighlight">\(h_d\)</span> (tonH2/day) that is distributed along the edge.</p>
+<div class="math notranslate nohighlight">
+\[\hat{D}_v =
+\sum_{e}^{E}
+D_v(\delta^e)
+\cdot
+h_d(e)\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">D_variable</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">dist_h</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">dist_cost_variable</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">distribution_arcs</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="costs-of-conversion">
+<h4>Costs of conversion<a class="headerlink" href="#costs-of-conversion" title="Permalink to this heading"></a></h4>
+<section id="capital-costs-of-conversion">
+<span id="id9"></span><h5>Capital costs of conversion<a class="headerlink" href="#capital-costs-of-conversion" title="Permalink to this heading"></a></h5>
+<p>The capital cost of conversion <span class="math notranslate nohighlight">\(\hat{C}_c\)</span> is dependent on the converter type <span class="math notranslate nohighlight">\(\pi\)</span>, the capital cost of that convertor type
+<span class="math notranslate nohighlight">\(C_c\)</span>, and the capacity of that convertor <span class="math notranslate nohighlight">\(\rho_{cv}\)</span> at that node <span class="math notranslate nohighlight">\(n\)</span>, and the regional capital cost multiplier <span class="math notranslate nohighlight">\(\lambda\)</span>
+associated with the hub <span class="math notranslate nohighlight">\(\omega\)</span> associated with the node.</p>
+<p>The whole term is divided by the amortization factor <span class="math notranslate nohighlight">\(A\)</span> that is divided by time slices <span class="math notranslate nohighlight">\(t\)</span>.
+Fixed costs are accounted for by multiplying the whole term by <span class="math notranslate nohighlight">\(1+\kappa\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\hat{C}_c
+=
+\frac{1+\kappa}{A/t}
+\left (
+\sum_{n_{cv}}^{N_{cv}}
+\lambda(\omega^n)
+\cdot
+C_c(\pi^n)
+\cdot
+\rho_{cv}(n)
+\right )\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CV_capital</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">conv_capacity</span><span class="p">[</span><span class="n">cv</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">conv_cost_capital</span><span class="p">[</span><span class="n">cv</span><span class="p">])</span> <span class="o">/</span> <span class="n">H</span><span class="o">.</span><span class="n">A</span> <span class="o">/</span> <span class="n">H</span><span class="o">.</span><span class="n">time_slices</span>
+    <span class="k">for</span> <span class="n">cv</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">converter_set</span>
+<span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">H</span><span class="o">.</span><span class="n">fixedcost_percent</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="variable-costs-of-conversion">
+<span id="id10"></span><h5>Variable costs of conversion<a class="headerlink" href="#variable-costs-of-conversion" title="Permalink to this heading"></a></h5>
+<p>The total variable cost of conversion <span class="math notranslate nohighlight">\(\hat{C}_v\)</span> is the variable cost of conversion <span class="math notranslate nohighlight">\(C_v\)</span> of the converter <span class="math notranslate nohighlight">\(\pi\)</span>
+times the utilization of the converter :math:mu_{c}` times the built capacity of the converter <span class="math notranslate nohighlight">\(\rho_{cv}\)</span> at the node <span class="math notranslate nohighlight">\(n\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\hat{C}_v =
+\sum_{n_{cv}}^{N_{cv}}
+C_v(\pi^n)
+\cdot
+\mu(\pi^n)
+\cdot
+\rho_{cv}(n)\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CV_variable</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">conv_capacity</span><span class="p">[</span><span class="n">cv</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">conv_utilization</span><span class="p">[</span><span class="n">cv</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">conv_cost_variable</span><span class="p">[</span><span class="n">cv</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">cv</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">converter_set</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="electricity-costs-of-conversion">
+<span id="id11"></span><h5>Electricity costs of conversion<a class="headerlink" href="#electricity-costs-of-conversion" title="Permalink to this heading"></a></h5>
+<p>The price of electricity for conversion is the price of electricity <span class="math notranslate nohighlight">\(\varepsilon\)</span> at the hub <span class="math notranslate nohighlight">\(\omega\)</span> associated
+with the node <span class="math notranslate nohighlight">\(n\)</span> at which the converter is located times the electricity efficiency of the convertor <span class="math notranslate nohighlight">\(C_e\)</span> (kwH/tonH2)
+multiplied by the utilization <span class="math notranslate nohighlight">\(\mu\)</span> and the capacity <span class="math notranslate nohighlight">\(\rho_{cv}\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\hat{C}_e
+=
+\sum_{n_{cv}}^{N_{cv}}
+\varepsilon(\omega^n)
+\cdot
+C_e(\pi^n)
+\cdot
+\mu(\pi^n)
+\cdot
+\rho_{cv}(n)\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CV_electricity</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">conv_capacity</span><span class="p">[</span><span class="n">cv</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">conv_utilization</span><span class="p">[</span><span class="n">cv</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">conv_e_price</span><span class="p">[</span><span class="n">cv</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">cv</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">converter_set</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition-todo admonition" id="id12">
+<p class="admonition-title">Todo</p>
+<p>The electricity associated with the converter does not have a carbon tax or remove CHECs.</p>
+</div>
+</section>
+</section>
+</section>
+</dd></dl>
+
+</section>
+<section id="constraints">
+<h2>Constraints<a class="headerlink" href="#constraints" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.create_model.apply_constraints">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.create_model.</span></span><span class="sig-name descname"><span class="pre">apply_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><span class="pre">HydrogenData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.create_model.apply_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Apply constraints to the model</p>
+</dd></dl>
+
+<section id="module-HOwDI.model.constraints.mass_conservation">
+<span id="mass-conservation"></span><h3>Mass Conservation<a class="headerlink" href="#module-HOwDI.model.constraints.mass_conservation" title="Permalink to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.mass_conservation.apply_mass_conservation">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.mass_conservation.</span></span><span class="sig-name descname"><span class="pre">apply_mass_conservation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.mass_conservation.apply_mass_conservation" title="Permalink to this definition"></a></dt>
+<dd><p>Apply all mass conservation constraints to a model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>ConcreteModel</em>) – Pyomo model</p></li>
+<li><p><strong>g</strong> (<em>DiGraph</em>) – Networkx graph</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.mass_conservation.rule_consumerSize">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.mass_conservation.</span></span><span class="sig-name descname"><span class="pre">rule_consumerSize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.mass_conservation.rule_consumerSize" title="Permalink to this definition"></a></dt>
+<dd><p id="consumersize">Each consumer’s consumption cannot exceed its size</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m</strong> (<em>pe.ConcreteModel</em>) – </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>Constraint</strong>:</dt><dd><p>consumed hydrogen &lt;= consumption size</p>
+</dd>
+</dl>
+<div class="math notranslate nohighlight">
+\[h_u(n) \le Q_{\text{H}_2}(\omega^n, \xi^n) \quad \forall n \in N_u\]</div>
+<p>The amount of hydrogen demanded/consumed/utilized <span class="math notranslate nohighlight">\(h_u\)</span> at a consumer node :math`n in N_u`
+must be less that or equal to the amount of hydrogen demanded by that node <span class="math notranslate nohighlight">\(Q_{\text{H}_2}\)</span>.
+The value <span class="math notranslate nohighlight">\(Q_{\text{H}_2}\)</span> is defined by the demand sector <span class="math notranslate nohighlight">\(\xi^n\)</span> and hub <span class="math notranslate nohighlight">\(\omega^n\)</span>
+corresponding to the node.</p>
+<dl class="simple">
+<dt>Set:</dt><dd><p>All consumers <span class="math notranslate nohighlight">\(n \in N_u\)</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.mass_conservation.rule_flowBalance">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.mass_conservation.</span></span><span class="sig-name descname"><span class="pre">rule_flowBalance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.mass_conservation.rule_flowBalance" title="Permalink to this definition"></a></dt>
+<dd><p>Mass conservation for each node.</p>
+<p>The amount of hydrogen flowing into a node must equal the
+amount of hydrogen exiting a node, unless that node is a producer or consumer node.
+Producer nodes can create hydrogen, and consumer nodes can consume hydrogen.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p></li>
+<li><p><strong>g</strong> (<em>networkx.DiGraph</em>) – A <cite>networkx.DiGraph</cite> object representing the hydrogen network.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Constraint</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">sum</span> <span class="n">of</span><span class="p">(</span>
+    <span class="o">+</span> <span class="n">flow</span> <span class="n">into</span> <span class="n">a</span> <span class="n">node</span>
+    <span class="o">-</span> <span class="n">flow</span> <span class="n">out</span> <span class="n">a</span> <span class="n">node</span>
+    <span class="o">+</span> <span class="n">flow</span> <span class="n">produced</span> <span class="n">by</span> <span class="n">a</span> <span class="n">node</span>
+    <span class="o">-</span> <span class="n">flow</span> <span class="n">consumed</span> <span class="n">by</span> <span class="n">a</span> <span class="n">node</span>
+    <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<div class="math notranslate nohighlight">
+\[\sum_{e^n_{in}}^{E^n_{in}}h_d(e)
+=
+\sum_{e^n_{out}}^{E^n_{out}}h_d(e)
+\quad
+\forall
+n
+\in
+N\backslash (N_p \cup N_u)\]</div>
+<p>For all nodes <span class="math notranslate nohighlight">\(n\)</span> in the network <span class="math notranslate nohighlight">\(N\)</span> that are not producers <span class="math notranslate nohighlight">\(N_p\)</span> or consumers <span class="math notranslate nohighlight">\(N_u\)</span>,
+the sum of hydrogen flow <span class="math notranslate nohighlight">\(h_d(e)\)</span> (distributed) from all edges <span class="math notranslate nohighlight">\(e_\text{in} \in E^n_{in}\)</span> into the node is equal
+to the sum of flow <span class="math notranslate nohighlight">\(h_d(e)\)</span> from all edges <span class="math notranslate nohighlight">\(e_\text{out} \in E^n_{out}\)</span> exiting the node.</p>
+<div class="math notranslate nohighlight">
+\[h_p(n)
+=
+\sum_{e^n_{out}}^{E^n_{out}}h_d(e)
+\quad
+\forall
+n
+\in
+N_p\]</div>
+<p>For all producer nodes <span class="math notranslate nohighlight">\(n \in N_p\)</span>, the flow produced by the node <span class="math notranslate nohighlight">\(h_p(n)\)</span> is equal to the sum
+of flow <span class="math notranslate nohighlight">\(h_d(e)\)</span> from all edges <span class="math notranslate nohighlight">\(e_\text{out} \in E^n_{out}\)</span> exiting the node.</p>
+<div class="math notranslate nohighlight">
+\[\sum_{e^n_{in}}^{E^n_{in}}h_d(e)
+=
+h_u(n)
+\quad
+\forall
+n
+\in
+N_u\]</div>
+<p>For all consumer nodes <span class="math notranslate nohighlight">\(n \in N_u\)</span>, the sum of flow <span class="math notranslate nohighlight">\(h_d(e)\)</span> from all edges
+<span class="math notranslate nohighlight">\(e_\text{in} \in E^n_{in}\)</span> into the node is equal to the flow consumed (utilized) by the node <span class="math notranslate nohighlight">\(h_u(n)\)</span>.</p>
+<dl class="simple">
+<dt>Set:</dt><dd><p>All nodes <span class="math notranslate nohighlight">\(n \in N\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function applies mass conservation constraints to the HOwDI model to ensure that the flow of hydrogen is balanced at each node.
+The constraints are based on the sum of the flow into the node, the flow out of the node, the flow produced by the node, and the flow consumed by the node, which should all sum to zero.</p>
+<p>The function loops through each node in the <cite>m.node_set</cite> and applies the appropriate constraint based on whether the node is a producer, consumer, or hub.</p>
+<p>If the node is a producer, the constraint is <cite>m.prod_h[node] + expr == 0.0</cite>, where <cite>expr</cite> is the sum of the flow into and out of the node.</p>
+<p>If the node is a consumer, the constraint is <cite>expr - m.cons_h[node] == 0.0</cite>, where <cite>expr</cite> is the sum of the flow into and out of the node.</p>
+<p>If the node is a hub, the constraint is <cite>expr == 0.0</cite>, where <cite>expr</cite> is the sum of the flow into and out of the node.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.mass_conservation.rule_truckCapacityConsistency">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.mass_conservation.</span></span><span class="sig-name descname"><span class="pre">rule_truckCapacityConsistency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.mass_conservation.rule_truckCapacityConsistency" title="Permalink to this definition"></a></dt>
+<dd><p>Truck mass balance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p></li>
+<li><p><strong>g</strong> (<em>networkx.DiGraph</em>) – A <cite>networkx.DiGraph</cite> object representing the hydrogen network.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>Constraint</strong>:</dt><dd><p>The number of trucks entering a node must be greater than or equal to
+the number of trucks leaving a node.</p>
+</dd>
+</dl>
+<div class="math notranslate nohighlight">
+\[\sum_{e^n_{in}}^{E^n_{in}}\rho_d(e)
+=
+\sum_{e^n_{out}}^{E^n_{out}}\rho_d(e)
+\quad
+\forall
+n
+\in
+N_{\text{truck}}\]</div>
+<p>The sum of capacities <span class="math notranslate nohighlight">\(\rho\)</span> of all edges <span class="math notranslate nohighlight">\(e\)</span> entering a node <span class="math notranslate nohighlight">\(n\)</span> must be equal
+to the sum of capacities of all edges exiting the node.</p>
+<dl class="simple">
+<dt>Set:</dt><dd><p>All nodes relevant to trucks (all distribution centers in distribution.csv that include truck),
+<span class="math notranslate nohighlight">\(n \in N_{\text{truck}}\)</span>.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>In nodes are only liquid/gas terminals (only converters).
+Out nodes can be converters (dispensers), demand centers, or nodes that distribute to other hubs.
+FIXME I don’t know if this is correct. Should hydrogen coming from other hubs be allowed as an
+in node?</p>
+</dd></dl>
+
+</section>
+<section id="module-HOwDI.model.constraints.existing_infrastructure">
+<span id="existing-infrastructure"></span><h3>Existing Infrastructure<a class="headerlink" href="#module-HOwDI.model.constraints.existing_infrastructure" title="Permalink to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.existing_infrastructure.apply_existing_infrastructure_constraints">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.existing_infrastructure.</span></span><span class="sig-name descname"><span class="pre">apply_existing_infrastructure_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><span class="pre">HydrogenData</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.existing_infrastructure.apply_existing_infrastructure_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Apply all constraints related to existing infrastructure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p></li>
+<li><p><strong>g</strong> (<em>networkx.DiGraph</em>) – A <cite>networkx.DiGraph</cite> object representing the network.</p></li>
+<li><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – A <cite>HydrogenData</cite> object representing that stores data about hydrogen production.
+Namely, the percent of CO2 captured by CCS1 and CCS2.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.existing_infrastructure.rule_ccs1CapacityRelationship">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.existing_infrastructure.</span></span><span class="sig-name descname"><span class="pre">rule_ccs1CapacityRelationship</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><span class="pre">HydrogenData</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.existing_infrastructure.rule_ccs1CapacityRelationship" title="Permalink to this definition"></a></dt>
+<dd><p id="rule-ccs1capacityrelationship">Define CCS1 CO2 Capacity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p></li>
+<li><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – A <cite>HydrogenData</cite> object representing that stores data about hydrogen production.
+Namely, the percent of CO2 captured by CCS1.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Constraint</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Amount</span> <span class="n">of</span> <span class="n">CO2</span> <span class="n">captured</span> <span class="o">==</span>
+<span class="n">the</span> <span class="n">amount</span> <span class="n">of</span> <span class="n">hydrogen</span> <span class="n">produced</span> <span class="n">that</span> <span class="n">went</span> <span class="n">through</span> <span class="n">CCS1</span>
+<span class="o">*</span> <span class="n">the</span> <span class="n">amount</span> <span class="n">of</span> <span class="n">CO2</span> <span class="n">produced</span> <span class="n">per</span> <span class="n">unit</span> <span class="n">of</span> <span class="n">hydrogen</span> <span class="n">produced</span>
+<span class="o">*</span> <span class="n">the</span> <span class="n">efficiency</span> <span class="n">of</span> <span class="n">CCS1</span>
+</pre></div>
+</div>
+<div class="math notranslate nohighlight">
+\[\theta_{CCS}(\psi^n,n)
+\cdot
+\zeta(\psi,n)
+=
+h_{CCS}(\psi^n,n)
+\cdot
+B_{\text{exist}}(n)
+\cdot
+\beta(psi^n)
+\quad
+\forall n_{p_\text{exist}} \in N_{p_\text{exist}}\]</div>
+<p>The amount of CO2 captured <span class="math notranslate nohighlight">\(\theta_{CCS}\)</span> by CCS1 <span class="math notranslate nohighlight">\(\psi^n\)</span> at node <span class="math notranslate nohighlight">\(n\)</span>
+times the binary tracking if CCS1 is built <span class="math notranslate nohighlight">\(\zeta(\psi,n)\)</span> where <span class="math notranslate nohighlight">\(\psi =\)</span> CCS1
+must equal the amount of hydrogen produced that went through CCS1 <span class="math notranslate nohighlight">\(h_{CCS}(\psi^n=\text{CCS1},n)\)</span>
+times a baseline emissions rate <span class="math notranslate nohighlight">\(B(n)\)</span> (tons CO2 per ton hydrogen produced of the unabated producer)
+times the percent of CO2 captured by CCS1 <span class="math notranslate nohighlight">\(\beta(\psi^n=\text{CCS1})\)</span>.</p>
+<dl class="simple">
+<dt>Set:</dt><dd><p>Existing producers <span class="math notranslate nohighlight">\(n_{p_\text{exist}} \in N_{p_\text{exist}}\)</span>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.existing_infrastructure.rule_ccs2CapacityRelationship">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.existing_infrastructure.</span></span><span class="sig-name descname"><span class="pre">rule_ccs2CapacityRelationship</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><span class="pre">HydrogenData</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.existing_infrastructure.rule_ccs2CapacityRelationship" title="Permalink to this definition"></a></dt>
+<dd><p>Define CCS2 CO2 Capacity.</p>
+<p>See <a class="reference internal" href="#HOwDI.model.constraints.existing_infrastructure.rule_ccs1CapacityRelationship" title="HOwDI.model.constraints.existing_infrastructure.rule_ccs1CapacityRelationship"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule_ccs1CapacityRelationship()</span></code></a> for equivalent details.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.existing_infrastructure.rule_flowCapacityExisting">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.existing_infrastructure.</span></span><span class="sig-name descname"><span class="pre">rule_flowCapacityExisting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.existing_infrastructure.rule_flowCapacityExisting" title="Permalink to this definition"></a></dt>
+<dd><p>Force existing pipelines.</p>
+<p>The capacity along an existing distribution arc must be greater than or equal to the existing capacity.
+This allows the model to build additional capacity.</p>
+<p>It is worth noting that the model allows for unrestricted flow through pipelines.
+Capacity for distribution arcs is the number of transporters, not the amount of hydrogen flow.
+Thus, the existence of a pipeline is represented by <span class="math notranslate nohighlight">\(\rho_d(e) = 1\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p></li>
+<li><p><strong>g</strong> (<em>networkx.DiGraph</em>) – A <cite>networkx.DiGraph</cite> object representing the hydrogen network.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>Constraint</strong>:</dt><dd><p>Existing pipelines’ capacity is greater than or equal to 1.
+(Where a capacity of “1” corresponds to one pipeline.)</p>
+</dd>
+</dl>
+<div class="math notranslate nohighlight">
+\[\rho_d(e) \ge 1
+\quad
+\forall e_\text{exist} \in E_\text{exist}\]</div>
+<p>The capacity <span class="math notranslate nohighlight">\(\rho_d\)</span> of a distribution edge <span class="math notranslate nohighlight">\(e\)</span> is greater than or equal to 1
+for all existing distribution edges <span class="math notranslate nohighlight">\(e_\text{exist} \in E_\text{exist}\)</span>.</p>
+<dl class="simple">
+<dt>Set:</dt><dd><p>Existing distribution arcs (existing pipelines) <span class="math notranslate nohighlight">\(e_\text{exist} \in E_\text{exist}\)</span>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.existing_infrastructure.rule_forceExistingProduction">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.existing_infrastructure.</span></span><span class="sig-name descname"><span class="pre">rule_forceExistingProduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.existing_infrastructure.rule_forceExistingProduction" title="Permalink to this definition"></a></dt>
+<dd><p>Existing production must be built</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>Constraint</strong>:</dt><dd><p>Binary tracking if producer built or not <span class="math notranslate nohighlight">\(z_p\)</span> must equal 1 for all existing producers
+<span class="math notranslate nohighlight">\(n_{p_\text{exist}} \in N_{p_\text{exist}}\)</span>.</p>
+</dd>
+</dl>
+<div class="math notranslate nohighlight">
+\[z_p(n) = 1
+\quad
+\forall n_{p_\text{exist}} \in N_{p_\text{exist}}\]</div>
+<dl class="simple">
+<dt>Set:</dt><dd><p>Existing producers nodes <span class="math notranslate nohighlight">\(n_{p_\text{exist}} \in N_{p_\text{exist}}\)</span>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.existing_infrastructure.rule_mustBuildAllCCS1">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.existing_infrastructure.</span></span><span class="sig-name descname"><span class="pre">rule_mustBuildAllCCS1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.existing_infrastructure.rule_mustBuildAllCCS1" title="Permalink to this definition"></a></dt>
+<dd><p>To build CCS1, it must be built over the entire possible capacity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p>
+</dd>
+</dl>
+<p><strong>Constraint</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">If</span> <span class="n">CCS1</span> <span class="ow">is</span> <span class="n">built</span><span class="p">:</span>
+    <span class="n">Amount</span> <span class="n">of</span> <span class="n">hydrogen</span> <span class="n">through</span> <span class="n">CCS1</span> <span class="o">==</span> <span class="n">Amount</span> <span class="n">of</span> <span class="n">hydrogen</span> <span class="n">produced</span>
+</pre></div>
+</div>
+<div class="math notranslate nohighlight">
+\[h_{CCS}(\psi,n) =
+z_{CCS}(\psi,n)
+\cdot
+h_p(n)
+\quad
+\forall n_{p_\text{exist}} \in N_{p_\text{exist}}
+, \quad
+\forall \psi \in \Psi\]</div>
+<p>The amount of hydrogen that has the associated carbon emissions cleaned by CCS <span class="math notranslate nohighlight">\(h_{CCS}(\psi,n)\)</span>
+for a given CCS technology <span class="math notranslate nohighlight">\(\psi\)</span> (is either CCS1 or CCS2) at node <span class="math notranslate nohighlight">\(n\)</span>
+must equal the binary tracking if CCS is built <span class="math notranslate nohighlight">\(z_{CCS}(\psi,n)\)</span> times the amount
+of hydrogen produced at the node <span class="math notranslate nohighlight">\(h_p(n)\)</span>.</p>
+<dl class="simple">
+<dt>Set:</dt><dd><p>Existing producers <span class="math notranslate nohighlight">\(n_{p_\text{exist}} \in N_{p_\text{exist}}\)</span>, for each
+CCS technology <span class="math notranslate nohighlight">\(\psi \in \Psi\)</span>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.existing_infrastructure.rule_mustBuildAllCCS2">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.existing_infrastructure.</span></span><span class="sig-name descname"><span class="pre">rule_mustBuildAllCCS2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.existing_infrastructure.rule_mustBuildAllCCS2" title="Permalink to this definition"></a></dt>
+<dd><p>To build CCS2, it must be built over the entire possible capacity</p>
+<p>See <a class="reference internal" href="#HOwDI.model.constraints.existing_infrastructure.rule_mustBuildAllCCS1" title="HOwDI.model.constraints.existing_infrastructure.rule_mustBuildAllCCS1"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule_mustBuildAllCCS1()</span></code></a> for equivalent details.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.existing_infrastructure.rule_onlyOneCCS">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.existing_infrastructure.</span></span><span class="sig-name descname"><span class="pre">rule_onlyOneCCS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.existing_infrastructure.rule_onlyOneCCS" title="Permalink to this definition"></a></dt>
+<dd><p id="only-one-ccs">Existing producers can only build one of the ccs tech options</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>Constraint</strong>:</dt><dd><p>NAND(ccs1_built, ccs2_built), but this can’t be solved numerically; thus,
+the sum of the binary variables tracking if a ccs technology is built <span class="math notranslate nohighlight">\(z_{CCS}\)</span> over
+all CCS technologies <span class="math notranslate nohighlight">\(\psi \in \Psi\)</span> must be less than or equal to 1
+for all existing producer nodes <span class="math notranslate nohighlight">\(n_{p_\text{exist}} \in N_{p_\text{exist}}\)</span>.
+Consequently, either only one CCS technology is built or none are built.</p>
+</dd>
+</dl>
+<div class="math notranslate nohighlight">
+\[\sum_\psi^\Psi z_{CCS}(\psi,n) \le 1
+\quad
+\forall n_{p_\text{exist}} \in N_{p_\text{exist}}\]</div>
+<dl class="simple">
+<dt>Set:</dt><dd><p>Existing producers <span class="math notranslate nohighlight">\(n_{p_\text{exist}} \in N_{p_\text{exist}}\)</span>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.existing_infrastructure.rule_productionCapacityExisting">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.existing_infrastructure.</span></span><span class="sig-name descname"><span class="pre">rule_productionCapacityExisting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.existing_infrastructure.rule_productionCapacityExisting" title="Permalink to this definition"></a></dt>
+<dd><p id="rule-productioncapacityexisting">Capacity of existing producers equals their existing capacity</p>
+<p>This does not necessarily mean an existing producer can not retire.
+A producer can have a non-zero capacity while producing zero tons per day,
+meaning there are not associated variable costs.
+Since capital (upfront) costs of an existing plant are zero,
+an existing producer retires (does not spend capital) when <span class="math notranslate nohighlight">\(h_p = 0\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p></li>
+<li><p><strong>g</strong> (<em>networkx.DiGraph</em>) – A <cite>networkx.DiGraph</cite> object representing the hydrogen network.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Constraint</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Amount</span> <span class="n">of</span> <span class="n">capacity</span> <span class="n">of</span> <span class="n">producer</span> <span class="ow">in</span> <span class="n">model</span> <span class="o">==</span> <span class="n">existing</span> <span class="n">capacity</span>
+</pre></div>
+</div>
+<div class="math notranslate nohighlight">
+\[\rho_p(n) = \text{Existing Capacity}|_n
+\quad
+\forall n_{p_\text{exist}} \in N_{p_\text{exist}}\]</div>
+<p>The amount of capacity <span class="math notranslate nohighlight">\(\rho_p\)</span> of a producer <span class="math notranslate nohighlight">\(p\)</span> is equal to the existing capacity
+for all existing producer nodes <span class="math notranslate nohighlight">\(n_{p_\text{exist}} \in N_{p_\text{exist}}\)</span>.</p>
+<dl class="simple">
+<dt>Set:</dt><dd><p>Existing producers <span class="math notranslate nohighlight">\(n_{p_\text{exist}} \in N_{p_\text{exist}}\)</span>.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Maybe this could be removed to allow retirement of existing production?</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-HOwDI.model.constraints.capacity_relationships">
+<span id="capacity-relationships"></span><h3>Capacity Relationships<a class="headerlink" href="#module-HOwDI.model.constraints.capacity_relationships" title="Permalink to this heading"></a></h3>
+<p>Since HOwDI is a mixed-integer linear model and lacks a time domain,
+the capacity of a node <span class="math notranslate nohighlight">\(\rho\)</span> and the amount of hydrogen <span class="math notranslate nohighlight">\(h\)</span> produced/consumed/distributed by a node
+seem similar and are often the same value.
+The capacity of a producer/converter is the maximum amount of hydrogen that can be be produced or processed.
+The actual amount produced or processed is <span class="math notranslate nohighlight">\(h\)</span>.
+For distribution, the capacity is the number of pipelines or trucks that can are used to transport hydrogen while
+<span class="math notranslate nohighlight">\(h\)</span> is the amount of hydrogen transported.</p>
+<p>In a real world system, <span class="math notranslate nohighlight">\(h\)</span> may vary with time.
+However, since the model does not have a time domain,
+a utilization term <span class="math notranslate nohighlight">\(\mu\)</span> is introduced that represents the percentage of the day that a given producer or converter is utilized.
+For new builds, <span class="math notranslate nohighlight">\(h = \rho \mu\)</span>
+Existing builds may not choose to utilize the full capacity to save variable costs, so <span class="math notranslate nohighlight">\(h \le \rho \mu\)</span>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.capacity_relationships.apply_capacity_relationships">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.capacity_relationships.</span></span><span class="sig-name descname"><span class="pre">apply_capacity_relationships</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.capacity_relationships.apply_capacity_relationships" title="Permalink to this definition"></a></dt>
+<dd><p>Applies all capacity constraints to the model, in the general form of</p>
+<div class="math notranslate nohighlight">
+\[h \le \rho \cdot \mu\]</div>
+<p>where <span class="math notranslate nohighlight">\(h\)</span> is the flow, <span class="math notranslate nohighlight">\(\rho\)</span> is the capacity, and <span class="math notranslate nohighlight">\(\mu\)</span> is the utilization factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p></li>
+<li><p><strong>g</strong> (<em>networkx.DiGraph</em>) – A <cite>networkx.DiGraph</cite> object representing the HOwDI model.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.capacity_relationships.rule_flowCapacity">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.capacity_relationships.</span></span><span class="sig-name descname"><span class="pre">rule_flowCapacity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.capacity_relationships.rule_flowCapacity" title="Permalink to this definition"></a></dt>
+<dd><p id="capacity-distribution">Capacity-distribution relationship.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>Constraint</strong>:</dt><dd><p>The amount of hydrogen through a distribution arc <span class="math notranslate nohighlight">\(e\)</span> must be less than or
+equal to the capacity of the arc (number of pipelines or trucks) <span class="math notranslate nohighlight">\(\rho_d (e)\)</span> times the
+allowable flow through one unit of capacity <span class="math notranslate nohighlight">\(y_d^\text{max}(\delta^e)\)</span> for the
+type of distributor <span class="math notranslate nohighlight">\(\delta^e\)</span> associated with edge <span class="math notranslate nohighlight">\(e\)</span> for all distribution arcs.</p>
+</dd>
+</dl>
+<div class="math notranslate nohighlight">
+\[h_d(e) \le \rho_d(e) \cdot y_{d}^{\text{max}}(\delta^e)
+\quad
+\forall e_{d} \in E_{d}\]</div>
+<dl class="simple">
+<dt>Set:</dt><dd><p>All distribution arcs <span class="math notranslate nohighlight">\(\forall e_{d} \in E_{d}\)</span>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.capacity_relationships.rule_flowCapacityConverters">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.capacity_relationships.</span></span><span class="sig-name descname"><span class="pre">rule_flowCapacityConverters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.capacity_relationships.rule_flowCapacityConverters" title="Permalink to this definition"></a></dt>
+<dd><p id="capacity-converters">Flow across a convertor is limited
+by the capacity of the conversion node</p>
+<p>The amount of hydrogen processed by a converter is not explicitly calculated.
+Instead, the hydrogen leaving the conversion node is considered the amount processed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p></li>
+<li><p><strong>g</strong> (<em>networkx.DiGraph</em>) – A <cite>networkx.DiGraph</cite> object representing the HOwDI model.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Constraint</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">flow</span> <span class="n">out</span> <span class="n">of</span> <span class="n">a</span> <span class="n">conversion</span> <span class="n">node</span> <span class="o">&lt;=</span>
+<span class="p">(</span><span class="n">capacity</span> <span class="n">of</span> <span class="n">convertor</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">utilization</span> <span class="n">of</span> <span class="n">convertor</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="math notranslate nohighlight">
+\[\sum_{e_{out}^n}^{E_{out}^n} h_d(e) \le \rho_{cv}(n) \cdot \mu_{cv}(\pi^n)
+\quad
+\forall n_{cv} \in N_{cv}\]</div>
+<p>The sum of all flow exiting a conversion node <span class="math notranslate nohighlight">\(\sum h_d(e)\)</span> must be less than or equal
+to the capacity of the conversion node <span class="math notranslate nohighlight">\(\rho_{cv}(n)\)</span> times the utilization factor
+<span class="math notranslate nohighlight">\(\mu_{cv}(\pi^n)\)</span> of the conversion method <span class="math notranslate nohighlight">\(\pi\)</span> associated with the conversion node <span class="math notranslate nohighlight">\(n\)</span>
+for all conversion nodes <span class="math notranslate nohighlight">\(n_{cv} \in N_{cv}\)</span>.</p>
+<dl class="simple">
+<dt>Set:</dt><dd><p>All convertor nodes <span class="math notranslate nohighlight">\(n_{cv} \in N_{cv}\)</span>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.capacity_relationships.rule_maxProductionCapacity">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.capacity_relationships.</span></span><span class="sig-name descname"><span class="pre">rule_maxProductionCapacity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.capacity_relationships.rule_maxProductionCapacity" title="Permalink to this definition"></a></dt>
+<dd><p id="capacity-production-max">Establishes a upper bound of production for a producer
+(only for new producers)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p></li>
+<li><p><strong>g</strong> (<em>networkx.DiGraph</em>) – A <cite>networkx.DiGraph</cite> object representing the HOwDI model.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>Constraint</strong>:</dt><dd><p>The production capacity <span class="math notranslate nohighlight">\(\rho_p\)</span> of a producer node <span class="math notranslate nohighlight">\(n_p\)</span> must be less than or equal to
+the maximum hydrogen production <span class="math notranslate nohighlight">\(y_{p}^{\text{min}}\)</span> of the production method <span class="math notranslate nohighlight">\(\phi\)</span> associated
+with the node times a binary variable <span class="math notranslate nohighlight">\(z_p(n_p)\)</span> that represents if the model has built the producer node.</p>
+</dd>
+</dl>
+<div class="math notranslate nohighlight">
+\[\rho_p(n)
+\le
+y_{p}^{\text{max}}(\phi(n))
+\cdot
+z_p(n)
+\quad
+\forall n_{p_\text{new}} \in N_{p_\text{new}}\]</div>
+<dl class="simple">
+<dt>Set:</dt><dd><p>All new producers <span class="math notranslate nohighlight">\(n_{p_\text{new}} \in N_{p_\text{new}}\)</span>.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If <cite>prod_exists</cite> (<span class="math notranslate nohighlight">\(z_p(n)\)</span>) is zero (false), the maximum allowed hydrogen production is zero.
+Paired with the minimum constraint <a class="reference internal" href="#HOwDI.model.constraints.capacity_relationships.rule_minProductionCapacity" title="HOwDI.model.constraints.capacity_relationships.rule_minProductionCapacity"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule_minProductionCapacity()</span></code></a>, the forces capacity of producers
+not built to be zero.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.capacity_relationships.rule_minProductionCapacity">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.capacity_relationships.</span></span><span class="sig-name descname"><span class="pre">rule_minProductionCapacity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiGraph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.capacity_relationships.rule_minProductionCapacity" title="Permalink to this definition"></a></dt>
+<dd><p id="capacity-production-min">Establishes a minimum bound of production for a producer
+(only for new producers)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p></li>
+<li><p><strong>g</strong> (<em>networkx.DiGraph</em>) – A <cite>networkx.DiGraph</cite> object representing the HOwDI model.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>Constraint</strong>:</dt><dd><p>The production capacity <span class="math notranslate nohighlight">\(\rho_p\)</span> of a producer node <span class="math notranslate nohighlight">\(n_p\)</span> must be greater than or equal to
+the minimum hydrogen production <span class="math notranslate nohighlight">\(y_{p}^{\text{min}}\)</span> of the production method <span class="math notranslate nohighlight">\(\phi\)</span> associated
+with the node times a binary variable <span class="math notranslate nohighlight">\(z_p(n_p)\)</span> that represents if the model has built the producer node.</p>
+</dd>
+</dl>
+<div class="math notranslate nohighlight">
+\[\rho_p(n)
+\ge
+y_{p}^{\text{min}}(\phi(n))
+\cdot
+z_p(n)
+\quad
+\forall n_{p_\text{new}} \in N_{p_\text{new}}\]</div>
+<dl class="simple">
+<dt>Set:</dt><dd><p>All new producers <span class="math notranslate nohighlight">\(n_{p_\text{new}} \in N_{p_\text{new}}\)</span>.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If <cite>prod_exists</cite> (<span class="math notranslate nohighlight">\(z_p(n)\)</span>) is zero (false), the minimum allowed hydrogen production is zero.
+Paired with the maximum constraint <a class="reference internal" href="#HOwDI.model.constraints.capacity_relationships.rule_maxProductionCapacity" title="HOwDI.model.constraints.capacity_relationships.rule_maxProductionCapacity"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule_maxProductionCapacity()</span></code></a>, the forces capacity of producers
+not built to be zero.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.capacity_relationships.rule_productionCapacity">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.capacity_relationships.</span></span><span class="sig-name descname"><span class="pre">rule_productionCapacity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.capacity_relationships.rule_productionCapacity" title="Permalink to this definition"></a></dt>
+<dd><p id="capacity-production">Each producer’s production capacity
+cannot exceed its capacity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m</strong> (<em>pyomo.environ.ConcreteModel</em>) – A <cite>pyomo.environ.ConcreteModel</cite> object representing the HOwDI model.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>Constraint</strong>:</dt><dd><p>The amount of hydrogen produced by a producer <span class="math notranslate nohighlight">\(n_p\)</span> must be less than or equal to
+the capacity of the producer <span class="math notranslate nohighlight">\(\rho_p(n_p)\)</span> times the utilization factor
+<span class="math notranslate nohighlight">\(\mu_p(\phi^n)\)</span> of the production method <span class="math notranslate nohighlight">\(\phi\)</span> associated with the producer <span class="math notranslate nohighlight">\(n_p\)</span>.</p>
+</dd>
+</dl>
+<div class="math notranslate nohighlight">
+\[h_p(n) \le \rho_p(n) \cdot \mu_p (\phi^n)
+\quad
+\forall n_p \in N_p\]</div>
+<dl class="simple">
+<dt>Set:</dt><dd><p>All producers <span class="math notranslate nohighlight">\(n_p \in N_p\)</span>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-HOwDI.model.constraints.checs">
+<span id="clean-hydrogen-energy-credits-checs"></span><h3>Clean Hydrogen Energy Credits (CHECs)<a class="headerlink" href="#module-HOwDI.model.constraints.checs" title="Permalink to this heading"></a></h3>
+<p>Clean Hydrogen Energy Credits (CHECs) ensure that the amount of hydrogen consumed
+by carbon-sensitive consumers is equal to the amount of clean hydrogen produced.
+It is important to note that CHECs do not necessitate that carbon-sensitive demand
+is met by clean hydrogen.
+Instead, CHECs serve as a non-physical commodity market that couples clean production
+with carbon-sensitive demand.</p>
+<p>For every ton of clean hydrogen produced, one CHEC is produced.
+For every ton of satisfied carbon-sensitive demand, one CHEC is consumed.
+The model is constrained such that the amount of CHECs produced exceeds the number of CHECs consumed.
+In other words, there must be more clean hydrogen production than carbon-sensitive demand met.</p>
+<p>The amount of CHECs generated per ton of hydrogen is calculated with the plant’s emission rate
+relative to the emission rate of an unabated SMR plant.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.checs.apply_CHECs">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.checs.</span></span><span class="sig-name descname"><span class="pre">apply_CHECs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><span class="pre">HydrogenData</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.checs.apply_CHECs" title="Permalink to this definition"></a></dt>
+<dd><p>Apply all CHEC constraints</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pe.ConcreteModel</em>) – Pyomo ConcreteModel object</p></li>
+<li><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – HydrogenData object</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.checs.rule_ccs1Checs">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.checs.</span></span><span class="sig-name descname"><span class="pre">rule_ccs1Checs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><span class="pre">HydrogenData</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.checs.rule_ccs1Checs" title="Permalink to this definition"></a></dt>
+<dd><p>CHECs produced from CCS1 cannot exceed the the amount of “carbon free”” hydrogen from CCS1</p>
+<p>If the model is using “fractional CHECs”, the amount of carbon free hydrogen is the CCS1 capacity
+times the percent of CO2 captured.</p>
+<p>If the model is not using “fractional CHECs”, the amount of carbon free hydrogen is the CCS1 capacity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pe.ConcreteModel</em>) – Pyomo ConcreteModel object</p></li>
+<li><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – HydrogenData object</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Constraint</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CHECs</span> <span class="kn">from</span> <span class="nn">CCS1</span> <span class="o">&lt;=</span> <span class="n">Hydrogen</span> <span class="n">cleaned</span> <span class="n">by</span> <span class="n">retrofitted</span> <span class="n">CCS</span>
+</pre></div>
+</div>
+<div class="math notranslate nohighlight">
+\[\chi_p(n)
+=
+h_{CCS}(\phi^n,n)
+\quad
+\forall n_{p_\text{exist}} \in N_{p_\text{exist}}\]</div>
+<p>For fractional CHECs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CHECs</span> <span class="kn">from</span> <span class="nn">CCS1</span> <span class="o">&lt;=</span> <span class="n">CCS1</span> <span class="n">capacity</span> <span class="o">*</span> <span class="n">percent</span> <span class="n">of</span> <span class="n">CO2</span> <span class="n">captured</span>
+</pre></div>
+</div>
+<div class="math notranslate nohighlight">
+\[\chi_p(n)
+\le
+\rho_\text{CCS} (\psi, n_{p_\text{exist}} )
+\cdot
+\beta(\psi)
+\quad
+\forall n_{p_\text{exist}} \in N_p | \zeta(\psi = \text{CCS1}, n_{p_\text{exist}})=1\]</div>
+<p>The amount of CHECs produced <span class="math notranslate nohighlight">\(\chi_p\)</span> at a node <span class="math notranslate nohighlight">\(n\)</span> as a result of retrofitted CCS1 is
+less than or equal to the capacity of retrofitted CCS <span class="math notranslate nohighlight">\(\rho_\text{CCS}(\psi, n_{p_\text{exist}} )\)</span>
+times the percent of CO2 captured <span class="math notranslate nohighlight">\(\beta(\psi)\)</span>. This constraint is applied to all producers, but only
+(existing) nodes with retrofitted CCS1 with have a non-zero value for
+<span class="math notranslate nohighlight">\(\rho_\text{CCS}(\psi=\text{CCS1}, n_{p_\text{exist}} )\)</span>.</p>
+<p>Else:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CHECs</span> <span class="kn">from</span> <span class="nn">CCS1</span> <span class="o">&lt;=</span>  <span class="n">CCS1</span> <span class="n">capacity</span>
+</pre></div>
+</div>
+<div class="math notranslate nohighlight">
+\[\chi_p(n)
+\le
+\rho_\text{CCS} (\psi, n_{p_\text{exist}} )
+\cdot
+\quad
+\forall n_{p_\text{exist}} \in N_p | \zeta(\psi = \text{CCS1}, n_{p_\text{exist}})=1\]</div>
+<dl class="simple">
+<dt>Set:</dt><dd><p>All producers, but in defacto existing producers that have CCS1
+<span class="math notranslate nohighlight">\(n_{p_\text{exist}} \in N_p | \zeta(\psi = \text{CCS1}, n_{p_\text{exist}})=1\)</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.checs.rule_ccs2Checs">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.checs.</span></span><span class="sig-name descname"><span class="pre">rule_ccs2Checs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><span class="pre">HydrogenData</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.checs.rule_ccs2Checs" title="Permalink to this definition"></a></dt>
+<dd><p>CHECs produced from CCS2 cannot exceed the clean hydrogen from CCS2</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pe.ConcreteModel</em>) – Pyomo ConcreteModel object</p></li>
+<li><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – HydrogenData object</p></li>
+</ul>
+</dd>
+</dl>
+<p>See <a class="reference internal" href="#HOwDI.model.constraints.checs.rule_ccs1Checs" title="HOwDI.model.constraints.checs.rule_ccs1Checs"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule_ccs1Checs()</span></code></a> for corresponding details.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.checs.rule_checsBalance">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.checs.</span></span><span class="sig-name descname"><span class="pre">rule_checsBalance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.checs.rule_checsBalance" title="Permalink to this definition"></a></dt>
+<dd><p>CHECs mass balance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m</strong> (<em>pe.ConcreteModel</em>) – Pyomo ConcreteModel object</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>Constraint</strong>:</dt><dd><p>The number of CHECs produced <span class="math notranslate nohighlight">\(\chi_p\)</span> must be greater than or equal to the number of CHECs consumed <span class="math notranslate nohighlight">\(\chi_u\)</span>.</p>
+</dd>
+</dl>
+<div class="math notranslate nohighlight">
+\[\sum_{n_p}^{N_p}\chi_p(n_p)
+\ge
+\sum_{n_u}^{N_u}\chi_u(n_u).\]</div>
+<dl class="simple">
+<dt>Set:</dt><dd><p>All producers <span class="math notranslate nohighlight">\(n_{p} \in N_{p}\)</span> and consumers <span class="math notranslate nohighlight">\(n_{u} \in N_{u}\)</span></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The sum of CHECs produced is inclusive of all producers, including those that are new and those that
+are existing and retrofitted with CCS.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.checs.rule_consumerChecs">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.checs.</span></span><span class="sig-name descname"><span class="pre">rule_consumerChecs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.checs.rule_consumerChecs" title="Permalink to this definition"></a></dt>
+<dd><p id="rule-consumerchecs">Each carbon-sensitive consumer’s consumption of CHECs
+equals its consumption of hydrogen</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m</strong> (<em>pe.ConcreteModel</em>) – Pyomo ConcreteModel object</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>Constraint</strong>:</dt><dd><p>A consumer consumes one CHEC per ton of H2 they consume if they are carbon sensitive.</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">consumer</span> <span class="n">CHECs</span> <span class="o">==</span> <span class="n">consumed</span> <span class="n">hydrogen</span> <span class="o">*</span> <span class="n">binary</span> <span class="n">tracking</span> <span class="k">if</span> <span class="n">consumer</span> <span class="ow">is</span> <span class="n">carbon</span><span class="o">-</span><span class="n">sensitive</span>
+</pre></div>
+</div>
+<div class="math notranslate nohighlight">
+\[\chi_d(n)
+ =
+ h_u(n)
+ \cdot
+ S_{\text{CO2}}(\xi^n)
+ \quad
+ \forall n_{u} \in N_{u}\]</div>
+<p>The amount of CHECs consumed <span class="math notranslate nohighlight">\(\chi_d\)</span> at a node <span class="math notranslate nohighlight">\(n\)</span> as a result of consumption is
+equal to the amount of hydrogen consumed <span class="math notranslate nohighlight">\(h_{u}(n)\)</span> times the carbon sensitivity binary
+<span class="math notranslate nohighlight">\(S_{\text{CO2}}(\xi^n)\)</span> of the demand sector <span class="math notranslate nohighlight">\(\xi^n\)</span> represented by the node.</p>
+<dl class="simple">
+<dt>Set:</dt><dd><p>All consumers <span class="math notranslate nohighlight">\(n_{u} \in N_{u}\)</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.checs.rule_productionChec">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.checs.</span></span><span class="sig-name descname"><span class="pre">rule_productionChec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConcreteModel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.checs.rule_productionChec" title="Permalink to this definition"></a></dt>
+<dd><p>The amount of CHECs produced by a producer is equal to the amount of hydrogen produced
+times the CHEC rate of the producer (CHEC/ton).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m</strong> (<em>pe.ConcreteModel</em>) – Pyomo ConcreteModel object</p>
+</dd>
+</dl>
+<p><strong>Constraint</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CHECs</span> <span class="n">produced</span> <span class="o">==</span> <span class="n">hydrogen</span> <span class="n">produced</span> <span class="o">*</span> <span class="n">checs</span><span class="o">/</span><span class="n">ton</span>
+</pre></div>
+</div>
+<p>For thermal producers:</p>
+<div class="math notranslate nohighlight">
+\[\chi_p(n)
+=
+h_{p}(n)
+\cdot
+\beta(\phi^n)
+\quad
+\forall n_{p_\text{new, thermal}} \in N_{p_\text{new, thermal}}\]</div>
+<p>The amount of CHECs produced <span class="math notranslate nohighlight">\(\chi_p\)</span> at a node <span class="math notranslate nohighlight">\(n\)</span> as a result of thermal production is
+equal to the amount of hydrogen produced <span class="math notranslate nohighlight">\(h_{p}(n)\)</span> times the CCS rate <span class="math notranslate nohighlight">\(\beta(\phi^n)\)</span> of the
+thermal producer <span class="math notranslate nohighlight">\(\phi^n\)</span> represented by the node.</p>
+<p id="electric-chec">For electric producers:</p>
+<div class="math notranslate nohighlight">
+\[\chi_p(n)
+=
+h_{p}(n)
+\cdot
+\left (
+1-\frac{G(\phi^n)}{B}
+\right )
+\quad
+\forall n_{p_\text{new, electric}} \in N_{p_\text{new, electric}}\]</div>
+<p>The amount of CHECs produced <span class="math notranslate nohighlight">\(\chi_p\)</span> at a node <span class="math notranslate nohighlight">\(n\)</span> as a result of electric production is
+equal to the amount of hydrogen produced <span class="math notranslate nohighlight">\(h_{p}(n)\)</span> times the compliment of the ratio of carbon intensity
+of the electricity <span class="math notranslate nohighlight">\(G(\phi^n)\)</span> to an established baseline emissions rate <span class="math notranslate nohighlight">\(B\)</span>.</p>
+<dl class="simple">
+<dt>Set:</dt><dd><p>New producers</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-HOwDI.model.constraints.subsidies">
+<span id="subsidies"></span><h3>Subsidies<a class="headerlink" href="#module-HOwDI.model.constraints.subsidies" title="Permalink to this heading"></a></h3>
+<p>An option of the model to utilize subsidies for hydrogen infrastructure.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.subsidies.apply_subsidy_constraints">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.subsidies.</span></span><span class="sig-name descname"><span class="pre">apply_subsidy_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.subsidies.apply_subsidy_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Apply all subsidy constraints</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pe.ConcreteModel</em>) – Pyomo ConcreteModel object</p></li>
+<li><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – HydrogenData object</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HOwDI.model.constraints.subsidies.rule_subsidyConverter">
+<span class="sig-prename descclassname"><span class="pre">HOwDI.model.constraints.subsidies.</span></span><span class="sig-name descname"><span class="pre">rule_subsidyConverter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.constraints.subsidies.rule_subsidyConverter" title="Permalink to this definition"></a></dt>
+<dd><p>Subsidies for a convertor is equal to the cost share fraction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>pe.ConcreteModel</em>) – Pyomo ConcreteModel object</p></li>
+<li><p><strong>H</strong> (<a class="reference internal" href="HydrogenData.html#HOwDI.model.HydrogenData.HydrogenData" title="HOwDI.model.HydrogenData.HydrogenData"><em>HydrogenData</em></a>) – HydrogenData object</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Constraint</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Subsidies</span> <span class="kn">from</span> <span class="nn">conversion</span> <span class="o">==</span> <span class="n">Cost</span> <span class="n">of</span> <span class="n">conversion</span> <span class="o">*</span> <span class="n">fraction</span> <span class="n">of</span> <span class="n">cost</span> <span class="n">paid</span> <span class="n">by</span> <span class="n">subsidies</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Set:</dt><dd><p>All fuel stations</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="create_network.html" class="btn btn-neutral float-left" title="Network Formulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../inputs_outputs/header.html" class="btn btn-neutral float-right" title="Input and output files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Braden Pecora.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

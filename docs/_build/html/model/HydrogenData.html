@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HydrogenData Class &mdash; HOwDI 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Network Formulation" href="create_network.html" />
+    <link rel="prev" title="Model Conception" href="header.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            HOwDI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="header.html">Model Conception</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">HydrogenData Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData"><code class="docutils literal notranslate"><span class="pre">HydrogenData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.uuid"><code class="docutils literal notranslate"><span class="pre">HydrogenData.uuid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.raiseFileNotFoundError_bool"><code class="docutils literal notranslate"><span class="pre">HydrogenData.raiseFileNotFoundError_bool</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.trial_number"><code class="docutils literal notranslate"><span class="pre">HydrogenData.trial_number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.scenario_dir"><code class="docutils literal notranslate"><span class="pre">HydrogenData.scenario_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.inputs_dir"><code class="docutils literal notranslate"><span class="pre">HydrogenData.inputs_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.outputs_dir"><code class="docutils literal notranslate"><span class="pre">HydrogenData.outputs_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.prod_therm"><code class="docutils literal notranslate"><span class="pre">HydrogenData.prod_therm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.prod_elec"><code class="docutils literal notranslate"><span class="pre">HydrogenData.prod_elec</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.distributors"><code class="docutils literal notranslate"><span class="pre">HydrogenData.distributors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.converters"><code class="docutils literal notranslate"><span class="pre">HydrogenData.converters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.demand"><code class="docutils literal notranslate"><span class="pre">HydrogenData.demand</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.hubs"><code class="docutils literal notranslate"><span class="pre">HydrogenData.hubs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.arcs"><code class="docutils literal notranslate"><span class="pre">HydrogenData.arcs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.producers_existing"><code class="docutils literal notranslate"><span class="pre">HydrogenData.producers_existing</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.ccs_data"><code class="docutils literal notranslate"><span class="pre">HydrogenData.ccs_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.ccs1_percent_co2_captured"><code class="docutils literal notranslate"><span class="pre">HydrogenData.ccs1_percent_co2_captured</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.ccs2_percent_co2_captured"><code class="docutils literal notranslate"><span class="pre">HydrogenData.ccs2_percent_co2_captured</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.ccs1_h2_tax_credit"><code class="docutils literal notranslate"><span class="pre">HydrogenData.ccs1_h2_tax_credit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.ccs2_h2_tax_credit"><code class="docutils literal notranslate"><span class="pre">HydrogenData.ccs2_h2_tax_credit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.ccs1_variable_usdPerTon"><code class="docutils literal notranslate"><span class="pre">HydrogenData.ccs1_variable_usdPerTon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.ccs2_variable_usdPerTon"><code class="docutils literal notranslate"><span class="pre">HydrogenData.ccs2_variable_usdPerTon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.price_tracking_array"><code class="docutils literal notranslate"><span class="pre">HydrogenData.price_tracking_array</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.price_hubs"><code class="docutils literal notranslate"><span class="pre">HydrogenData.price_hubs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.price_demand"><code class="docutils literal notranslate"><span class="pre">HydrogenData.price_demand</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.find_prices"><code class="docutils literal notranslate"><span class="pre">HydrogenData.find_prices</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.carbon_price"><code class="docutils literal notranslate"><span class="pre">HydrogenData.carbon_price</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.carbon_capture_credit"><code class="docutils literal notranslate"><span class="pre">HydrogenData.carbon_capture_credit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.baseSMR_CO2_per_H2_tons"><code class="docutils literal notranslate"><span class="pre">HydrogenData.baseSMR_CO2_per_H2_tons</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.carbon_g_MJ_to_t_tH2"><code class="docutils literal notranslate"><span class="pre">HydrogenData.carbon_g_MJ_to_t_tH2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.time_slices"><code class="docutils literal notranslate"><span class="pre">HydrogenData.time_slices</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.A"><code class="docutils literal notranslate"><span class="pre">HydrogenData.A</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.subsidy_dollar_billion"><code class="docutils literal notranslate"><span class="pre">HydrogenData.subsidy_dollar_billion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.subsidy_cost_share_fraction"><code class="docutils literal notranslate"><span class="pre">HydrogenData.subsidy_cost_share_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.solver_settings"><code class="docutils literal notranslate"><span class="pre">HydrogenData.solver_settings</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.fractional_chec"><code class="docutils literal notranslate"><span class="pre">HydrogenData.fractional_chec</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.fixedcost_percent"><code class="docutils literal notranslate"><span class="pre">HydrogenData.fixedcost_percent</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.dat_dir"><code class="docutils literal notranslate"><span class="pre">HydrogenData.dat_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.hubs_dir"><code class="docutils literal notranslate"><span class="pre">HydrogenData.hubs_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.shpfile_dir"><code class="docutils literal notranslate"><span class="pre">HydrogenData.shpfile_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.outputs_dfs"><code class="docutils literal notranslate"><span class="pre">HydrogenData.outputs_dfs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.add_uuid_to_all_dfs"><code class="docutils literal notranslate"><span class="pre">HydrogenData.add_uuid_to_all_dfs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.all_dfs"><code class="docutils literal notranslate"><span class="pre">HydrogenData.all_dfs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.append_value_to_all_dfs"><code class="docutils literal notranslate"><span class="pre">HydrogenData.append_value_to_all_dfs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.create_output_dfs"><code class="docutils literal notranslate"><span class="pre">HydrogenData.create_output_dfs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.create_output_dict"><code class="docutils literal notranslate"><span class="pre">HydrogenData.create_output_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.find_data_dir"><code class="docutils literal notranslate"><span class="pre">HydrogenData.find_data_dir()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.find_data_mapping_setting"><code class="docutils literal notranslate"><span class="pre">HydrogenData.find_data_mapping_setting()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.get_hubs_list"><code class="docutils literal notranslate"><span class="pre">HydrogenData.get_hubs_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.get_other_data"><code class="docutils literal notranslate"><span class="pre">HydrogenData.get_other_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.get_price_hub_params"><code class="docutils literal notranslate"><span class="pre">HydrogenData.get_price_hub_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.get_prices_dict"><code class="docutils literal notranslate"><span class="pre">HydrogenData.get_prices_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.get_prod_types"><code class="docutils literal notranslate"><span class="pre">HydrogenData.get_prod_types()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.get_settings"><code class="docutils literal notranslate"><span class="pre">HydrogenData.get_settings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.get_trial_info"><code class="docutils literal notranslate"><span class="pre">HydrogenData.get_trial_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.init_files"><code class="docutils literal notranslate"><span class="pre">HydrogenData.init_files()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.init_from_csvs"><code class="docutils literal notranslate"><span class="pre">HydrogenData.init_from_csvs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.init_from_dfs"><code class="docutils literal notranslate"><span class="pre">HydrogenData.init_from_dfs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.init_from_sql"><code class="docutils literal notranslate"><span class="pre">HydrogenData.init_from_sql()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.init_outputs"><code class="docutils literal notranslate"><span class="pre">HydrogenData.init_outputs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.initialize_ccs"><code class="docutils literal notranslate"><span class="pre">HydrogenData.initialize_ccs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.make_output_dir"><code class="docutils literal notranslate"><span class="pre">HydrogenData.make_output_dir()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.output_vector"><code class="docutils literal notranslate"><span class="pre">HydrogenData.output_vector()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.output_vector_dict"><code class="docutils literal notranslate"><span class="pre">HydrogenData.output_vector_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.plot"><code class="docutils literal notranslate"><span class="pre">HydrogenData.plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.raiseFileNotFoundError"><code class="docutils literal notranslate"><span class="pre">HydrogenData.raiseFileNotFoundError()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.read_file"><code class="docutils literal notranslate"><span class="pre">HydrogenData.read_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.read_sql"><code class="docutils literal notranslate"><span class="pre">HydrogenData.read_sql()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.read_yaml"><code class="docutils literal notranslate"><span class="pre">HydrogenData.read_yaml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.upload_to_sql"><code class="docutils literal notranslate"><span class="pre">HydrogenData.upload_to_sql()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.write_output_dataframes"><code class="docutils literal notranslate"><span class="pre">HydrogenData.write_output_dataframes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HOwDI.model.HydrogenData.HydrogenData.write_output_dict"><code class="docutils literal notranslate"><span class="pre">HydrogenData.write_output_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="create_network.html">Network Formulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create_model.html">Model Formulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs_outputs/header.html">Input and output files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utility/header.html">Utility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial.html">Running HOwDI Example/Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">HOwDI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="header.html">Model Conception</a></li>
+      <li class="breadcrumb-item active">HydrogenData Class</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/model/HydrogenData.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="hydrogendata-class">
+<h1>HydrogenData Class<a class="headerlink" href="#hydrogendata-class" title="Permalink to this heading"></a></h1>
+<p>The HydrogenData class and associated functions are used for storing and
+manipulating the data for the hydrogen model. Most of the data come from
+<a class="reference internal" href="../inputs_outputs/header.html#io-header"><span class="std std-ref">model inputs and outputs</span></a>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HOwDI.model.HydrogenData.</span></span><span class="sig-name descname"><span class="pre">HydrogenData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UUID</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'inputs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'outputs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raiseFileNotFoundError</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dfs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sql_database</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class used primarily to store data in one central location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uuid</strong> (<em>Union</em><em>[</em><em>uuid.UUID</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – A unique identifier for the instance. If not provided, a new UUID4 will be generated.</p></li>
+<li><p><strong>read_type</strong> (<em>str</em>) – Either “csv” or “dataframe”, determines whether or not to read from csvs in a
+prescribed directory or to read inputs from a dictionary of <cite>pd.DataFrame</cite>. Defaults to “csv”.</p></li>
+<li><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – A dictionary of settings to use when initializing the instance. If not specified,
+reads from the <cite>settings.yaml</cite> file in the <cite>scenario_dir</cite>.</p></li>
+<li><p><strong>scenario_dir</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) – Inputs and outputs dir are relative to this dir. Defaults to “.”.</p></li>
+<li><p><strong>inputs_dir</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) – The directory containing the input data for the model. Defaults to “inputs”.</p></li>
+<li><p><strong>outputs_dir</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) – The directory where output data will be written. Defaults to “outputs”.</p></li>
+<li><p><strong>store_outputs</strong> (<em>bool</em>) – If true, saves outputs to file. Defaults to True.</p></li>
+<li><p><strong>raiseFileNotFoundError</strong> (<em>bool</em>) – Raise error if an expected file does not exist. Set to false only when using this class
+for pre and postprocessing. Defaults to True.</p></li>
+<li><p><strong>read_output_dir</strong> (<em>bool</em>) – If set to True, will load data from the outputs dir. Useful if the model has already been
+run and postprocessing with this class is desired. Defaults to False.</p></li>
+<li><p><strong>dfs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>pd.DataFrame</em><em>]</em><em>, </em><em>optional</em>) – A dictionary of <cite>pd.DataFrame</cite> to use when initializing the instance. Only used if
+<cite>read_type</cite> is “dataframe”. Defaults to None.</p></li>
+<li><p><strong>outputs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – A dictionary of output data to use when initializing the instance. Only used if <cite>read_type</cite>
+is “dataframe”. Defaults to None.</p></li>
+<li><p><strong>trial_number</strong> (<em>int</em><em>, </em><em>optional</em>) – The trial number to use when initializing the instance. Only used if <cite>read_type</cite> is “sql”.
+Defaults to None.</p></li>
+<li><p><strong>sql_database</strong> (<em>str</em><em>, </em><em>optional</em>) – The SQL database to use when initializing the instance. Only used if <cite>read_type</cite> is “sql”.
+Defaults to None.</p></li>
+<li><p><strong>sql_table</strong> (<em>str</em><em>, </em><em>optional</em>) – The SQL table to use when initializing the instance. Only used if <cite>read_type</cite> is “sql”.
+Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.uuid">
+<span class="sig-name descname"><span class="pre">uuid</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.uuid" title="Permalink to this definition"></a></dt>
+<dd><p>A unique identifier for the instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>uuid.UUID</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.raiseFileNotFoundError_bool">
+<span class="sig-name descname"><span class="pre">raiseFileNotFoundError_bool</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.raiseFileNotFoundError_bool" title="Permalink to this definition"></a></dt>
+<dd><p>If true, raises error if an expected file does not exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.trial_number">
+<span class="sig-name descname"><span class="pre">trial_number</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.trial_number" title="Permalink to this definition"></a></dt>
+<dd><p>The trial number to use when initializing the instance for Monte Carlo runs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.scenario_dir">
+<span class="sig-name descname"><span class="pre">scenario_dir</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.scenario_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Inputs and outputs dir are relative to this dir.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.inputs_dir">
+<span class="sig-name descname"><span class="pre">inputs_dir</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.inputs_dir" title="Permalink to this definition"></a></dt>
+<dd><p>The directory containing the input data for the model, relative to scenario_dir</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.outputs_dir">
+<span class="sig-name descname"><span class="pre">outputs_dir</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.outputs_dir" title="Permalink to this definition"></a></dt>
+<dd><p>The directory where output data will be written, relative to scenario_dir</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.prod_therm">
+<span class="sig-name descname"><span class="pre">prod_therm</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.prod_therm" title="Permalink to this definition"></a></dt>
+<dd><p>A <cite>pd.DataFrame</cite> containing thermal production data, corresponding to the <cite>production_thermal.csv</cite> input file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.prod_elec">
+<span class="sig-name descname"><span class="pre">prod_elec</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.prod_elec" title="Permalink to this definition"></a></dt>
+<dd><p>A <cite>pd.DataFrame</cite> containing electric production data, corresponding to the <cite>production_electric.csv</cite> input file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.distributors">
+<span class="sig-name descname"><span class="pre">distributors</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.distributors" title="Permalink to this definition"></a></dt>
+<dd><p>A <cite>pd.DataFrame</cite> containing distributor data, corresponding to the <cite>distribution.csv</cite> input file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.converters">
+<span class="sig-name descname"><span class="pre">converters</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.converters" title="Permalink to this definition"></a></dt>
+<dd><p>A <cite>pd.DataFrame</cite> containing converter data, corresponding to the <cite>conversion.csv</cite> input file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.demand">
+<span class="sig-name descname"><span class="pre">demand</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.demand" title="Permalink to this definition"></a></dt>
+<dd><p>A <cite>pd.DataFrame</cite> containing demand data, corresponding to the <cite>demand.csv</cite> input file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.hubs">
+<span class="sig-name descname"><span class="pre">hubs</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.hubs" title="Permalink to this definition"></a></dt>
+<dd><p>A <cite>pd.DataFrame</cite> containing hub data, corresponding to the <cite>hubs.csv</cite> input file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.arcs">
+<span class="sig-name descname"><span class="pre">arcs</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.arcs" title="Permalink to this definition"></a></dt>
+<dd><p>A <cite>pd.DataFrame</cite> containing arc data, corresponding to the <cite>arcs.csv</cite> input file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.producers_existing">
+<span class="sig-name descname"><span class="pre">producers_existing</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.producers_existing" title="Permalink to this definition"></a></dt>
+<dd><p>A <cite>pd.DataFrame</cite> containing existing producer data, corresponding to the <cite>producers_existing.csv</cite> input file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.ccs_data">
+<span class="sig-name descname"><span class="pre">ccs_data</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.ccs_data" title="Permalink to this definition"></a></dt>
+<dd><p>A <cite>pd.DataFrame</cite> containing carbon capture and storage data, corresponding to the <cite>ccs.csv</cite> input file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.ccs1_percent_co2_captured">
+<span class="sig-name descname"><span class="pre">ccs1_percent_co2_captured</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.ccs1_percent_co2_captured" title="Permalink to this definition"></a></dt>
+<dd><p>The percentage of CO2 captured by the first CCS unit. Read from the <cite>ccs.csv</cite> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.ccs2_percent_co2_captured">
+<span class="sig-name descname"><span class="pre">ccs2_percent_co2_captured</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.ccs2_percent_co2_captured" title="Permalink to this definition"></a></dt>
+<dd><p>The percentage of CO2 captured by the second CCS unit. Read from the <cite>ccs.csv</cite> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.ccs1_h2_tax_credit">
+<span class="sig-name descname"><span class="pre">ccs1_h2_tax_credit</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.ccs1_h2_tax_credit" title="Permalink to this definition"></a></dt>
+<dd><p>The tax credit for hydrogen “cleaned” by CCS1 ($/ton H2). Read from the <cite>ccs.csv</cite> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.ccs2_h2_tax_credit">
+<span class="sig-name descname"><span class="pre">ccs2_h2_tax_credit</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.ccs2_h2_tax_credit" title="Permalink to this definition"></a></dt>
+<dd><p>The tax credit for hydrogen “cleaned” by CCS2 ($/ton H2). Read from the <cite>ccs.csv</cite> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.ccs1_variable_usdPerTon">
+<span class="sig-name descname"><span class="pre">ccs1_variable_usdPerTon</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.ccs1_variable_usdPerTon" title="Permalink to this definition"></a></dt>
+<dd><p>The variable cost of CCS1 ($/ton CO2). Read from the <cite>ccs.csv</cite> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.ccs2_variable_usdPerTon">
+<span class="sig-name descname"><span class="pre">ccs2_variable_usdPerTon</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.ccs2_variable_usdPerTon" title="Permalink to this definition"></a></dt>
+<dd><p>The variable cost of CCS2 ($/ton CO2). Read from the <cite>ccs.csv</cite> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.price_tracking_array">
+<span class="sig-name descname"><span class="pre">price_tracking_array</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.price_tracking_array" title="Permalink to this definition"></a></dt>
+<dd><p>Used in the approximation for finding delivered prices at hubs. Has a start, stop, and step
+based on the settings file. Model will test if hydrogen can be delivered at each price.
+More steps will result in a more accurate approximation, but will take longer to run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.price_hubs">
+<span class="sig-name descname"><span class="pre">price_hubs</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.price_hubs" title="Permalink to this definition"></a></dt>
+<dd><p>The hubs for which to track prices. Specified in settings.yml. More hubs will result in a
+longer runtime.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[str, List[str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.price_demand">
+<span class="sig-name descname"><span class="pre">price_demand</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.price_demand" title="Permalink to this definition"></a></dt>
+<dd><p>The price at “price hubs” pay for a unit of hydrogen. Specified in settings.yml.
+For the “price hubs” option to work, this value must be non-zero. However, the value
+should also be close to zero as to not interfere with the model’s results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.find_prices">
+<span class="sig-name descname"><span class="pre">find_prices</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.find_prices" title="Permalink to this definition"></a></dt>
+<dd><p>A flag indicating whether to find prices using the price tracking/price hubs feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.carbon_price">
+<span class="sig-name descname"><span class="pre">carbon_price</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.carbon_price" title="Permalink to this definition"></a></dt>
+<dd><p>Dollars per ton penalty on CO2 emissions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.carbon_capture_credit">
+<span class="sig-name descname"><span class="pre">carbon_capture_credit</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.carbon_capture_credit" title="Permalink to this definition"></a></dt>
+<dd><p>The credit for carbon capture in dollars per ton.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.baseSMR_CO2_per_H2_tons">
+<span class="sig-name descname"><span class="pre">baseSMR_CO2_per_H2_tons</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.baseSMR_CO2_per_H2_tons" title="Permalink to this definition"></a></dt>
+<dd><p>The carbon rate that produces 0 CHECs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.carbon_g_MJ_to_t_tH2">
+<span class="sig-name descname"><span class="pre">carbon_g_MJ_to_t_tH2</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.carbon_g_MJ_to_t_tH2" title="Permalink to this definition"></a></dt>
+<dd><p>The unit conversion factor for carbon.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.time_slices">
+<span class="sig-name descname"><span class="pre">time_slices</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.time_slices" title="Permalink to this definition"></a></dt>
+<dd><p>used to get from investment_period units to the simulation
+timestep units. Default is 365 because the investment period units are in
+years (20 years default) and the simulation units are in days.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.A">
+<span class="sig-name descname"><span class="pre">A</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.A" title="Permalink to this definition"></a></dt>
+<dd><p>The yearly amortized payment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.subsidy_dollar_billion">
+<span class="sig-name descname"><span class="pre">subsidy_dollar_billion</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.subsidy_dollar_billion" title="Permalink to this definition"></a></dt>
+<dd><p>The amount of billions of dollars available to subsidize infrastructure
+(for scenarios where hydrogen infrastructure is subsidized).
+e.g., if = 0.6, then for a $10Billion facility, industry must spend $6Billion</p>
+<blockquote>
+<div><p>(which counts toward the objective function) and the subsidy will cover $4Billion
+(which is excluded from the objective function).</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.subsidy_cost_share_fraction">
+<span class="sig-name descname"><span class="pre">subsidy_cost_share_fraction</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.subsidy_cost_share_fraction" title="Permalink to this definition"></a></dt>
+<dd><p>The fraction of dollars that industry must spend on new infrastructure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.solver_settings">
+<span class="sig-name descname"><span class="pre">solver_settings</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.solver_settings" title="Permalink to this definition"></a></dt>
+<dd><p>A dictionary of solver settings to pass to pyomo. Currently supports:
+- solver: The solver to use. Defaults to “glpk” but “gurobi” is recommended.
+- mipgap: The mipgap to use. Defaults to 0.01.
+- debug: A flag indicating whether to print debug information for the solver. Defaults to False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.fractional_chec">
+<span class="sig-name descname"><span class="pre">fractional_chec</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.fractional_chec" title="Permalink to this definition"></a></dt>
+<dd><p>A flag indicating whether to use fractional CHECs or whole CHECs.
+Fractional CHEC: 1 CHEC per 1 ton of clean hydrogen produced, 0.5 CHECs if
+the hydrogen produced has 50% of the associated carbon emissions of an unabated SMR.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.fixedcost_percent">
+<span class="sig-name descname"><span class="pre">fixedcost_percent</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.fixedcost_percent" title="Permalink to this definition"></a></dt>
+<dd><p>The percentage of capital costs used to estimate fixed costs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.dat_dir">
+<span class="sig-name descname"><span class="pre">dat_dir</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.dat_dir" title="Permalink to this definition"></a></dt>
+<dd><p>The directory containing geographic and other base data for the model, independent of the scenario.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.hubs_dir">
+<span class="sig-name descname"><span class="pre">hubs_dir</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.hubs_dir" title="Permalink to this definition"></a></dt>
+<dd><p>The directory containing hub data for the model, independent of the scenario. Within the data_dir</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.shpfile_dir">
+<span class="sig-name descname"><span class="pre">shpfile_dir</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.shpfile_dir" title="Permalink to this definition"></a></dt>
+<dd><p>The shapefile used to create the background map for the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.outputs_dfs">
+<span class="sig-name descname"><span class="pre">outputs_dfs</span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.outputs_dfs" title="Permalink to this definition"></a></dt>
+<dd><p>A dictionary of dataframes containing the outputs from the model. Keys are
+“production”, “conversion”, “consumption”, and “distribution”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, pd.DataFrame]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.add_uuid_to_all_dfs">
+<span class="sig-name descname"><span class="pre">add_uuid_to_all_dfs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.add_uuid_to_all_dfs" title="Permalink to this definition"></a></dt>
+<dd><p>Add uuid to all DataFrames in the <cite>HydrogenData</cite> instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.all_dfs">
+<span class="sig-name descname"><span class="pre">all_dfs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.all_dfs" title="Permalink to this definition"></a></dt>
+<dd><p>Return a dictionary of all the dataframes in the <cite>HydrogenData</cite> instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.append_value_to_all_dfs">
+<span class="sig-name descname"><span class="pre">append_value_to_all_dfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.append_value_to_all_dfs" title="Permalink to this definition"></a></dt>
+<dd><blockquote>
+<div><p>Append value to all columns in all DataFrames in the <cite>HydrogenData</cite> instance.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>Any</em>) – Keyword arguments representing the values to add to the DataFrames.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">append_value_to_all_dfs</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="go">For all tables returned by `self.all_dfs()`, add a column &quot;a&quot; with value 1.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.create_output_dfs">
+<span class="sig-name descname"><span class="pre">create_output_dfs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.create_output_dfs" title="Permalink to this definition"></a></dt>
+<dd><p>Create pandas DataFrames from CSV files in the <cite>outputs</cite> directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.create_output_dict">
+<span class="sig-name descname"><span class="pre">create_output_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.create_output_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Create a dictionary of output DataFrames for the <cite>HydrogenData</cite> instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.find_data_dir">
+<span class="sig-name descname"><span class="pre">find_data_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.find_data_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Find the path to the <cite>data</cite> directory, containing geographic data.</p>
+<p>TODO Refactor in __init__, doesn’t need to be a method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.find_data_mapping_setting">
+<span class="sig-name descname"><span class="pre">find_data_mapping_setting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setting_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.find_data_mapping_setting" title="Permalink to this definition"></a></dt>
+<dd><p>Find the path to a setting. Settings dictionary is searched first,
+then data mapping dictionary, which should be read from data/data_mapping.yml
+(This order is hopefully intuitive since it should allow easier flexibility between
+runs or Monte Carlo trials).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – A dictionary of settings.</p></li>
+<li><p><strong>setting_name</strong> (<em>str</em>) – The name of the setting to find.</p></li>
+<li><p><strong>data_mapping</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – A dictionary of data mappings (default is None), by default None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The path to the data mapping setting.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If the specified <cite>setting_name</cite> is not found in the <cite>settings</cite> dictionary and <cite>data_mapping</cite> is not provided.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.get_hubs_list">
+<span class="sig-name descname"><span class="pre">get_hubs_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.get_hubs_list" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list of the hub names in the <cite>HydrogenData</cite> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of the hub names.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.get_other_data">
+<span class="sig-name descname"><span class="pre">get_other_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.get_other_data" title="Permalink to this definition"></a></dt>
+<dd><p>Get other data for the <cite>HydrogenData</cite> instance. This includes:</p>
+<ul class="simple">
+<li><p>The “data” directory, which is relative to this file and contains a yaml file describing the location of the hubs directory within <cite>/data</cite>, the hubs directory, and a shapefile for the geography.</p></li>
+<li><p>The “hubs” directory, which contains the hubs data (hubs.geojson and roads.csv). Only used for generating output images</p></li>
+<li><p>The shapefile, which is the background for generated images</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – A dictionary of settings for the <cite>HydrogenData</cite> instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.get_price_hub_params">
+<span class="sig-name descname"><span class="pre">get_price_hub_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.get_price_hub_params" title="Permalink to this definition"></a></dt>
+<dd><p>Get a dictionary of price hub parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary containing the <cite>find_prices</cite>, <cite>price_hubs</cite>, and <cite>price_demand</cite> parameters.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.get_prices_dict">
+<span class="sig-name descname"><span class="pre">get_prices_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.get_prices_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.get_prod_types">
+<span class="sig-name descname"><span class="pre">get_prod_types</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.get_prod_types" title="Permalink to this definition"></a></dt>
+<dd><p>Get a dictionary of production types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary containing the <cite>thermal</cite> and <cite>electric</cite> production types.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.get_settings">
+<span class="sig-name descname"><span class="pre">get_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.get_settings" title="Permalink to this definition"></a></dt>
+<dd><p>Get the settings for the <cite>HydrogenData</cite> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>Path</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em><em>]</em>) – The settings for the <cite>HydrogenData</cite> instance, either as a dictionary or a file path.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary of settings for the <cite>HydrogenData</cite> instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Any]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – If the specified settings file is not found and <cite>raiseFileNotFoundError</cite> is <cite>True</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.get_trial_info">
+<span class="sig-name descname"><span class="pre">get_trial_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.get_trial_info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.init_files">
+<span class="sig-name descname"><span class="pre">init_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">how</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.init_files" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the <cite>HydrogenData</cite> instance, reading files or data based on the passed function <cite>how</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>how</strong> (<em>Callable</em><em>[</em><em>[</em><em>str</em><em>]</em><em>, </em><em>pd.DataFrame</em><em>]</em>) – A function that takes a filename and returns a pandas DataFrame.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This method does not return anything.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – If a required file is not found and <cite>raiseFileNotFoundError</cite> is <cite>True</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.init_from_csvs">
+<span class="sig-name descname"><span class="pre">init_from_csvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.init_from_csvs" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the <cite>HydrogenData</cite> instance from CSV files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario_dir</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) – The directory containing the scenario data.</p></li>
+<li><p><strong>inputs_dir</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) – The directory containing the input data for the model.</p></li>
+<li><p><strong>outputs_dir</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) – The directory where output data will be written.</p></li>
+<li><p><strong>store_outputs</strong> (<em>bool</em>) – If true, saves outputs to file.</p></li>
+<li><p><strong>settings</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – A dictionary of settings to use when initializing the instance (default is None).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>FileNotFoundError</strong> – If a required file is not found and raiseFileNotFoundError is True.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.init_from_dfs">
+<span class="sig-name descname"><span class="pre">init_from_dfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.init_from_dfs" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the <cite>HydrogenData</cite> instance from a dictionary of pandas DataFrames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dfs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>pd.DataFrame</em><em>]</em>) – A dictionary of pandas DataFrames containing input data. Keys are file names.</p></li>
+<li><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – A dictionary of settings for the <cite>HydrogenData</cite> instance (see settings.yml in scenario dict).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>FileNotFoundError</strong> – If a required file is not found and <cite>raiseFileNotFoundError</cite> is <cite>True</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.init_from_sql">
+<span class="sig-name descname"><span class="pre">init_from_sql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Engine</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.init_from_sql" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the <cite>HydrogenData</cite> instance from data stored in a SQL database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>db.engine.base.Engine</em><em>]</em>) – The SQLAlchemy engine to use for connecting to the database.</p></li>
+<li><p><strong>trial_number</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – The trial number to use (default is None), by default None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If a trial number is not specified.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.init_outputs">
+<span class="sig-name descname"><span class="pre">init_outputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">how</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.init_outputs" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the output DataFrames for the <cite>HydrogenData</cite> instance.</p>
+<p>TODO Currently only used for SQL data, and always set to true. Should be refactored</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>how</strong> (<em>Callable</em><em>[</em><em>[</em><em>str</em><em>]</em><em>, </em><em>pd.DataFrame</em><em>]</em>) – A function that takes a string argument (the name of an output DataFrame) and returns a pandas DataFrame.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This method does not return anything.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The <cite>self.output_dfs</cite> attribute is a dictionary containing the output DataFrames for the <cite>HydrogenData</cite> instance.
+The keys of the dictionary are the names of the output DataFrames (“production”, “consumption”, “conversion”, and “distribution”).
+The values of the dictionary are pandas DataFrames containing the output data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.initialize_ccs">
+<span class="sig-name descname"><span class="pre">initialize_ccs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ccs_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.initialize_ccs" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the CCS data for the <cite>HydrogenData</cite> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ccs_data</strong> (<em>Optional</em><em>[</em><em>pd.DataFrame</em><em>]</em>) – A pandas DataFrame containing the CCS data.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>FileNotFoundError</strong> – If the CCS data file is not found and <cite>raiseFileNotFoundError</cite> is <cite>True</cite>.</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>The way this is currently implemented is limiting and should be refactored.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.make_output_dir">
+<span class="sig-name descname"><span class="pre">make_output_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputs_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.make_output_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Create the output directory for the <cite>HydrogenData</cite> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outputs_dir</strong> (<em>Path</em>) – The directory where output data will be written.</p></li>
+<li><p><strong>store_outputs</strong> (<em>bool</em>) – If true, saves outputs to file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This method does not return anything.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.output_vector">
+<span class="sig-name descname"><span class="pre">output_vector</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.output_vector" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.output_vector_dict">
+<span class="sig-name descname"><span class="pre">output_vector_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.output_vector_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.raiseFileNotFoundError">
+<span class="sig-name descname"><span class="pre">raiseFileNotFoundError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.raiseFileNotFoundError" title="Permalink to this definition"></a></dt>
+<dd><p>Raise a <cite>FileNotFoundError</cite> exception if <cite>self.raiseFileNotFoundError_bool</cite> is True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fn</strong> (<em>str</em>) – The path to the file that was not found.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.read_file">
+<span class="sig-name descname"><span class="pre">read_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.read_file" title="Permalink to this definition"></a></dt>
+<dd><p>Read a CSV file from the input directory. Used as callable for <cite>init_files</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fn</strong> (<em>str</em>) – The name of the file to read, without the “.csv” extension.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pandas DataFrame containing the data from the file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – If the specified file does not exist and <cite>raiseFileNotFoundError</cite> is <cite>True</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.read_sql">
+<span class="sig-name descname"><span class="pre">read_sql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Engine</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.read_sql" title="Permalink to this definition"></a></dt>
+<dd><p>Read data from a SQL table for the <cite>HydrogenData</cite> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – The name of the SQL table to read data from.</p></li>
+<li><p><strong>engine</strong> (<em>db.engine.base.Engine</em>) – The SQLAlchemy engine to use for connecting to the database.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pandas DataFrame containing the data from the specified SQL table.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.read_yaml">
+<span class="sig-name descname"><span class="pre">read_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_no_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.read_yaml" title="Permalink to this definition"></a></dt>
+<dd><p>Read a YAML file and return its contents as a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fn</strong> (<em>str</em>) – The path to the YAML file.</p></li>
+<li><p><strong>force_no_error</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to suppress the <cite>FileNotFoundError</cite> exception (default is False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the contents of the YAML file, or None if the file was not found and <cite>force_no_error</cite> is True.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[Dict[str, Any], None]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – If the YAML file is not found and <cite>force_no_error</cite> is False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.upload_to_sql">
+<span class="sig-name descname"><span class="pre">upload_to_sql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.upload_to_sql" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.write_output_dataframes">
+<span class="sig-name descname"><span class="pre">write_output_dataframes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.write_output_dataframes" title="Permalink to this definition"></a></dt>
+<dd><p>Write the output DataFrames to CSV files in the <cite>outputs</cite> directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HOwDI.model.HydrogenData.HydrogenData.write_output_dict">
+<span class="sig-name descname"><span class="pre">write_output_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#HOwDI.model.HydrogenData.HydrogenData.write_output_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Write the output dictionary to a JSON file in the <cite>outputs</cite> directory.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="header.html" class="btn btn-neutral float-left" title="Model Conception" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="create_network.html" class="btn btn-neutral float-right" title="Network Formulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Braden Pecora.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
