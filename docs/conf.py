@@ -3,7 +3,7 @@ import sys
 
 import sphinx_rtd_theme
 
-import HOwDI
+# import HOwDI
 
 sys.path.insert(0, os.path.abspath("../HOwDI"))
 # Configuration file for the Sphinx documentation builder.
@@ -17,7 +17,8 @@ sys.path.insert(0, os.path.abspath("../HOwDI"))
 project = "HOwDI"
 copyright = "2023, Braden Pecora"
 author = "Braden Pecora"
-release = HOwDI.__version__
+release = "0.0.1"
+# release = HOwDI.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
