@@ -29,8 +29,6 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.mathjax",
     "myst_parser",
-    # "readthedocs_ext.readthedocs",
-    "sphinx_toolbox.more_autodoc",
 ]
 
 templates_path = ["_templates"]
