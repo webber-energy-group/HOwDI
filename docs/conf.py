@@ -17,7 +17,6 @@ sys.path.insert(0, os.path.abspath("../HOwDI"))
 project = "HOwDI"
 copyright = "2023, Braden Pecora"
 author = "Braden Pecora"
-# release = "0.0.1"
 release = HOwDI.__version__
 
 # -- General configuration ---------------------------------------------------
@@ -30,6 +29,8 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.mathjax",
     "myst_parser",
+    # "readthedocs_ext.readthedocs",
+    "sphinx_toolbox.more_autodoc",
 ]
 
 templates_path = ["_templates"]
