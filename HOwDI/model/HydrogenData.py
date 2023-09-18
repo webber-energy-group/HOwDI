@@ -143,8 +143,8 @@ class HydrogenData:
         The amount of billions of dollars available to subsidize infrastructure
         (for scenarios where hydrogen infrastructure is subsidized).
         e.g., if = 0.6, then for a $10Billion facility, industry must spend $6Billion
-         (which counts toward the objective function) and the subsidy will cover $4Billion
-         (which is excluded from the objective function).
+        (which counts toward the objective function) and the subsidy will cover $4Billion
+        (which is excluded from the objective function).
     subsidy_cost_share_fraction : float
         The fraction of dollars that industry must spend on new infrastructure.
     solver_settings : Dict[str, Any]
