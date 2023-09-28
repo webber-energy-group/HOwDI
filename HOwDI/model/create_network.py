@@ -170,7 +170,7 @@ def initialize_graph(H: HydrogenData) -> DiGraph:
         g.add_edge(
             "{}_center_lowPurity".format(hub_name),
             "{}_center_highPurity".format(hub_name),
-            **free_flow_dict("flow_through_purifier")
+            **free_flow_dict("flow_through_purifier"),
         )
 
     ### 3) create the arcs and associated data that connect hub_names to each other
@@ -475,6 +475,20 @@ def add_producers(g: DiGraph, H):
         prod_exist_data = prod_existing_series.to_dict()
         prod_exist_data["node"] = prod_node
         prod_exist_data["type"] = prod_type
+
+        # TODO I'm making a quick bug fix
+        if "smr" in prod_type:
+            prod_exist_data["prod_tech_type"] = "thermal"
+        else:
+            raise Exception(
+                f"""Each value in the column 'type' in producers_existing.csv must contain the substring 'smr'
+                    for every type, and this type must match a type in producers_thermal.csv. 
+                    The current value is {prod_type}, which does not contain the literal string 'smr'.
+                    
+                    Existing thermal producers are not yet supported, but may be in a future release.
+                    """
+            )
+
         prod_exist_data["class"] = "producer"
         prod_exist_data["existing"] = 1
         prod_exist_data["purity"] = prod_data["purity"]

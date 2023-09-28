@@ -39,18 +39,39 @@ def _create_df(label, data):
     return df
 
 
-def _join_multiple_dfs(dfs_labels, dfs_values):
+def _find_first_non_empty_df(dfs: list[pd.DataFrame]):
+    """Returns first non-empty dataframe in list of dataframes {dfs}"""
+    for df in dfs:
+        if not df.empty:
+            return df.copy()
+    raise ValueError("All dataframes are empty")
+
+
+def _join_multiple_dfs(dfs_labels, dfs_values, na_value="n/a"):
     """From a dictionary of dataframes ({label: data_frame}) {dfs_values},
     merges all dataframes with label in {dfs_labels}"""
-    dfs = [dfs_values[label] for label in dfs_labels]
+    dfs = {label: dfs_values[label] for label in dfs_labels}
+
+    # check if any dfs are empty
+    # first need to find non-empty df
+    non_empty_df = _find_first_non_empty_df(dfs.values())
+    non_empty_df_index = non_empty_df.index
+    # then check if any other dfs are empty
+    for label, _df in dfs.items():
+        if _df.empty:
+            # build empty df with same index as non-empty df
+            dfs[label] = pd.DataFrame(
+                data=na_value, index=non_empty_df_index, columns=[label]
+            )
+
     df = reduce(
         lambda left, right: pd.merge(
             left, right, how="outer", left_index=True, right_index=True
         ),
-        dfs,
+        dfs.values(),
     )
     df.reset_index(inplace=True)
-    df = df.fillna("n/a")
+    df = df.fillna(na_value)
     return df
 
 
